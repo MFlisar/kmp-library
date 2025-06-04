@@ -6,8 +6,8 @@ const val PLACEHOLDER = "com.michaelflisar.example"
 
 fun main() {
     val oldPackageName = PLACEHOLDER
-    val newPackageName = "com.michaelflisar.example"
-    run(oldPackageName, newPackageName)
+    val newPackageName = "com.michaelflisar.example.test"
+    run(newPackageName, oldPackageName)
 }
 
 private fun run(
@@ -47,6 +47,11 @@ private fun updateLibraryPackageName(
         return
     }
 
+    //val f = File("D:\\dev2\\kmp-template\\library\\demo\\app\\android\\src\\main\\java\\com\\michaelflisar\\example\\test")
+    //val success = f.deleteRecursively()
+    //println("Deleted test folder: ${f.path}, success: $success")
+    //return
+
     println("Updating package name from '$oldPackageName' to '$newPackageName' in folder: ${folder.path}")
     val oldPath = oldPackageName.replace('.', File.separatorChar)
     val newPath = newPackageName.replace('.', File.separatorChar)
@@ -57,19 +62,29 @@ private fun updateLibraryPackageName(
         .filter { it.isDirectory }
         .filter {
             val relative = it.relativeTo(folder).path
-            !relative.split(File.separatorChar).any { part -> part.startsWith(".") } &&
-                    relative.endsWith(oldPath)
+            relative.endsWith(oldPath) && !relative.split(File.separatorChar).any { part -> part.startsWith(".") }
         }
         .toList()
+
+    println("1... - dirsToMove = ${dirsToMove.size}")
 
     // 2) move files from old package to new package
     for (oldDir in dirsToMove) {
         val relative = oldDir.relativeTo(folder).path
         val newDir = File(folder, relative.removeSuffix(oldPath) + newPath)
-        newDir.mkdirs()
-        oldDir.listFiles()?.forEach { file ->
-            file.copyRecursively(File(newDir, file.name), overwrite = true)
-            file.deleteRecursively()
+        val filesToMove = oldDir.walkTopDown().toList()
+        for (file in filesToMove) {
+            val relative = file.relativeTo(oldDir)
+            val target = File(newDir, relative.path)
+            if (file.isDirectory) {
+                target.mkdirs()
+            } else {
+                // Versuche zu verschieben, sonst kopieren und löschen
+                if (!file.renameTo(target)) {
+                    file.copyTo(target, overwrite = true)
+                    file.delete()
+                }
+            }
         }
         println("Moved: ${oldDir.path} -> ${newDir.path}")
     }
@@ -77,12 +92,16 @@ private fun updateLibraryPackageName(
     // 3) delete old package folders (if they are empty)
     for (oldDir in dirsToMove) {
         var dirToDelete: File? = oldDir
-        while (dirToDelete != null && dirToDelete.exists() && dirToDelete.listFiles()
-                ?.isEmpty() == true && dirToDelete != folder
+        while (
+            dirToDelete != null &&
+            dirToDelete.exists() &&
+            dirToDelete.walk().none { it.isFile } &&
+            dirToDelete != folder &&
+            dirToDelete.relativeTo(folder).path.endsWith(oldPath)
         ) {
             val parent = dirToDelete.parentFile
-            dirToDelete.delete()
-            println("Deleted old dir: ${dirToDelete.path}")
+            val success = dirToDelete.deleteRecursively()
+            println("Deleted old dir: ${dirToDelete.path} | success: $success")
             dirToDelete = parent
         }
     }
@@ -96,7 +115,7 @@ private fun updateLibraryPackageName(
     }
 
     // 5) update run configurations in IDE
-    runConfigFolder.listFiles().forEach {
+    runConfigFolder.listFiles()?.forEach {
         updateFile(it, oldPackageName, newPackageName)
     }
     println("Package name update completed.")
@@ -109,4 +128,15 @@ private fun updateFile(file: File, oldPackageName: String, newPackageName: Strin
         file.writeText(updatedContent)
         println("Updated file: $file")
     }
+}
+
+fun deleteEmptyDirs(folder: File, oldPath: String) {
+    folder.walkBottomUp()
+        .filter { it.isDirectory && it.relativeTo(folder).path.endsWith(oldPath) }
+        .forEach { dir ->
+            if (dir.listFiles()?.all { it.isDirectory.not() || !it.exists() } == true) {
+                dir.delete()
+                println("Deleted old dir: ${dir.path}")
+            }
+        }
 }

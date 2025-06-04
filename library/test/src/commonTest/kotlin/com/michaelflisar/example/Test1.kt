@@ -1,4 +1,4 @@
-package com.michaelflisar.example.test
+package com.michaelflisar.example
 
 import kotlinx.coroutines.test.runTest
 import java.io.File
