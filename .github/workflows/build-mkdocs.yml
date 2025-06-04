@@ -30,4 +30,4 @@ jobs:
             mkdocs-badges
       - name: Deploy
         run: mkdocs gh-deploy --force
-        working-directory: generator/gen/documentation
+        working-directory: generator/gen/docs
