@@ -9,7 +9,7 @@ val PLACEHOLDER_INDEX_INFO_PLATFORMS = "# <INFO_PLATFORMS>"
 
 val NAV_TO_IGNORE = "usage.md"
 
-val REL_PATH_DOCS_OUTPUT = "generator/gen/docs" // must match working-directory in build-mkdocs.yaml
+val REL_PATH_DOCS_OUTPUT = "generator/generated/docs" // must match working-directory in build-mkdocs.yaml
 val REL_PATH_DOCS_CUSTOM = "generator/docs-custom"
 val REL_PATH_DOCS_TEMPLATE = "generator/docs-template"
 
