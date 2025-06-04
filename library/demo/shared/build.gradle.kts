@@ -25,7 +25,7 @@ val buildTargets = Targets(
     wasm = true
 )
 
-val androidNamespace = "com.michaelflisar.kotpreferences.demo.shared"
+val androidNamespace = "com.michaelflisar.example.demo.shared"
 
 // -------------------
 // Setup

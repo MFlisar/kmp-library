@@ -64,3 +64,5 @@ folderLibrary
         }
         println("  - $modulePath")
     }
+
+include(":scripts")

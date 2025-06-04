@@ -34,11 +34,11 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "com.michaelflisar.kotpreferences.demo.MainKt"
+        mainClass = "com.michaelflisar.example.demo.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Exe)
-            packageName = "KotPreference JVM Demo"
+            packageName = "com.michaelflisar.example.windows.demo"
             packageVersion = "1.0.0"
         }
     }

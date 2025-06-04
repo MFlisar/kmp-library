@@ -8,7 +8,7 @@ plugins {
 
 android {
 
-    namespace = "com.michaelflisar.kotpreferences.demo"
+    namespace = "com.michaelflisar.example.demo"
 
     compileSdk = app.versions.compileSdk.get().toInt()
 

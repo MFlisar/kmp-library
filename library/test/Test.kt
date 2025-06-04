@@ -1,9 +1,9 @@
-package com.michaelflisar.kotpreferences.demo
+package com.michaelflisar.example.demo
 
-import com.michaelflisar.kotpreferences.core.SettingsModel
-import com.michaelflisar.kotpreferences.core.interfaces.StorageEncryption
-import com.michaelflisar.kotpreferences.storage.datastore.DataStoreStorage
-import com.michaelflisar.kotpreferences.storage.datastore.create
+import com.michaelflisar.example.core.SettingsModel
+import com.michaelflisar.example.core.interfaces.StorageEncryption
+import com.michaelflisar.example.storage.datastore.DataStoreStorage
+import com.michaelflisar.example.storage.datastore.create
 import kotlinx.coroutines.test.runTest
 import java.io.File
 import kotlin.test.assertEquals

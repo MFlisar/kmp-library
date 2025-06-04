@@ -20,7 +20,7 @@ val buildLogicPlugin = project.plugins.getPlugin(BuildLogicPlugin::class.java)
 
 val module = ModuleMetaData(
     artifactId = "core",
-    androidNamespace = "com.michaelflisar.kotpreferences.core",
+    androidNamespace = "com.michaelflisar.example.core",
     description = "provides delegate based preferences",
 )
 
