@@ -4,7 +4,7 @@ import java.io.File
 
 fun main() {
     val oldPackageName = "com.michaelflisar.example"
-    val newPackageName = "com.michaelflisar.example.test"
+    val newPackageName = "com.michaelflisar.example"
     run(oldPackageName, newPackageName)
 }
 

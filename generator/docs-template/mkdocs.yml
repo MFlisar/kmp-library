@@ -1,9 +1,9 @@
-site_name: KotPreferences
-site_url: https://mflisar.github.io/KotPreferences/
-repo_url: https://github.com/MFlisar/Example
-repo_name: mflisar/KotPreferences
+site_name: <DOC_PROJECT_NAME>
+site_url: <DOC_PROJECT_URL>
+repo_url: <LIBRARY_GITHUB>
+repo_name: <DOC_PROJECT_REPO_NAME>
 
-copyright: Copyright &copy; 2024 Michael Flisar
+copyright: Copyright &copy; <LIBRARY_RELEASE> <DEVELOPER_NAME>
 
 theme:
   name: material
@@ -105,7 +105,7 @@ plugins:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/mflisar
+      link: <DOC_SOCIAL_GITHUB>
   #generator: false
 
 extra_css:
@@ -118,18 +118,7 @@ nav:
     - Dependencies: dependencies.md
     - Setup: setup.md
     - Usage: usage.md
-  - modules:
-    - compose: modules\compose.md
-    - datastore: modules\datastore.md
-    - encryption: modules\encryption.md
-    - key-value: modules\key-value.md
-    - test:
-      - test: modules\test\test.md
-  - migration:
-    - v0.7: migration\v0.7.md
-  - t1:
-    - t11:
-      - t111: t1\t11\t111.md
+# <CUSTOM-NAV>
   - More:
     - Other Libraries: other-libraries.md
     - About Me: me.md

@@ -9,6 +9,10 @@ val PLACEHOLDER_INDEX_INFO_PLATFORMS = "# <INFO_PLATFORMS>"
 
 val NAV_TO_IGNORE = "usage.md"
 
+val REL_PATH_DOCS_OUTPUT = "generator/gen/docs" // must match working-directory in build-mkdocs.yaml
+val REL_PATH_DOCS_CUSTOM = "generator/docs-custom"
+val REL_PATH_DOCS_TEMPLATE = "generator/docs-template"
+
 /*
  * generates the documentation files in the "documentation" folder
  *
@@ -17,9 +21,9 @@ val NAV_TO_IGNORE = "usage.md"
 fun main() {
 
     val root = rootFolder()
-    val documentationFolder = File(root, "documentation")
-    val docTemplateFolder = File(root, "scripts/docs-template")
-    val docCustom = File(root, "scripts/docs-custom")
+    val documentationFolder = File(root, REL_PATH_DOCS_OUTPUT)
+    val docTemplateFolder = File(root, REL_PATH_DOCS_TEMPLATE)
+    val docCustom = File(root, REL_PATH_DOCS_CUSTOM)
 
     val gradleProperties = gradleProperties(root)
     val placeholders = gradleProperties.toList().filter {

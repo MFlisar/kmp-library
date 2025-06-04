@@ -65,4 +65,4 @@ folderLibrary
         println("  - $modulePath")
     }
 
-include(":scripts")
+include(":generator:scripts")
