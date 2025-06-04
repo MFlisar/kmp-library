@@ -120,7 +120,7 @@ private fun updateCustomNav(
     val existingPaths = ArrayList<String>()
     with(customNavLines) {
         for (nav in customNavFiles) {
-            if (!existingPaths.contains(nav.path)) {
+            if (!existingPaths.contains(nav.navPath)) {
                 val allPaths = nav.allFolderPathsTopDown().toMutableList()
                 //println("nav: level = ${nav.folderPathElements.size} | name = ${nav.name} | path = ${nav.path}")
                 //for (p in allPaths) {
@@ -136,7 +136,7 @@ private fun updateCustomNav(
                     }
                 }
             }
-            add("  ".repeat(nav.folderPathElements.size + 1) + "- ${nav.name}: ${nav.path}")
+            add("  ".repeat(nav.folderPathElements.size + 1) + "- ${nav.name}: ${nav.navPath}")
         }
     }
 
@@ -163,7 +163,7 @@ class NavItem(
     val folderPathElements = relativeFolderPath.split(File.separatorChar).filter { it.isNotEmpty() }
 
     val name = file.nameWithoutExtension
-    val path = relativeFilePath
+    val navPath = relativeFilePath.replace(File.separatorChar, '/')
 
     fun allFolderPathsTopDown(): List<Path> {
         if (relativeFolderPath.isEmpty())
@@ -186,6 +186,7 @@ fun walkTopDownWithPrioritizedFoldersOnTop(
     folder: File,
     prioritizedFolders: List<String>
 ): List<File> {
+
     val prioritizedPaths = prioritizedFolders.map { File(folder, it).canonicalPath }
     val prioritized = mutableListOf<File>()
     val rest = mutableListOf<File>()

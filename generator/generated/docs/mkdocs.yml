@@ -119,17 +119,17 @@ nav:
     - Setup: setup.md
     - Usage: usage.md
   - modules:
-    - compose: modules\compose.md
-    - datastore: modules\datastore.md
-    - encryption: modules\encryption.md
-    - key-value: modules\key-value.md
+    - compose: modules/compose.md
+    - datastore: modules/datastore.md
+    - encryption: modules/encryption.md
+    - key-value: modules/key-value.md
     - test:
-      - test: modules\test\test.md
+      - test: modules/test/test.md
   - migration:
-    - v0.7: migration\v0.7.md
+    - v0.7: migration/v0.7.md
   - t1:
     - t11:
-      - t111: t1\t11\t111.md
+      - t111: t1/t11/t111.md
   - More:
     - Other Libraries: other-libraries.md
     - About Me: me.md
