@@ -21,6 +21,9 @@ jobs:
 
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
 
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
       - name: Run UpdateDocs
         working-directory: generator/scripts
         run: |
