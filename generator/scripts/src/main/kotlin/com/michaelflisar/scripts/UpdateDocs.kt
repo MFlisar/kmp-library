@@ -20,6 +20,9 @@ val REL_PATH_DOCS_OUTPUT = "generator/gen/docs"
 val REL_PATH_DOCS_CUSTOM = "generator/docs-custom"
 val REL_PATH_DOCS_TEMPLATE = "generator/docs-template"
 
+val REL_PATH_DOCS_CUSTOM_PARTS_FEATURES = "parts/features.md"
+val REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS = "parts/platform_comments.md"
+
 /*
  * generates the documentation files in the "documentation" folder
  *
@@ -96,6 +99,13 @@ private fun copyDoc(
 
     // 3) copy the custom folder
     docCustom.copyRecursively(documentationFolder, overwrite = false)
+
+    // 4) delete parts folders
+    val partFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_FEATURES)
+    val partPlatformFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS)
+    partFeatures.saveDelete()
+    partPlatformFeatures.saveDelete()
+    partPlatformFeatures.parentFile.deleteIfEmpty()
 }
 
 private fun updatePlaceholders(
@@ -120,14 +130,14 @@ private fun updatePlaceholders(
 
 private fun updatePlaceholdersInIndexMd(
     documentationFolder: File,
-    docCustom: File,
+    docCustom: File
 ) {
     val file = File(documentationFolder, "docs/index.md")
 
-    val partFeatures = File(docCustom, "parts/features.md")
-    val partPlatformFeatures = File(docCustom, "parts/platform_comments.md")
+    val partFeatures = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_FEATURES)
+    val partPlatformComments = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS)
     file.update(PLACEHOLDER_INDEX_INFO_FEATURES, partFeatures.readText(Charsets.UTF_8))
-    file.update(PLACEHOLDER_INDEX_INFO_PLATFORMS, partPlatformFeatures.readText(Charsets.UTF_8))
+    file.update(PLACEHOLDER_INDEX_INFO_PLATFORMS, partPlatformComments.readText(Charsets.UTF_8))
 }
 
 private fun updateCustomNav(

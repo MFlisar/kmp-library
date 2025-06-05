@@ -30,3 +30,15 @@ fun File.saveDeleteRecursively() {
         deleteRecursively()
     }
 }
+
+fun File.saveDelete() {
+    if (exists()) {
+        delete()
+    }
+}
+
+fun File.deleteIfEmpty() {
+    if (isDirectory && listFiles()?.isEmpty() == true) {
+        delete()
+    }
+}
