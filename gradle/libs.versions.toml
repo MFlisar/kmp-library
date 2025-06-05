@@ -41,3 +41,5 @@ compose-material-icons-extended = 	{ module = "org.jetbrains.compose.material:ma
 android-build-tools =               { module = "com.android.tools.build:gradle",                            version.ref = "gradle" }
 kotlin-multiplatform =              { module = "org.jetbrains.kotlin:kotlin-gradle-plugin",                 version.ref = "kotlin" }
 gradle-maven-publish-plugin =       { module = "com.vanniktech:gradle-maven-publish-plugin",                version.ref = "gradle-maven-publish-plugin" }
+
+

@@ -6,12 +6,6 @@ import java.util.Properties
 
 fun rootFolder() = File(System.getProperty("user.dir"))
 
-fun gradleProperties(folder: File): Properties {
-    val props = Properties()
-    FileInputStream(File(folder, "gradle.properties")).use { props.load(it) }
-    return props
-}
-
 fun File.update(oldString: String, newString: String) {
     val content = readText()
     val updatedContent = content.replace(oldString, newString)

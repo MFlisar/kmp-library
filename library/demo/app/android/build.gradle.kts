@@ -73,5 +73,5 @@ dependencies {
     // Libraries
     // ------------------------
 
-    implementation(project(":example:modules:module1"))
+    implementation(project(":kmp-template:modules:module1"))
 }

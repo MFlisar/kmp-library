@@ -1,9 +1,9 @@
-site_name: <DOC_PROJECT_NAME>
-site_url: <DOC_PROJECT_URL>
-repo_url: <LIBRARY_GITHUB>
-repo_name: <DOC_PROJECT_REPO_NAME>
+site_name: <library.name>
+site_url: <library.link-docs>
+repo_url: <library.link-repo>
+repo_name: <library.repo-name>
 
-copyright: Copyright &copy; <LIBRARY_RELEASE> <DEVELOPER_NAME>
+copyright: Copyright &copy; <library.release> <developer.name>
 
 theme:
   name: material
@@ -105,7 +105,7 @@ plugins:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: <DOC_SOCIAL_GITHUB>
+      link: <developer.social-github>
   #generator: false
 
 extra_css:

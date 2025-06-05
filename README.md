@@ -29,3 +29,9 @@ Do not touch following directories:
 
     * is a task to update the documentation
     * do NOT edit the documentation manually => additional docs must be placed in `scripts/docs`
+
+# TODO
+
+* generate the docs automatically from github action
+* fail if mkdocs build does not find functions
+* mkdocs template anpassen -> alle mflisar und ähnliche durch properties ersetzen

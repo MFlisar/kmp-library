@@ -1,7 +1,7 @@
-{% if project["library"]["demo"] %}
+{% if project["library"]["demo-path"] %}
 
 ## :dna: Demo
 
-A full [demo](https://github.com/{{ project["library"]["github"] }}/tree/{{ project["library"]["branch"] }}/demo){:target="_blank"} is included inside the demo module, it shows nearly every usage with working examples.
+A full [demo](https://github.com/{{ project["library"]["github"] }}/tree/{{ project["library"]["branch"] }}/project["library"]["demo-path"]){:target="_blank"} is included inside the demo module, it shows nearly every usage with working examples.
 
 {% endif %}

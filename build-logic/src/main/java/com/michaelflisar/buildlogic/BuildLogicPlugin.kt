@@ -1,17 +1,10 @@
 package com.michaelflisar.buildlogic
 
 import com.android.build.gradle.LibraryExtension
-import com.michaelflisar.buildlogic.classes.DEVELOPER_EMAIL
-import com.michaelflisar.buildlogic.classes.DEVELOPER_ID
-import com.michaelflisar.buildlogic.classes.DEVELOPER_NAME
-import com.michaelflisar.buildlogic.classes.JAVA_VERSION
-import com.michaelflisar.buildlogic.classes.LIBRARY_GITHUB
-import com.michaelflisar.buildlogic.classes.LIBRARY_GROUP_ID
-import com.michaelflisar.buildlogic.classes.LIBRARY_LICENSE
-import com.michaelflisar.buildlogic.classes.LIBRARY_NAME
-import com.michaelflisar.buildlogic.classes.LIBRARY_RELEASE
 import com.michaelflisar.buildlogic.classes.ModuleMetaData
 import com.michaelflisar.buildlogic.classes.Targets
+import com.michaelflisar.buildlogic.shared.Setup
+import com.michaelflisar.buildlogic.shared.SetupData
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -19,10 +12,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.project
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -30,9 +20,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 class BuildLogicPlugin : Plugin<Project> {
 
     private lateinit var project: Project
+    private lateinit var setup: Setup
 
     override fun apply(project: Project) {
         this.project = project
+        setup = SetupData.read(project.rootDir).setup
     }
 
     fun setupMavenPublish(
@@ -47,34 +39,34 @@ class BuildLogicPlugin : Plugin<Project> {
                 )
             )
             coordinates(
-                groupId = LIBRARY_GROUP_ID.loadString(project),
+                groupId = setup.maven.groupId,
                 artifactId = module.artifactId,
                 version = System.getenv("TAG")
             )
 
             pom {
-                name.set(LIBRARY_NAME.loadString(project))
-                description.set(module.libraryDescription(project))
-                inceptionYear.set(LIBRARY_RELEASE.loadString(project))
-                url.set(LIBRARY_GITHUB.loadString(project))
+                name.set(setup.library.name)
+                description.set(module.libraryDescription(setup))
+                inceptionYear.set(setup.library.release.toString())
+                url.set(setup.library.linkRepo)
 
                 licenses {
                     license {
-                        name.set(LIBRARY_LICENSE.loadString(project))
-                        url.set(module.licenseUrl(project))
+                        name.set(setup.library.license.name)
+                        url.set(setup.library.license.link)
                     }
                 }
 
                 developers {
                     developer {
-                        id.set(DEVELOPER_ID.loadString(project))
-                        name.set(DEVELOPER_NAME.loadString(project))
-                        email.set(DEVELOPER_EMAIL.loadString(project))
+                        id.set(setup.developer.mavenId)
+                        name.set(setup.developer.name)
+                        email.set(setup.developer.mail)
                     }
                 }
 
                 scm {
-                    url.set(LIBRARY_GITHUB.loadString(project))
+                    url.set(setup.library.linkRepo)
                 }
             }
 
@@ -101,7 +93,7 @@ class BuildLogicPlugin : Plugin<Project> {
                 androidTarget {
                     publishLibraryVariants("release")
                     compilerOptions {
-                        jvmTarget.set(JvmTarget.fromTarget(JAVA_VERSION.loadString(project)))
+                        jvmTarget.set(JvmTarget.fromTarget(setup.javaVersion))
                     }
                 }
             }
@@ -165,8 +157,8 @@ class BuildLogicPlugin : Plugin<Project> {
             }
 
             compileOptions {
-                sourceCompatibility = JavaVersion.toVersion(JAVA_VERSION.loadString(project))
-                targetCompatibility = JavaVersion.toVersion(JAVA_VERSION.loadString(project))
+                sourceCompatibility = JavaVersion.toVersion(setup.javaVersion)
+                targetCompatibility = JavaVersion.toVersion(setup.javaVersion)
             }
         }
     }

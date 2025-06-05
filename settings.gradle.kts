@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 // include modules
 // --------------------
 
-val library = settings.providers.gradleProperty("LIBRARY_NAME").get()
+val library = rootDir.name.lowercase()//settings.providers.gradleProperty("LIBRARY_KEY").get()
 println("Modules:")
 val folderLibrary = File(rootDir, "library")
 folderLibrary

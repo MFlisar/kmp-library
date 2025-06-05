@@ -15,9 +15,8 @@ private fun run(
     val folder = rootFolder()
     val libraryFolder = File(folder, "library")
     val runConfigFolder = File(folder, ".idea/runConfigurations")
-    val gradleProperties = gradleProperties(folder)
 
-    val libraryName = gradleProperties.getProperty("LIBRARY_NAME") as String
+    val libraryName = folder.name.lowercase()
     println("LIBRARY_NAME: $libraryName")
 
     println("Updating package names from '$oldPackageName' to '$newPackageName'? (y/n)")

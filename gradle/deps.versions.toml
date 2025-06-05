@@ -1,3 +1,15 @@
 [versions]
 
+# scripts
+yaml =                          "0.80.1"
+ktoml-core =                    "0.7.0"
+ktoml-file =                    "0.7.0"
+jsoup =                        "1.16.1"
+
 [libraries]
+
+# scripts
+yaml =                              { module = "com.charleskorn.kaml:kaml",                                 version.ref = "yaml" }
+ktoml-core =                        { module = "com.akuleshov7:ktoml-core",                                 version.ref = "ktoml-core" }
+ktoml-file =                        { module = "com.akuleshov7:ktoml-file",                                 version.ref = "ktoml-file" }
+jsoup =                             { module = "org.jsoup:jsoup",                                           version.ref = "jsoup" }

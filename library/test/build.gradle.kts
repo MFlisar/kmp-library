@@ -28,7 +28,7 @@ kotlin {
             implementation(kotlinx.coroutines.test)
             implementation(kotlinx.io.core)
 
-            implementation(project(":example:modules:module1"))
+            implementation(project(":kmp-template:modules:module1"))
 
         }
     }

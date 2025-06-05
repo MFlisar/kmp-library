@@ -1,6 +1,7 @@
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
+    alias(libs.plugins.kotlin.serialization)
 }
 
 repositories {
@@ -23,4 +24,5 @@ dependencies {
     implementation(libs.kotlin.multiplatform)
     implementation(libs.android.build.tools)
     implementation(libs.android.build.tools)
+    implementation(deps.yaml)
 }
