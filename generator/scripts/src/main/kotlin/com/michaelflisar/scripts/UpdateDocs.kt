@@ -317,7 +317,7 @@ private fun generateProjectYaml(
         setup.modules.forEach {
             appendLine("modules:")
             setup.modules.forEach { module ->
-                val buildGradleFile = allModuleBuildGradleFile.find { it.relativeModulePath == module.relativePath }!!
+                val buildGradleFile = allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() }!!
                 appendLine("  - id: ${module.artifactId}")
                 appendLine("    group: ${module.group}")
                 appendLine("    description: ${module.description}")
@@ -492,6 +492,10 @@ private fun findKotlinFunctionNamedParameters(
         }
         parts[0] to parts[1].removeSurrounding("\"")
     }.toMap()
+}
+
+fun String.normalizePath(): String {
+    return path.replace("\\", "/")
 }
 
 // ----------------------------

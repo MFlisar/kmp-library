@@ -86,7 +86,7 @@ class Setup(
     @SerialName("other-projects") val otherProjects: List<OtherProjectGroup>?
 ) {
     fun getModuleByPath(path: String): Module {
-        return modules.find { it.relativePath == path }
+        return modules.find { it.relativePath.replace("\\", "/") == path.replace("\\", "/") }
             ?: throw RuntimeException("module setup definition not found for path: $path")
     }
 
