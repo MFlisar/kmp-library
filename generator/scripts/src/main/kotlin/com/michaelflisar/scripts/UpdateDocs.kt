@@ -495,7 +495,7 @@ private fun findKotlinFunctionNamedParameters(
 }
 
 fun String.normalizePath(): String {
-    return path.replace("\\", "/")
+    return replace("\\", "/")
 }
 
 // ----------------------------
