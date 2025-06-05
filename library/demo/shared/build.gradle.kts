@@ -59,7 +59,7 @@ kotlin {
             implementation(libs.compose.material.icons.extended)
 
             // library
-            implementation(project(":kmp-template:modules:module1"))
+            implementation(project(":kmp-template:modules:core"))
 
         }
     }

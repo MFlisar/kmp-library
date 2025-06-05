@@ -32,3 +32,122 @@ library:
 maven:
   group-id: io.github.mflisar.example
   primary-artifact-id: module1 # used to detect latest release version of the library (dynamically on the published homepage)
+
+# -----------
+# Module Groups
+# -----------
+
+# optional - remove it if you do not want to group your modules
+# each group has following properties:
+# - id...  the id - only needed to reference this group below inside the modules sections
+# - label... the label of the group - used in the docs tables
+# - gradle-comment... the comment on the gradle setup docs page for this group
+groups:
+  - id: core
+    label: Core
+    gradle-comment: core
+  - id: extensions
+    label: Extensions
+    gradle-comment: some useful extensions
+
+# -----------
+# Modules
+# -----------
+
+# REQUIRED! each module must define its meta data here!
+# each module has following properties:
+# relativePath... the relative path to the project root folder
+# artifact-id... the maven artifact id
+# group... the id of the group this module belongs to (defined above) [OPTIONAL]
+# platforms-info... a string that is displayed inside the docs in the "supported platforms" table in the info column [OPTIONAL]
+# dependencies... a list of dependencies this module has (see below for details) [OPTIONAL]
+#    ... name: the name of the dependency - used in the docs tables
+#    ... versions-file... the toml file to load the version from (e.g. deps.versions.toml, ...)
+#    ... versions-key... the key for the versions table in the toml file
+#    ... link: a link to the dependency - used in the docs tables
+modules:
+  - relativePath: library\modules\core
+    artifact-id: core
+    group: core
+    description: this is the core module of the library
+    optional: false
+    platforms-info: "(1)"
+    dependencies:
+      - name: Yaml...
+        versions-file: deps.versions.toml
+        versions-key: yaml
+        link: https://github.com/composablehorizons/compose-unstyled/
+
+# -----------
+# Other Projects
+# -----------
+
+# you can copy this between all your projects - if the current library is inside this definition it will be ignored autamatically
+# each project has following properties:
+# - name... the name of the project
+# - link... the link to the project
+# - maven... the maven artifact id of the project
+# - image... the image to display in the docs [OPTIONAL]
+# - description... a short description of the project
+other-projects:
+  - group: Utilities
+    projects:
+      - name: CacheFileProvider
+        link: https://mflisar.github.io/CacheFileProvider
+        maven: io.github.mflisar.cachefileprovider/library
+        description: This is a minimal library with a <b>few lines of code</b> and without dependencies that offers a simple file provider (simple read only access for sharing files with other apps).
+      - name: FeedbackManager
+        link: https://mflisar.github.io/FeedbackManager
+        maven: io.github.mflisar.feedbackmanager/library
+        description: This is a very small library that allows you to <b>send feedback</b> from an app <b>without internet permission</b> via email, either directly or via an unintrusive notification.
+      - name: Toolbox
+        link: https://github.com/MFlisar/Toolbox
+        maven: io.github.mflisar.toolbox/core
+        description: My personal toolbox library
+  - group: Libraries
+    projects:
+    - name: KotBilling
+      link: https://mflisar.github.io/KotBilling
+      maven: io.github.mflisar.kotbilling/library
+      description: A kotlin coroutine based solution for handling in app purchases for <b>billing library version 7</b>.
+    - name: KotPreferences
+      link: https://mflisar.github.io/KotPreferences
+      maven: io.github.mflisar.kotpreferences/core
+      description: With this library you can declare preferences via <b>kotlin delegates</b> and observe and update them via <b>kotlin flows</b>. This works with any storage implementation, an implementation for JetPack DataStore is provided already.
+    - name: Lumberjack
+      link: https://mflisar.github.io/Lumberjack
+      #image: https://raw.githubusercontent.com/MFlisar/Lumberjack/master/screenshots/compose-viewer1.jpg
+      maven: io.github.mflisar.lumberjack/core
+      description: This is a <b>full logging library</b> with a build in way to log to <b>console</b>, <b>file</b> or any <b>custom</b> place as well as optional extensions to send a log file via mail or show it on the device.
+  - group: Compose
+    projects:
+    - name: ComposeChangelog
+      link: https://mflisar.github.io/ComposeChangelog
+      image: https://raw.githubusercontent.com/MFlisar/ComposeChangelog/main/documentation/docs/screenshots/core/overview.jpg
+      maven: io.github.mflisar.composechangelog/core
+      description: This library offers you a a <b>changelog dialog</b> for compose including the ability to show new logs on app start only as well as filtering and customisation.
+    - name: ComposeColors
+      link: https://mflisar.github.io/ComposeColors
+      image: https://raw.githubusercontent.com/MFlisar/ComposeColors/main/documentation/docs/screenshots/material/material.png
+      maven: io.github.mflisar.composecolors/core
+      description: A simple collection of colors that can be used inside any KMP compose project.
+    - name: ComposeDebugDrawer
+      link: https://mflisar.github.io/ComposeDebugDrawer
+      image: https://raw.githubusercontent.com/MFlisar/ComposeDebugDrawer/main/documentation/docs/screenshots/core/demo2.jpg
+      maven: io.github.mflisar.composedebugdrawer/core
+      description: This library offers you a <b>simple</b> and easily extendable <b>debug drawer</b>.
+    - name: ComposeDialogs
+      link: https://mflisar.github.io/ComposeDialogs
+      image: https://raw.githubusercontent.com/MFlisar/ComposeDialogs/main/documentation/docs/screenshots/overview.jpg
+      maven: io.github.mflisar.composedialogs/core
+      description: A compose framework for <b>modal dialogs</b>.
+    - name: ComposePreferences
+      link: https://mflisar.github.io/ComposePreferences
+      image: https://raw.githubusercontent.com/MFlisar/ComposePreferences/main/documentation/docs/screenshots/overview.jpg
+      maven: io.github.mflisar.composepreferences/core
+      description: This library offers you <b>preference screens</b> for compose including the ability of endless nesting subscreens as well as simple integration of custom preferences.
+    - name: ComposeThemer
+      link: https://mflisar.github.io/ComposeThemer
+      image: https://mflisar.github.io/ComposeThemer/screenshots/defaultpicker/android1.png
+      maven: io.github.mflisar.composethemer/core
+      description: This is a <b>full compose theme engine</b> that handles applying a theme as well as updating the system ui elements. Extendible and allows to simply apply user selected themes inside your app.

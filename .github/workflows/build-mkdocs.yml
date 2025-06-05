@@ -24,7 +24,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Run UpdateDocs
+      - name: Run UpdateDocs script
         working-directory: generator/scripts
         run: |
           ../../gradlew run \

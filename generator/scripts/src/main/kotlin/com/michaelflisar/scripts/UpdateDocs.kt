@@ -38,7 +38,6 @@ fun main() {
     val docTemplateFolder = File(root, REL_PATH_DOCS_TEMPLATE)
     val docCustom = File(root, REL_PATH_DOCS_CUSTOM)
 
-
     val setupData = SetupData.read(root)
 
     // 1) copy all doc files from the template folder including the custom files
@@ -54,7 +53,13 @@ fun main() {
         setupData = setupData
     )
 
-    // 3) add nav items
+    // 3) update placeholders with part files in index.md
+    updatePlaceholdersInIndexMd(
+        documentationFolder = documentationFolder,
+        docCustom = docCustom
+    )
+
+    // 4) add nav items
     // - modules
     // - migration
     // - rest...
@@ -64,9 +69,15 @@ fun main() {
         prioritizedFolders = listOf("modules", "migration"),
     )
 
-    // 4) generate project.yaml => this reads data from ...
+    // 5) generate project.yaml
     generateProjectYaml(
         root = root,
+        documentationFolder = documentationFolder,
+        setup = setupData.setup
+    )
+
+    // 6) generate other-projects.yaml
+    generateOtherProjectsYaml(
         documentationFolder = documentationFolder,
         setup = setupData.setup
     )
@@ -105,6 +116,18 @@ private fun updatePlaceholders(
                 file.writeText(content)
         }
     }
+}
+
+private fun updatePlaceholdersInIndexMd(
+    documentationFolder: File,
+    docCustom: File,
+) {
+    val file = File(documentationFolder, "docs/index.md")
+
+    val partFeatures = File(docCustom, "parts/features.md")
+    val partPlatformFeatures = File(docCustom, "parts/platform_comments.md")
+    file.update(PLACEHOLDER_INDEX_INFO_FEATURES, partFeatures.readText(Charsets.UTF_8))
+    file.update(PLACEHOLDER_INDEX_INFO_PLATFORMS, partPlatformFeatures.readText(Charsets.UTF_8))
 }
 
 private fun updateCustomNav(
@@ -165,18 +188,13 @@ private fun generateProjectYaml(
     setup: Setup
 ) {
     val file = File(documentationFolder, "_data/project.yml")
-    val allModuleBuildGradleFile =
-        File(root, "library/modules").walkTopDownFiltered { it.name == "build.gradle.kts" }.toList()
+    val allModuleBuildGradleFile = File(root, "library/modules").walkTopDownFiltered { it.name == "build.gradle.kts" }.toList().map {
+        BuildGradleFile(root, it)
+    }
     val allModuleKtFile =
         File(root, "library/modules").walkTopDownFiltered { it.extension == "kt" }.toList()
-    val tomlApp =
-        Toml.tomlParser.parseString(File(root, "gradle/app.versions.toml").readText(Charsets.UTF_8))
-    val tomlLibs = Toml.tomlParser.parseString(
-        File(
-            root,
-            "gradle/libs.versions.toml"
-        ).readText(Charsets.UTF_8)
-    )
+    val tomlApp = loadToml(root, "app.versions.toml")
+    val tomlLibs = loadToml(root, "libs.versions.toml")
 
     // data library
     val siteName = setup.library.name
@@ -187,20 +205,7 @@ private fun generateProjectYaml(
     val multiplatform =
         "true" // TODO: template is multiplatform... would need another base template???
     val supportedPlatforms = allModuleBuildGradleFile
-        .map {
-            val content = it.readText(Charsets.UTF_8)
-            val buildTargets =
-                content.findBetween("Targets(", ")")!!.removeComments().split(",").map { it.trim() }
-            val platforms = buildTargets.mapNotNull {
-                val parts = it.split("=").map { it.trim() }
-                if (parts[1] == "true") {
-                    parts[0]
-                } else {
-                    null
-                }
-            }
-            platforms
-        }
+        .map { it.platforms }
         .flatten()
         .distinct()
     val screenshots = setup.library.screenshots
@@ -265,14 +270,7 @@ private fun generateProjectYaml(
         for (p in supportedPlatforms) {
             appendLine("    - $p")
         }
-        if (screenshots.isEmpty()) {
-            appendLine("  screenshots: []")
-        } else {
-            appendLine("  screenshots:")
-            for (screenshot in screenshots) {
-                appendLine("    - $screenshot")
-            }
-        }
+        appendArray("  ", "screenshots", screenshots)
         appendLine("  branch: $branch")
         if (demo) {
             appendLine("  demo-path: $demoPath")
@@ -291,15 +289,81 @@ private fun generateProjectYaml(
         appendLine("# Groups")
         appendLine("# -------")
         appendLine("")
-
+        if (setup.groups == null) {
+            appendLine("# no groups defined")
+        } else {
+            appendLine("groups:")
+            setup.groups.forEach {
+                appendLine("  - id: ${it.id}")
+                appendLine("    label: ${it.label}")
+                appendLine("    gradle-comment: ${it.gradleComment}")
+            }
+        }
         appendLine("")
         appendLine("# -------")
         appendLine("# Modules")
         appendLine("# -------")
         appendLine("")
+        setup.modules.forEach {
+            appendLine("modules:")
+            setup.modules.forEach { module ->
+                val buildGradleFile = allModuleBuildGradleFile.find { it.relativeModulePath == module.relativePath }!!
+                appendLine("  - id: ${module.artifactId}")
+                appendLine("    group: ${module.group}")
+                appendLine("    description: ${module.description}")
+                appendLine("    optional: ${module.optional}")
+                appendArray("    ", "platforms", buildGradleFile.platforms)
+                appendLine("  - platform-info: ${module.platformInfo ?: ""}")
+                if (module.dependencies?.isNotEmpty() == true) {
+                    appendLine("    dependencies:")
+                    module.dependencies.forEach { dep ->
+                        val toml = loadToml(root, dep.versionsFile)
+                        val version = toml.findKey("versions", dep.versionsKey)
+                        appendLine("      - name: ${dep.name}")
+                        appendLine("        link: ${dep.link}")
+                        appendLine("        version: $version")
+                    }
+                } else {
+                    appendLine("    dependencies: []")
+                }
+            }
+        }
 
     }
 
+    file.parentFile.mkdirs()
+    file.delete()
+    file.writeText(content, Charsets.UTF_8)
+}
+
+private fun generateOtherProjectsYaml(
+    documentationFolder: File,
+    setup: Setup
+) {
+    val file = File(documentationFolder, "_data/other-projects.yml")
+
+    if (setup.otherProjects.isNullOrEmpty()) {
+        file.delete()
+        return
+    }
+
+    val content = buildString {
+        appendLine("libraries:")
+        for (group in setup.otherProjects) {
+            appendLine("  ${group.group}:")
+            for (other in group.projects) {
+                appendLine("    - name: ${other.name}")
+                appendLine("      link: ${other.link}")
+                if (other.image != null) {
+                    appendLine("      image: ${other.image}")
+                }
+                appendLine("      maven: ${other.maven}")
+                appendLine("      description: ${other.description}")
+            }
+        }
+    }
+
+    file.parentFile.mkdirs()
     file.delete()
     file.writeText(content, Charsets.UTF_8)
 }
@@ -342,6 +406,15 @@ fun Properties.getString(key: String): String {
     return getProperty(key) as String
 }
 
+fun loadToml(root: File, fileName: String) : TomlFile {
+    return Toml.tomlParser.parseString(
+        File(
+            root,
+            "gradle/$fileName"
+        ).readText(Charsets.UTF_8)
+    )
+}
+
 fun TomlFile.findKey(table: String, key: String): String {
     return (findTableInAstByName(table)!!.children.find { it.name == key } as TomlKeyValuePrimitive).value.content.toString()
 }
@@ -369,6 +442,17 @@ fun String.splitOrEmpty(delimiter: String): List<String> {
     }
 }
 
+private fun StringBuilder.appendArray(inset: String, key: String, values: List<String>) {
+    if (values.isEmpty()) {
+        appendLine("$inset$key: []")
+    } else {
+        appendLine("$inset$key:")
+        for (value in values) {
+            appendLine("$inset  - $value")
+        }
+    }
+}
+
 private fun findVersionInPOM(url: String, groupId: String): String? {
     val jsoup = Jsoup.connect(url)
         .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36")
@@ -384,6 +468,20 @@ private fun findVersionInPOM(url: String, groupId: String): String? {
     return elements.filter {
         it.select("groupId").text() == groupId
     }.firstOrNull()?.select("version")?.firstOrNull()?.text()
+}
+
+private fun findKotlinFunctionNamedParameters(
+    content: String,
+    functionName: String
+) : Map<String, String> {
+    val parameters = content.findBetween("$functionName(", ")")!!.removeComments().split(",").map { it.trim() }
+    return parameters.mapNotNull {
+        val parts = it.split("=").map { it.trim() }
+        if (parts.size != 2) {
+            return@mapNotNull null
+        }
+        parts[0] to parts[1].removeSurrounding("\"")
+    }.toMap()
 }
 
 // ----------------------------
@@ -427,4 +525,20 @@ class Path(
     val level: Int,
     val name: String
 )
+
+class BuildGradleFile(
+    root: File,
+    file: File
+) {
+    private val content = file.readText(Charsets.UTF_8)
+
+    val relativeModulePath = file.parentFile.relativeTo(root).path
+
+    val platforms by lazy {
+        val targets = findKotlinFunctionNamedParameters(content, "Targets")
+        targets.filter { it.value == "true" }
+            .map { it.key }
+    }
+
+}
 

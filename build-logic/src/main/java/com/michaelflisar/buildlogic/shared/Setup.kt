@@ -26,6 +26,7 @@ class SetupData(
                 val values = collectYamlValues(yaml)
                 SetupData(setup, values)
             } catch (e: Exception) {
+                e.printStackTrace()
                 throw RuntimeException("Failed to read setup file: ${setupFile.path}", e)
             }
         }
@@ -40,16 +41,19 @@ class SetupData(
                         collectYamlValues(value, result)
                     }
                 }
+
                 is YamlList -> {
                     val path = node.path.toHumanReadableString()
                     val value = node.items.joinToString(", ") { it.toString() }
                     result.add(YamlValue(value, path))
                 }
+
                 is YamlScalar -> {
                     val path = node.path.toHumanReadableString()
                     val value = node.content
                     result.add(YamlValue(value, path))
                 }
+
                 is YamlNull -> {}
                 is YamlTaggedNode -> {}
             }
@@ -77,7 +81,15 @@ class Setup(
     @SerialName("java-version") val javaVersion: String,
     val library: Library,
     val maven: Maven,
+    val groups: List<Group>? = null,
+    val modules: List<Module>,
+    @SerialName("other-projects") val otherProjects: List<OtherProjectGroup>?
 ) {
+    fun getModuleByPath(path: String): Module {
+        return modules.find { it.relativePath == path }
+            ?: throw RuntimeException("module setup definition not found for path: $path")
+    }
+
     @Serializable
     class Developer(
         val id: String,
@@ -109,4 +121,50 @@ class Setup(
         @SerialName("group-id") val groupId: String,
         @SerialName("primary-artifact-id") val primaryArtifactId: String
     )
+
+    @Serializable
+    class Group(
+        val id: String,
+        val label: String,
+        @SerialName("gradle-comment") val gradleComment: String
+    )
+
+    @Serializable
+    class Module(
+        val relativePath: String,
+        @SerialName("artifact-id") val artifactId: String,
+        val group: String? = null,
+        val description: String,
+        val optional: Boolean,
+        @SerialName("platforms-info") val platformInfo: String?,
+        val dependencies: List<Dependency>?,
+    ) {
+        fun libraryDescription(setup: Setup): String {
+            val library = setup.library.name
+            return "$library - $artifactId module - $description"
+        }
+
+        @Serializable
+        class Dependency(
+            val name: String,
+            @SerialName("versions-file") val versionsFile: String,
+            @SerialName("versions-key") val versionsKey: String,
+            val link: String
+        )
+    }
+
+    @Serializable
+    class OtherProjectGroup(
+        val group: String,
+        val projects: List<OtherProject>
+    ) {
+        @Serializable
+        class OtherProject(
+            val name: String,
+            val link: String,
+            val image: String? = null,
+            val maven: String,
+            val description: String,
+        )
+    }
 }

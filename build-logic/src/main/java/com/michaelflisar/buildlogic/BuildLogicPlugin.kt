@@ -1,7 +1,6 @@
 package com.michaelflisar.buildlogic
 
 import com.android.build.gradle.LibraryExtension
-import com.michaelflisar.buildlogic.classes.ModuleMetaData
 import com.michaelflisar.buildlogic.classes.Targets
 import com.michaelflisar.buildlogic.shared.Setup
 import com.michaelflisar.buildlogic.shared.SetupData
@@ -28,9 +27,10 @@ class BuildLogicPlugin : Plugin<Project> {
     }
 
     fun setupMavenPublish(
-        module: ModuleMetaData,
         autoPublishReleases: Boolean = true
     ) {
+        val path = project.projectDir.relativeTo(project.rootDir).path
+        val module = setup.getModuleByPath(path)
         project.extensions.configure(MavenPublishBaseExtension::class.java) {
             configure(
                 KotlinMultiplatform(
@@ -136,10 +136,6 @@ class BuildLogicPlugin : Plugin<Project> {
                 js(IR)
             }
         }
-    }
-
-    fun setupAndroid(meta: ModuleMetaData, compileSdk: Provider<String>, minSdk: Provider<String>) {
-        setupAndroid(meta.androidNamespace, compileSdk, minSdk)
     }
 
     fun setupAndroid(

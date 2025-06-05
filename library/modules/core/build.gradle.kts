@@ -1,5 +1,4 @@
 import com.michaelflisar.buildlogic.BuildLogicPlugin
-import com.michaelflisar.buildlogic.classes.ModuleMetaData
 import com.michaelflisar.buildlogic.classes.Target
 import com.michaelflisar.buildlogic.classes.Targets
 
@@ -18,12 +17,9 @@ val buildLogicPlugin = project.plugins.getPlugin(BuildLogicPlugin::class.java)
 // Informations
 // -------------------
 
-val module = ModuleMetaData(
-    artifactId = "core",
-    androidNamespace = "com.michaelflisar.example.core",
-    description = "provides delegate based preferences",
-)
+val androidNamespace = "com.michaelflisar.example.core"
 
+// use named arguments - the docs generation script depends on it!
 val buildTargets = Targets(
     // mobile
     android = true,
@@ -34,24 +30,6 @@ val buildTargets = Targets(
     // web
     wasm = true
 )
-
-// -------------------
-// Variables for Documentation Generator
-// -------------------
-
-// # DEP + GROUP are optional arrays!
-
-// OPTIONAL = "false"               // defines if this module is optional or not
-// GROUP_ID = "core"                // defines the "grouping" in the documentation this module belongs to
-// #DEP = "deps.composables.core|Compose Unstyled (core)|https://github.com/composablehorizons/compose-unstyled/"
-// PLATFORM_INFO = ""               // defines a comment that will be shown in the documentation for this modules platform support
-
-// GLOBAL DATA
-// BRANCH = "master"        // defines the branch on github (master/main)
-// GROUP = "core|Core|core"
-// GROUP = "storage|Storage|select a storage implementation"
-// GROUP = "extensions|Extensions|optional extensions"
-// GROUP = "encryptions|Encryption|optionally add additional encryption"
 
 // -------------------
 // Setup
@@ -152,8 +130,8 @@ kotlin {
 
 // android configuration
 android {
-    buildLogicPlugin.setupAndroid(module, app.versions.compileSdk, app.versions.minSdk)
+    buildLogicPlugin.setupAndroid(androidNamespace, app.versions.compileSdk, app.versions.minSdk)
 }
 
 // maven publish configuration
-buildLogicPlugin.setupMavenPublish(module)
+buildLogicPlugin.setupMavenPublish()
