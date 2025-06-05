@@ -16,7 +16,7 @@ val PLACEHOLDER_INDEX_INFO_PLATFORMS = "# <INFO_PLATFORMS>"
 
 val NAV_TO_IGNORE = "usage.md"
 
-val REL_PATH_DOCS_OUTPUT = "generator/generated/docs" // must match working-directory in build-mkdocs.yaml
+val REL_PATH_DOCS_OUTPUT = "generator/gen/docs"
 val REL_PATH_DOCS_CUSTOM = "generator/docs-custom"
 val REL_PATH_DOCS_TEMPLATE = "generator/docs-template"
 
@@ -27,10 +27,17 @@ val REL_PATH_DOCS_TEMPLATE = "generator/docs-template"
  */
 fun main() {
 
-    val root = rootFolder()
+    val ci = System.getenv("CI")?.toBoolean() == true
+    var root = rootFolder()
+    if (ci) {
+        // in this case we are running inside the scripts folder => we must fix the root to avoid issues with relative paths
+        root = root.parentFile.parentFile
+    }
+
     val documentationFolder = File(root, REL_PATH_DOCS_OUTPUT)
     val docTemplateFolder = File(root, REL_PATH_DOCS_TEMPLATE)
     val docCustom = File(root, REL_PATH_DOCS_CUSTOM)
+
 
     val setupData = SetupData.read(root)
 

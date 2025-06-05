@@ -20,6 +20,8 @@ dependencies {
 }
 
 // allows to run the application with `./gradlew run -PmainClass=com.michaelflisar.scripts.UpdateDocsKt`
-application {
-    mainClass.set(project.findProperty("mainClass") as String)
+if (System.getenv("CI")?.toBoolean() == true) {
+    application {
+        mainClass.set(project.findProperty("mainClass") as String)
+    }
 }
