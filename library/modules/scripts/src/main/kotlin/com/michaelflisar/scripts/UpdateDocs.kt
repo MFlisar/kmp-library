@@ -28,8 +28,8 @@ private val REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS = "parts/platform_comme
 fun buildDocs(
     relativePathDocsCustom: String = "documentation/custom",
     relativePathGeneratedDocsOutput: String = "documentation/gen/docs",
-    relativeModulesPath: String = "library/modules",
-    relativeDemosPath: String = "library/demo",
+    relativeModulesPath: String = "library",
+    relativeDemosPath: String = "demo",
 ) {
 
     val ci = System.getenv("CI")?.toBoolean() == true
@@ -339,8 +339,8 @@ private fun generateProjectYaml(
         setup.modules.forEach {
             appendLine("modules:")
             setup.modules.forEach { module ->
-                val buildGradleFile =
-                    allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() }!!
+                val buildGradleFile = allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() } ?:
+                    throw RuntimeException("BuildGradleFile not found for module: ${module.relativePath} in [${allModuleBuildGradleFile.map { it.relativeModulePath }}]")
                 appendLine("  - id: ${module.artifactId}")
                 appendLine("    group: ${module.group}")
                 appendLine("    description: ${module.description}")
