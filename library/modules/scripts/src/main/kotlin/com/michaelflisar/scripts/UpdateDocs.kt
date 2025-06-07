@@ -225,6 +225,7 @@ private fun generateProjectYaml(
     val tomlLibs = loadToml(root, "libs.versions.toml")
 
     // data library
+    val id = setup.library.id
     val siteName = setup.library.name
     val minSdk = tomlApp.findKey("versions", "minSdk")
     val repoName = setup.library.repoName
@@ -288,6 +289,7 @@ private fun generateProjectYaml(
         appendLine("# -------")
         appendLine("")
         appendLine("library:")
+        appendLine("  id: $id")
         appendLine("  name: $siteName")
         appendLine("  api: $minSdk")
         appendLine("  github: $repoName")
