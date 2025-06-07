@@ -47,6 +47,10 @@ kotlin {
 // Configurations
 // -------------------
 
+tasks.named<Jar>("jar") {
+    dependsOn(tasks.named("compileJava"))
+}
+
 mavenPublishing {
 
     configure(

@@ -22,3 +22,16 @@ subprojects {
         }
     }
 }
+
+/*
+tasks.register("publish") {
+    dependsOn(gradle.includedBuild("library/modules/build-logic").task(":plugin:publish"))
+}
+
+tasks.register("publishToMaven") {
+    dependsOn(gradle.includedBuild("library/modules/build-logic").task(":plugin:publishToMaven"))
+}
+
+tasks.register("publishToMavenLocal") {
+    dependsOn(gradle.includedBuild("library/modules/build-logic").task(":plugin:publishToMavenLocal"))
+}*/

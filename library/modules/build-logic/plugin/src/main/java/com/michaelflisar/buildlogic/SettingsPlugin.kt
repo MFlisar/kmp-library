@@ -4,7 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 import java.io.File
 
-class SettingPlugin : Plugin<Settings> {
+class SettingsPlugin : Plugin<Settings> {
 
     private lateinit var settings: Settings
 

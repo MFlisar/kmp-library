@@ -51,7 +51,6 @@ if (System.getenv("CI")?.toBoolean() == true) {
     }
 }
 
-
 // -------------------
 // Configurations
 // -------------------
