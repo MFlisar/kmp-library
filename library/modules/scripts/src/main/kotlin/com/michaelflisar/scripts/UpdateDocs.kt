@@ -9,6 +9,8 @@ import org.jsoup.parser.Parser
 import java.io.File
 import java.util.Properties
 import com.michaelflisar.buildlogic.shared.SetupData
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
 
 val PLACEHOLDER_CUSTOM_NAV = "# <CUSTOM-NAV>"
 val PLACEHOLDER_INDEX_INFO_FEATURES = "# <INFO_FEATURES>"
@@ -18,7 +20,7 @@ val NAV_TO_IGNORE = "usage.md"
 
 val REL_PATH_DOCS_OUTPUT = "generator/gen/docs"
 val REL_PATH_DOCS_CUSTOM = "generator/docs-custom"
-val REL_PATH_DOCS_TEMPLATE = "generator/docs-template"
+//val REL_PATH_DOCS_TEMPLATE = "generator/docs-template"
 
 val REL_PATH_DOCS_CUSTOM_PARTS_FEATURES = "parts/features.md"
 val REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS = "parts/platform_comments.md"
@@ -38,7 +40,7 @@ fun main() {
     }
 
     val documentationFolder = File(root, REL_PATH_DOCS_OUTPUT)
-    val docTemplateFolder = File(root, REL_PATH_DOCS_TEMPLATE)
+    //val docTemplateFolder = File(root, REL_PATH_DOCS_TEMPLATE)
     val docCustom = File(root, REL_PATH_DOCS_CUSTOM)
 
     val setupData = SetupData.read(root)
@@ -46,7 +48,6 @@ fun main() {
     // 1) copy all doc files from the template folder including the custom files
     copyDoc(
         documentationFolder = documentationFolder,
-        docTemplateFolder = docTemplateFolder,
         docCustom = docCustom
     )
 
@@ -88,14 +89,17 @@ fun main() {
 
 private fun copyDoc(
     documentationFolder: File,
-    docTemplateFolder: File,
+    //docTemplateFolder: JarFile,
     docCustom: File
 ) {
     // 1) delete the old documentation folder
     documentationFolder.saveDeleteRecursively()
 
     // 2) copy the template folder
-    docTemplateFolder.copyRecursively(documentationFolder, overwrite = true)
+    val jarUrl = BuildGradleFile::class.java.protectionDomain.codeSource.location
+    val jarFile = JarFile(File(jarUrl.toURI()))
+    copyTemplateFromJar(jarFile, "template/", documentationFolder)
+    //docTemplateFolder.copyRecursively(documentationFolder, overwrite = true)
 
     // 3) copy the custom folder
     docCustom.copyRecursively(documentationFolder, overwrite = false)
@@ -382,6 +386,22 @@ private fun generateOtherProjectsYaml(
 // helper functions
 // ----------------------------
 
+private fun copyTemplateFromJar(jarFile: JarFile, templatePrefix: String, targetDir: File) {
+    val entries = jarFile.entries()
+    while (entries.hasMoreElements()) {
+        val entry = entries.nextElement()
+        if (entry.name.startsWith(templatePrefix) && !entry.isDirectory) {
+            val outFile = File(targetDir, entry.name.removePrefix(templatePrefix))
+            outFile.parentFile.mkdirs()
+            jarFile.getInputStream(entry).use { input ->
+                outFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+        }
+    }
+}
+
 private fun walkTopDownWithPrioritizedFoldersOnTop(
     files: List<File>,
     folder: File,
@@ -501,16 +521,6 @@ fun String.normalizePath(): String {
 // ----------------------------
 // Classes
 // ----------------------------
-
-class DocsPlaceholder(
-    val key: String
-) {
-    val replacement: String = "<$key>"
-
-    fun getValue(gradleProperties: Properties): String {
-        return gradleProperties.getProperty(key) as String
-    }
-}
 
 class NavItem(
     val root: File,
