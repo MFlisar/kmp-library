@@ -32,7 +32,7 @@ jobs:
 
       - name: Publish Library
         run: |
-          echo "TAG: $TAG"
+          echo "TAG: ${{ env.TAG }}"
           echo "Publishing library 🚀"
           echo ""
           ./gradlew publish --no-daemon --no-parallel
