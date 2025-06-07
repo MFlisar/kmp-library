@@ -297,7 +297,7 @@ private fun generateProjectYaml(
         appendLine("  platforms:")
         for (p in supportedPlatforms) {
             appendLine("    - name: ${p.targetName}")
-            appendLine("    - color: ${p.color}")
+            appendLine("      color: ${p.color}")
         }
         appendArray("  ", "screenshots", screenshots)
         appendLine("  branch: $branch")
