@@ -7,6 +7,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 
+
 }
 
 dependencyResolutionManagement {
@@ -39,12 +40,21 @@ dependencyResolutionManagement {
 include(":shared")
 project(":shared").projectDir = file("library/modules/build-logic/shared")
 
-//includeBuild("library/modules/build-logic")
 includeBuild("library/modules/build-logic")
 
 // --------------------
 // include modules
 // --------------------
+
+/*
+plugins {
+    id("com.michaelflisar.buildlogic.settings-plugin")
+}
+
+apply<com.michaelflisar.buildlogic.SettingPlugin>()
+val settingsPlugin = settings.plugins.getPlugin(com.michaelflisar.buildlogic.SettingPlugin::class.java)
+settingsPlugin.importAllModules()
+*/
 
 val library = rootDir.name.lowercase()//settings.providers.gradleProperty("LIBRARY_KEY").get()
 println("Modules:")
