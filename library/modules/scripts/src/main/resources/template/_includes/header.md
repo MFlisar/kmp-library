@@ -9,21 +9,6 @@
 <h1 align="center"><b>{{ project["library"]["name"] }}</b></h1>
 
 ![PLATFORMS](https://img.shields.io/badge/PLATFORMS-black?style=for-the-badge){:class=exclude-glightbox }
-{% if "jvm" in project["library"]["platforms"] -%}
-![JVM](https://img.shields.io/badge/JVM-grey?style=for-the-badge){:class=exclude-glightbox }
-{% endif -%}
-{% if "android" in project["library"]["platforms"] -%}
-![ANDROID](https://img.shields.io/badge/Android-green?style=for-the-badge){:class=exclude-glightbox }
-{% endif -%}
-{% if "ios" in project["library"]["platforms"] -%}
-![IOS](https://img.shields.io/badge/iOS-blue?style=for-the-badge){:class=exclude-glightbox }
-{% endif -%}
-{% if "js" in project["library"]["platforms"] -%}
-![JS](https://img.shields.io/badge/js-orange?style=for-the-badge){:class=exclude-glightbox }
-{% endif -%}
-{% if "wasm" in project["library"]["platforms"] -%}
-![WASM](https://img.shields.io/badge/wasm-purple?style=for-the-badge){:class=exclude-glightbox }
-{% endif -%}
-{% if "linux" in project["library"]["platforms"] -%}
-![LINUX](https://img.shields.io/badge/linux-yellow?style=for-the-badge){:class=exclude-glightbox }
-{% endif -%}
+{% for platform in project["library"]["platforms"] -%}
+![{{ platform["name"] }}](https://img.shields.io/badge/{{ platform["name"] }}-{{ platform["color"] }}?style=for-the-badge){:class=exclude-glightbox }
+{% endfor -%}

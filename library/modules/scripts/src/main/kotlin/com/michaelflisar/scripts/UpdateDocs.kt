@@ -5,6 +5,7 @@ import com.akuleshov7.ktoml.tree.nodes.TomlFile
 import com.akuleshov7.ktoml.tree.nodes.TomlKeyValuePrimitive
 import com.michaelflisar.buildlogic.shared.Setup
 import com.michaelflisar.buildlogic.shared.SetupData
+import com.michaelflisar.buildlogic.shared.Target
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.io.File
@@ -95,17 +96,8 @@ fun buildDocs(
     println("Building docs finished successfully!")
 }
 
-fun deployDocs(
-    relativePathGeneratedDocsOutput: String = "documentation/gen/docs"
-) {
-    val cmd = "mkdocs gh-deploy --force"
-    val workingDirectory = File(rootFolder(), relativePathGeneratedDocsOutput)
-
-}
-
 private fun copyDoc(
     documentationFolder: File,
-    //docTemplateFolder: JarFile,
     docCustom: File,
 ) {
     // 1) delete the old documentation folder
@@ -244,6 +236,9 @@ private fun generateProjectYaml(
         .map { it.platforms }
         .flatten()
         .distinct()
+        .map { t ->
+            Target.entries.find { it.targetName == t } ?: throw RuntimeException("Target not found: ${t} in Target Enum!")
+        }
     val screenshots = setup.library.screenshots
     val branch = File(root, ".git/HEAD")
         .readText(Charsets.UTF_8)
@@ -304,7 +299,8 @@ private fun generateProjectYaml(
         appendLine("  multiplatform: $multiplatform")
         appendLine("  platforms:")
         for (p in supportedPlatforms) {
-            appendLine("    - $p")
+            appendLine("    - name: ${p.targetName}")
+            appendLine("    - color: ${p.color}")
         }
         appendArray("  ", "screenshots", screenshots)
         appendLine("  branch: $branch")

@@ -1,5 +1,6 @@
 package com.michaelflisar.buildlogic.classes
 
+import com.michaelflisar.buildlogic.shared.Target
 import org.gradle.api.NamedDomainObjectContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
