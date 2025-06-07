@@ -32,5 +32,8 @@ dependencyResolutionManagement {
     }
 }
 
-include(":plugin")
-include(":shared")
+include(":build-logic:shared")
+project(":build-logic:shared").projectDir = file("shared")
+
+include(":build-logic:plugin")
+project(":build-logic:plugin").projectDir = file("plugin")

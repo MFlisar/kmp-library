@@ -37,10 +37,15 @@ dependencyResolutionManagement {
 
 }
 
-include(":shared")
-project(":shared").projectDir = file("library/modules/build-logic/shared")
-include(":plugin")
-project(":plugin").projectDir = file("library/modules/build-logic/plugin")
+include(":build-logic:shared")
+project(":build-logic:shared").projectDir = file("library/modules/build-logic/shared")
+
+include(":build-logic:plugin")
+project(":build-logic:plugin").projectDir = file("library/modules/build-logic/plugin")
+
+include(":scrips")
+project(":scrips").projectDir = file("library/modules/scripts")
+
 /*
 includeBuild("library/modules/build-logic") {
     //dependencySubstitution {
@@ -48,44 +53,3 @@ includeBuild("library/modules/build-logic") {
     //        .using(project(":kmp-template:modules:build-logic:shared"))
     //}
 }*/
-
-// --------------------
-// include modules
-// --------------------
-
-/*
-plugins {
-    id("com.michaelflisar.buildlogic.settings-plugin")
-}
-
-apply<com.michaelflisar.buildlogic.SettingPlugin>()
-val settingsPlugin = settings.plugins.getPlugin(com.michaelflisar.buildlogic.SettingPlugin::class.java)
-settingsPlugin.importAllModules()
-*/
-
-val library = rootDir.name.lowercase()//settings.providers.gradleProperty("LIBRARY_KEY").get()
-println("Modules:")
-val folderLibrary = File(rootDir, "library")
-folderLibrary
-    .walk()
-    .maxDepth(10)
-    .filter { it.isDirectory && File(it, "build.gradle.kts").exists() }
-    .filter { !it.path.contains("build-logic") }
-    .forEach { dir ->
-        val relativePath = dir.relativeTo(folderLibrary)
-        val relativeRoot = generateSequence(relativePath) { it.parentFile }.last()
-        val baseModulePath = ":" + relativePath.invariantSeparatorsPath.replace('/', ':')
-        val modulePath: String
-        if (relativeRoot.name != "demo") {
-            modulePath = ":" + library.lowercase() + baseModulePath
-            include(modulePath)
-            project(modulePath).projectDir = dir
-        } else {
-            modulePath = ":" + relativePath.invariantSeparatorsPath.replace('/', ':')
-            include(modulePath)
-            project(modulePath).projectDir = dir
-        }
-        println("  - $modulePath")
-    }
-
-include(":generator:scripts")

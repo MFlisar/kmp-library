@@ -38,7 +38,7 @@ dependencies {
     implementation(deps.jsoup)
     implementation(deps.yaml)
 
-    implementation(project(":shared"))
+    implementation(project(":build-logic:shared"))
 }
 
 // allows to run the application with `./gradlew run -PmainClass=com.michaelflisar.scripts.UpdateDocsKt`

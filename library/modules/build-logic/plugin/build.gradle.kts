@@ -49,7 +49,7 @@ dependencies {
     implementation(libs.android.build.tools)
     implementation(deps.yaml)
 
-    api(project(":shared"))
+    api(project(":build-logic:shared"))
 }
 
 mavenPublishing {

@@ -14,15 +14,6 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
 }
 
-// exclude all demo projects from CI builds
-subprojects {
-    if (project.path.contains(":demo:", ignoreCase = true) && System.getenv("CI") == "true") {
-        tasks.configureEach {
-            enabled = false
-        }
-    }
-}
-
 /*
 tasks.register("publish") {
     dependsOn(gradle.includedBuild("library/modules/build-logic").task(":plugin:publish"))
