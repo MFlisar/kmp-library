@@ -4,12 +4,11 @@ import com.akuleshov7.ktoml.Toml
 import com.akuleshov7.ktoml.tree.nodes.TomlFile
 import com.akuleshov7.ktoml.tree.nodes.TomlKeyValuePrimitive
 import com.michaelflisar.buildlogic.shared.Setup
+import com.michaelflisar.buildlogic.shared.SetupData
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.io.File
 import java.util.Properties
-import com.michaelflisar.buildlogic.shared.SetupData
-import java.util.jar.JarEntry
 import java.util.jar.JarFile
 
 val PLACEHOLDER_CUSTOM_NAV = "# <CUSTOM-NAV>"
@@ -31,6 +30,10 @@ val REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS = "parts/platform_comments.md"
  * automatically detects all gradle properties that start with "DOC_", "LIBRARY_" or "DEVELOPER_" and uses them as placeholders for the replacement logic
  */
 fun main() {
+    buildDocs()
+}
+
+fun buildDocs() {
 
     val ci = System.getenv("CI")?.toBoolean() == true
     var root = rootFolder()
@@ -90,9 +93,10 @@ fun main() {
 private fun copyDoc(
     documentationFolder: File,
     //docTemplateFolder: JarFile,
-    docCustom: File
+    docCustom: File,
 ) {
     // 1) delete the old documentation folder
+    documentationFolder.mkdirs()
     documentationFolder.saveDeleteRecursively()
 
     // 2) copy the template folder
@@ -106,7 +110,8 @@ private fun copyDoc(
 
     // 4) delete parts folders
     val partFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_FEATURES)
-    val partPlatformFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS)
+    val partPlatformFeatures =
+        File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS)
     partFeatures.saveDelete()
     partPlatformFeatures.saveDelete()
     partPlatformFeatures.parentFile.deleteIfEmpty()
@@ -114,7 +119,7 @@ private fun copyDoc(
 
 private fun updatePlaceholders(
     documentationFolder: File,
-    setupData: SetupData
+    setupData: SetupData,
 ) {
     // 4) iterate the generated documentation files and replace the placeholders
     documentationFolder.walkTopDown().forEach { file ->
@@ -134,7 +139,7 @@ private fun updatePlaceholders(
 
 private fun updatePlaceholdersInIndexMd(
     documentationFolder: File,
-    docCustom: File
+    docCustom: File,
 ) {
     val file = File(documentationFolder, "docs/index.md")
 
@@ -147,7 +152,7 @@ private fun updatePlaceholdersInIndexMd(
 private fun updateCustomNav(
     documentationFolder: File,
     docCustom: File,
-    prioritizedFolders: List<String>
+    prioritizedFolders: List<String>,
 ) {
     val file = File(documentationFolder, "mkdocs.yml")
 
@@ -199,12 +204,14 @@ private fun updateCustomNav(
 private fun generateProjectYaml(
     root: File,
     documentationFolder: File,
-    setup: Setup
+    setup: Setup,
 ) {
     val file = File(documentationFolder, "_data/project.yml")
-    val allModuleBuildGradleFile = File(root, "library/modules").walkTopDownFiltered { it.name == "build.gradle.kts" }.toList().map {
-        BuildGradleFile(root, it)
-    }
+    val allModuleBuildGradleFile =
+        File(root, "library/modules").walkTopDownFiltered { it.name == "build.gradle.kts" }.toList()
+            .map {
+                BuildGradleFile(root, it)
+            }
     val allModuleKtFile =
         File(root, "library/modules").walkTopDownFiltered { it.extension == "kt" }.toList()
     val tomlApp = loadToml(root, "app.versions.toml")
@@ -321,7 +328,8 @@ private fun generateProjectYaml(
         setup.modules.forEach {
             appendLine("modules:")
             setup.modules.forEach { module ->
-                val buildGradleFile = allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() }!!
+                val buildGradleFile =
+                    allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() }!!
                 appendLine("  - id: ${module.artifactId}")
                 appendLine("    group: ${module.group}")
                 appendLine("    description: ${module.description}")
@@ -352,7 +360,7 @@ private fun generateProjectYaml(
 
 private fun generateOtherProjectsYaml(
     documentationFolder: File,
-    setup: Setup
+    setup: Setup,
 ) {
     val file = File(documentationFolder, "_data/other-projects.yml")
 
@@ -405,7 +413,7 @@ private fun copyTemplateFromJar(jarFile: JarFile, templatePrefix: String, target
 private fun walkTopDownWithPrioritizedFoldersOnTop(
     files: List<File>,
     folder: File,
-    prioritizedFolders: List<String>
+    prioritizedFolders: List<String>,
 ): List<File> {
 
     val prioritizedPaths = prioritizedFolders.map { File(folder, it).canonicalPath }
@@ -432,11 +440,11 @@ private fun walkTopDownWithPrioritizedFoldersOnTop(
     return prioritizedSorted + rest
 }
 
-fun Properties.getString(key: String): String {
+private fun Properties.getString(key: String): String {
     return getProperty(key) as String
 }
 
-fun loadToml(root: File, fileName: String) : TomlFile {
+private fun loadToml(root: File, fileName: String): TomlFile {
     return Toml.tomlParser.parseString(
         File(
             root,
@@ -445,11 +453,11 @@ fun loadToml(root: File, fileName: String) : TomlFile {
     )
 }
 
-fun TomlFile.findKey(table: String, key: String): String {
+private fun TomlFile.findKey(table: String, key: String): String {
     return (findTableInAstByName(table)!!.children.find { it.name == key } as TomlKeyValuePrimitive).value.content.toString()
 }
 
-fun String.findBetween(from: String, to: String): String? {
+private fun String.findBetween(from: String, to: String): String? {
     val start = this.indexOf(from)
     if (start == -1) return null
     val fromEnd = start + from.length
@@ -458,13 +466,13 @@ fun String.findBetween(from: String, to: String): String? {
     return this.substring(fromEnd, end)
 }
 
-fun String.removeComments(): String {
+private fun String.removeComments(): String {
     val singleLine = Regex("//.*?$", RegexOption.MULTILINE)
     val multiLine = Regex("/\\*.*?\\*/", setOf(RegexOption.DOT_MATCHES_ALL))
     return this.replace(multiLine, "").replace(singleLine, "")
 }
 
-fun String.splitOrEmpty(delimiter: String): List<String> {
+private fun String.splitOrEmpty(delimiter: String): List<String> {
     return if (this.isEmpty()) {
         emptyList()
     } else {
@@ -502,9 +510,10 @@ private fun findVersionInPOM(url: String, groupId: String): String? {
 
 private fun findKotlinFunctionNamedParameters(
     content: String,
-    functionName: String
-) : Map<String, String> {
-    val parameters = content.findBetween("$functionName(", ")")!!.removeComments().split(",").map { it.trim() }
+    functionName: String,
+): Map<String, String> {
+    val parameters =
+        content.findBetween("$functionName(", ")")!!.removeComments().split(",").map { it.trim() }
     return parameters.mapNotNull {
         val parts = it.split("=").map { it.trim() }
         if (parts.size != 2) {
@@ -514,7 +523,7 @@ private fun findKotlinFunctionNamedParameters(
     }.toMap()
 }
 
-fun String.normalizePath(): String {
+private fun String.normalizePath(): String {
     return replace("\\", "/")
 }
 
@@ -524,7 +533,7 @@ fun String.normalizePath(): String {
 
 class NavItem(
     val root: File,
-    val file: File
+    val file: File,
 ) {
     val relativeFilePath = file.relativeTo(root).path
     val relativeFolderPath = file.parentFile.relativeTo(root).path
@@ -547,12 +556,12 @@ class NavItem(
 class Path(
     val path: String,
     val level: Int,
-    val name: String
+    val name: String,
 )
 
 class BuildGradleFile(
     root: File,
-    file: File
+    file: File,
 ) {
     private val content = file.readText(Charsets.UTF_8)
 
@@ -563,6 +572,4 @@ class BuildGradleFile(
         targets.filter { it.value == "true" }
             .map { it.key }
     }
-
 }
-

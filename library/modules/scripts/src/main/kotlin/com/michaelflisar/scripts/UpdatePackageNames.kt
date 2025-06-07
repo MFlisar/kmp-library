@@ -5,6 +5,13 @@ import java.io.File
 fun main() {
     val oldPackageName = "com.michaelflisar.example"
     val newPackageName = "com.michaelflisar.example"
+    updatePackageNames(oldPackageName, newPackageName)
+}
+
+fun updatePackageNames(
+    oldPackageName: String,
+    newPackageName: String
+) {
     run(oldPackageName, newPackageName)
 }
 

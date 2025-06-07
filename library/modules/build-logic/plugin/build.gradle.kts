@@ -56,6 +56,8 @@ dependencies {
     api(project(":build-logic:shared"))
 }
 
+// isAutomatedPublishing => the plugins are automatically published to the Gradle Plugin Portal
+/*
 mavenPublishing {
 
     configure(
@@ -103,4 +105,4 @@ mavenPublishing {
     // Enable GPG signing for all publications
     if (System.getenv("CI")?.toBoolean() == true)
         signAllPublications()
-}
+}*/
