@@ -20,11 +20,11 @@ val description = "a collection of scripts to generate mkdocs based documentatio
 val artifactId = "scripts"
 
 // Library
-val libraryName = "kmp-build-logic"
-val libraryDescription = "kmp-build-logic - $artifactId module - $description"
-val groupID = "io.github.mflisar.kmp-build-logic"
+val libraryName = "kmp-template"
+val libraryDescription = "$libraryName - $artifactId module - $description"
+val groupID = "io.github.mflisar.kmp-template"
 val release = 2023
-val github = "https://github.com/MFlisar/kmp-build-logic"
+val github = "https://github.com/MFlisar/kmp-template"
 val license = "Apache License 2.0"
 val licenseUrl = "$github/blob/main/LICENSE"
 

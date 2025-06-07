@@ -11,29 +11,26 @@ import java.io.File
 import java.util.Properties
 import java.util.jar.JarFile
 
-val PLACEHOLDER_CUSTOM_NAV = "# <CUSTOM-NAV>"
-val PLACEHOLDER_INDEX_INFO_FEATURES = "# <INFO_FEATURES>"
-val PLACEHOLDER_INDEX_INFO_PLATFORMS = "# <INFO_PLATFORMS>"
+private val PLACEHOLDER_CUSTOM_NAV = "# <CUSTOM-NAV>"
+private val PLACEHOLDER_INDEX_INFO_FEATURES = "# <INFO_FEATURES>"
+private val PLACEHOLDER_INDEX_INFO_PLATFORMS = "# <INFO_PLATFORMS>"
 
-val NAV_TO_IGNORE = "usage.md"
+private val NAV_TO_IGNORE = "usage.md"
 
-val REL_PATH_DOCS_OUTPUT = "generator/gen/docs"
-val REL_PATH_DOCS_CUSTOM = "generator/docs-custom"
-//val REL_PATH_DOCS_TEMPLATE = "generator/docs-template"
-
-val REL_PATH_DOCS_CUSTOM_PARTS_FEATURES = "parts/features.md"
-val REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS = "parts/platform_comments.md"
+private val REL_PATH_DOCS_CUSTOM_PARTS_FEATURES = "parts/features.md"
+private val REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS = "parts/platform_comments.md"
 
 /*
  * generates the documentation files in the "documentation" folder
  *
  * automatically detects all gradle properties that start with "DOC_", "LIBRARY_" or "DEVELOPER_" and uses them as placeholders for the replacement logic
  */
-fun main() {
-    buildDocs()
-}
-
-fun buildDocs() {
+fun buildDocs(
+    relativePathDocsCustom: String = "documentation/custom",
+    relativePathGeneratedDocsOutput: String = "documentation/gen/docs",
+    relativeModulesPath: String = "library/modules",
+    relativeDemosPath: String = "library/demo",
+) {
 
     val ci = System.getenv("CI")?.toBoolean() == true
     var root = rootFolder()
@@ -42,25 +39,30 @@ fun buildDocs() {
         root = root.parentFile.parentFile
     }
 
-    val documentationFolder = File(root, REL_PATH_DOCS_OUTPUT)
-    //val docTemplateFolder = File(root, REL_PATH_DOCS_TEMPLATE)
-    val docCustom = File(root, REL_PATH_DOCS_CUSTOM)
+    println("Building docs [ci = $ci]...")
 
+    val documentationFolder = File(root, relativePathGeneratedDocsOutput)
+    val docCustom = File(root, relativePathDocsCustom)
+
+    println("Creating setup data...")
     val setupData = SetupData.read(root)
 
     // 1) copy all doc files from the template folder including the custom files
+    println("1) Copy all doc files from the template folder including the custom files...")
     copyDoc(
         documentationFolder = documentationFolder,
         docCustom = docCustom
     )
 
     // 2) update all placeholders in the documentation files
+    println("2) Update all placeholders in the documentation files...")
     updatePlaceholders(
         documentationFolder = documentationFolder,
         setupData = setupData
     )
 
     // 3) update placeholders with part files in index.md
+    println("3) Update placeholders with part files in index.md...")
     updatePlaceholdersInIndexMd(
         documentationFolder = documentationFolder,
         docCustom = docCustom
@@ -70,6 +72,7 @@ fun buildDocs() {
     // - modules
     // - migration
     // - rest...
+    println("4) Adding nav items to mkdocs.yml...")
     updateCustomNav(
         documentationFolder = documentationFolder,
         docCustom = docCustom,
@@ -77,17 +80,23 @@ fun buildDocs() {
     )
 
     // 5) generate project.yaml
+    println("5) Generate project.yaml...")
     generateProjectYaml(
         root = root,
         documentationFolder = documentationFolder,
-        setup = setupData.setup
+        setup = setupData.setup,
+        relativeModulesPath = relativeModulesPath,
+        relativeDemosPath = relativeDemosPath,
     )
 
     // 6) generate other-projects.yaml
+    println("6) Generate other-projects.yaml...")
     generateOtherProjectsYaml(
         documentationFolder = documentationFolder,
         setup = setupData.setup
     )
+
+    println("Building docs finished successfully!")
 }
 
 private fun copyDoc(
@@ -124,7 +133,7 @@ private fun updatePlaceholders(
     // 4) iterate the generated documentation files and replace the placeholders
     documentationFolder.walkTopDown().forEach { file ->
         if (file.isFile) {
-            var originalContent = file.readText()
+            val originalContent = file.readText()
             var content = originalContent
             for (yamlValue in setupData.yaml) {
                 val placeholder = "<${yamlValue.path}>"
@@ -142,7 +151,6 @@ private fun updatePlaceholdersInIndexMd(
     docCustom: File,
 ) {
     val file = File(documentationFolder, "docs/index.md")
-
     val partFeatures = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_FEATURES)
     val partPlatformComments = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS)
     file.update(PLACEHOLDER_INDEX_INFO_FEATURES, partFeatures.readText(Charsets.UTF_8))
@@ -205,15 +213,18 @@ private fun generateProjectYaml(
     root: File,
     documentationFolder: File,
     setup: Setup,
+    relativeModulesPath: String,
+    relativeDemosPath: String,
 ) {
     val file = File(documentationFolder, "_data/project.yml")
     val allModuleBuildGradleFile =
-        File(root, "library/modules").walkTopDownFiltered { it.name == "build.gradle.kts" }.toList()
+        File(root, relativeModulesPath).walkTopDownFiltered { it.name == "build.gradle.kts" }
+            .toList()
             .map {
                 BuildGradleFile(root, it)
             }
     val allModuleKtFile =
-        File(root, "library/modules").walkTopDownFiltered { it.extension == "kt" }.toList()
+        File(root, relativeModulesPath).walkTopDownFiltered { it.extension == "kt" }.toList()
     val tomlApp = loadToml(root, "app.versions.toml")
     val tomlLibs = loadToml(root, "libs.versions.toml")
 
@@ -240,7 +251,7 @@ private fun generateProjectYaml(
                 null // Detached HEAD oder Commit-Hash
             }
         }
-    val demoPath = "library/demo"
+    val demoPath = relativeDemosPath
     val demo = File(root, demoPath).exists()
 
     // data dependencies
