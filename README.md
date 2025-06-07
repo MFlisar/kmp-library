@@ -41,4 +41,4 @@ TODO
 
 * fail if mkdocs build does not find functions
 * mkdocs template anpassen -> alle mflisar und ähnliche durch properties ersetzen
-* generator könnte eine library sein die man veröffentlicht...
+* generator + build-logic könnte eine library sein die man veröffentlicht - oder?

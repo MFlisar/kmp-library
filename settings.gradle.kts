@@ -7,7 +7,6 @@ pluginManagement {
         gradlePluginPortal()
     }
 
-    includeBuild("build-logic")
 }
 
 dependencyResolutionManagement {
@@ -36,6 +35,12 @@ dependencyResolutionManagement {
     }
 
 }
+
+include(":shared")
+project(":shared").projectDir = file("library/modules/build-logic/shared")
+
+//includeBuild("library/modules/build-logic")
+includeBuild("library/modules/build-logic")
 
 // --------------------
 // include modules
