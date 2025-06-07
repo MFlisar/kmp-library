@@ -8,9 +8,9 @@ env:
 
 jobs:
 
-  build-on-macos:
+  build-on-ubuntu:
     name: Publish to Maven Central
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
 
