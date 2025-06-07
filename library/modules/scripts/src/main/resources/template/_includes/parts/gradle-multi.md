@@ -6,12 +6,12 @@
 
     ```kotlin title="build.gradle.kts"
 
-    val {{ project["library"]["name"] | lower }} = "<LATEST-VERSION>"
+    val {{ project["library"]["id"] | lower }} = "<LATEST-VERSION>"
     {% for group in project["groups"] %}
     // {{ group["gradle-comment" ]}}
     {% for module in project["modules"] -%}
     {% if module["group"] == group["name"] -%}
-    implementation("{{ project["library"]["maven"] }}:{{ module["name"] }}:${{ project["library"]["name"] | lower }}")
+    implementation("{{ project["library"]["maven"] }}:{{ module["name"] }}:${{ project["library"]["id"] | lower }}")
     {% endif -%}
     {%- endfor -%}
     {%- endfor -%}
@@ -24,9 +24,9 @@
     ```toml title="libs.versions.toml"
     [versions]
 
-    {{ project["library"]["name"] | lower }} = "<LATEST-VERSION>"
+    {{ project["library"]["id"] | lower }} = "<LATEST-VERSION>"
     
-    {%- set l1 = project["library"]["name"] | length -%}
+    {%- set l1 = project["library"]["id"] | length -%}
     {%- set ns = namespace(maxLength=0) -%}
     {%- for group in project["groups"] -%}
       {%- for module in group["modules"] -%}   
@@ -45,9 +45,9 @@
     # {{ group["gradle-comment" ]}}
     {% for module in project["modules"] -%}
     {% if module["group"] == group["name"] -%}
-      {%- set name = project["library"]["name"] | lower ~ "-" ~ module["name"] ~ " =" -%}
+      {%- set name = project["library"]["id"] | lower ~ "-" ~ module["name"] ~ " =" -%}
       {%- set module2 = "\"" ~ project["library"]["maven"] ~ ":" ~ module["name"] ~ "\"," -%}
-    {{ name.ljust(padding) }} { module = {{ module2.ljust(padding2) }} version.ref = "{{ project["library"]["name"] | lower }}" }
+    {{ name.ljust(padding) }} { module = {{ module2.ljust(padding2) }} version.ref = "{{ project["library"]["id"] | lower }}" }
     {% endif -%}
     {% endfor %}
     {%- endfor -%}
@@ -60,7 +60,7 @@
     # {{ group["gradle-comment" ]}}
     {% for module in project["modules"] -%}
     {% if module["group"] == group["name"] -%}
-    implementation(libs.{{ project["library"]["name"] | lower }}.{{ module["name"] | replace("-", ".") }})
+    implementation(libs.{{ project["library"]["id"] | lower }}.{{ module["name"] | replace("-", ".") }})
     {% endif -%}
     {% endfor %}
     {%- endfor -%}

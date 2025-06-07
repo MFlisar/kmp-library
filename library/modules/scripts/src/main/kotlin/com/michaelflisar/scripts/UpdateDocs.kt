@@ -304,6 +304,7 @@ private fun generateProjectYaml(
         if (demo) {
             appendLine("  demo-path: $demoPath")
         }
+        appendLine("")
         appendLine("# -------")
         appendLine("# Dependencies")
         appendLine("# -------")

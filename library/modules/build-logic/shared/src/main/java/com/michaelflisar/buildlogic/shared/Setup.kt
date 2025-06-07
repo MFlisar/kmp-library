@@ -92,7 +92,6 @@ class Setup(
 
     @Serializable
     class Developer(
-        val id: String,
         val name: String,
         val mail: String,
         @SerialName("maven-id") val mavenId: String,
@@ -101,6 +100,7 @@ class Setup(
 
     @Serializable
     class Library(
+        val id: String,
         val name: String,
         val release: Int,
         @SerialName("link-docs") val linkDocs: String,
