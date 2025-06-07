@@ -31,12 +31,16 @@ val licenseUrl = "$github/blob/main/LICENSE"
 
 gradlePlugin {
     plugins {
-        create("BuildPlugin") {
-            id = "com.michaelflisar.buildlogic.build-plugin"
+        //create("BuildPlugin") {
+        //    id = "com.michaelflisar.buildlogic.build-plugin"
+        create("$groupID.build-plugin") {
+            id = "$groupID.build-plugin"
             implementationClass = "com.michaelflisar.buildlogic.BuildPlugin"
         }
-        create("SettingsPlugin") {
-            id = "com.michaelflisar.buildlogic.settings-plugin"
+        //create("SettingsPlugin") {
+        create("$groupID.settings-plugin") {
+            id = "$groupID.settings-plugin"
+            //id = "com.michaelflisar.buildlogic.settings-plugin"
             implementationClass = "com.michaelflisar.buildlogic.SettingsPlugin"
         }
         isAutomatedPublishing = true
