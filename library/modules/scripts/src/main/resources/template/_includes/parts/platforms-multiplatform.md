@@ -12,51 +12,51 @@ This is a **KMP (kotlin multiplatform)** library and the provided modules do sup
     <th>Module</th>
     {% endif %}
 	{% for platform in project["library"]["platforms"] %}
-    <th>{{ platform.upper() }}</th>
+    <th>{{ platform["name"] }}</th>
 	{% endfor %}
     <th>Info</th>
   </tr>
 
-  {% if project["modules"] | length == 1 %}
+{% if project["modules"] | length == 1 %}
 
   <tr>
       {% for platform in project["library"]["platforms"] %}
 		<td>
-		  {% if platform in project["modules"][0]["platforms"] %}✔{% else %}-{% endif %}
+		  {% if platform["name"] in project["modules"][0]["platforms"] %}✔{% else %}-{% endif %}
 		</td>
 	  {% endfor %}
       <td>
-        {{ project["modules"][0]["platforms-info"] }}
+        {{ project["modules"][0]["platform-info"] }}
       </td>
   </tr>
 
-  {% elif project["modules"] is defined %}
+{% elif project["modules"] is defined %}
 
-  {% for group in project["groups"] %}
+{% for group in project["groups"] %}
 
     <tr><td colspan="{{ project["library"]["platforms"] | length + 2 }}" style="background-color:var(--md-primary-fg-color--light);">{{ group["label"] }}</td></tr>
 
     {% for module in project["modules"] %}
-      {% if module["group"] == group["name"] %}
+      {% if module["group"] == group["id"] %}
           
         <tr>
-            <td><code>{{ module["name"] }}</code></td>
+            <td><code>{{ module["id"] }}</code></td>
             {% for platform in project["library"]["platforms"] %}
 				<td>
-				  {% if platform in module["platforms"] %}✔{% else %}-{% endif %}
+				  {% if platform["name"] in module["platforms"] %}✔{% else %}-{% endif %}
 				</td>
 			{% endfor %}
             <td>
-              {{ module["platforms-info"] }}
+              {{ module["platform-info"] }}
             </td>
         </tr>
           
       {% endif %}
     {% endfor %}
 
-  {% endfor %}
+{% endfor %}
 
-  {% endif %}
+{% endif %}
 
 </table>
 
