@@ -30,13 +30,14 @@ fun buildDocs(
     relativePathGeneratedDocsOutput: String = "documentation/gen/docs",
     relativeModulesPath: String = "library",
     relativeDemosPath: String = "demo",
+    root: (root: File) -> File = { it }
 ) {
 
     val ci = System.getenv("CI")?.toBoolean() == true
-    var root = rootFolder()
+    var root = root(rootFolder())
     if (ci) {
         // in this case we are running inside the scripts folder => we must fix the root to avoid issues with relative paths
-        root = root.parentFile.parentFile
+        //root = root.parentFile.parentFile
     }
 
     println("Building docs [ci = $ci]...")
