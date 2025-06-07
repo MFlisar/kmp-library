@@ -20,8 +20,6 @@ private val NAV_TO_IGNORE = "usage.md"
 private val REL_PATH_DOCS_CUSTOM_PARTS_FEATURES = "parts/features.md"
 private val REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS = "parts/platform_comments.md"
 
-private val
-
 /*
  * generates the documentation files in the "documentation" folder
  *
@@ -29,7 +27,7 @@ private val
  */
 fun buildDocs(
     relativePathDocsCustom: String = "documentation/custom",
-    relativePathGeneratedDocsOutput: String = "documentation/gen/docs",
+    relativePathGeneratedDocsOutput: String = "gen/docs",
     relativeModulesPath: String = "library",
     relativeDemosPath: String = "demo"
 ) {
