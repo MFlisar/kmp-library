@@ -28,19 +28,18 @@ val github = "https://github.com/MFlisar/kmp-build-logic"
 val license = "Apache License 2.0"
 val licenseUrl = "$github/blob/main/LICENSE"
 
+// -------------------
+// Plugins
+// -------------------
 
 gradlePlugin {
     plugins {
-        //create("BuildPlugin") {
-        //    id = "com.michaelflisar.buildlogic.build-plugin"
         create("$groupID.build-plugin") {
             id = "$groupID.build-plugin"
             implementationClass = "com.michaelflisar.buildlogic.BuildPlugin"
         }
-        //create("SettingsPlugin") {
         create("$groupID.settings-plugin") {
             id = "$groupID.settings-plugin"
-            //id = "com.michaelflisar.buildlogic.settings-plugin"
             implementationClass = "com.michaelflisar.buildlogic.SettingsPlugin"
         }
         isAutomatedPublishing = true
@@ -56,8 +55,6 @@ dependencies {
     api(project(":build-logic:shared"))
 }
 
-// isAutomatedPublishing => the plugins are automatically published to the Gradle Plugin Portal
-/*
 mavenPublishing {
 
     configure(
@@ -105,4 +102,4 @@ mavenPublishing {
     // Enable GPG signing for all publications
     if (System.getenv("CI")?.toBoolean() == true)
         signAllPublications()
-}*/
+}
