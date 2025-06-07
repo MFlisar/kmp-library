@@ -14,7 +14,7 @@ plugins {
 // Informations
 // -------------------
 
-val description = "a gradle plugin that provides common functions for kmp libraries that are published to maven central"
+val description = "a gradle plugin that provides common functions for kmp libraries"
 
 // Module
 val artifactId = "gradle-plugin"
