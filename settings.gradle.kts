@@ -39,8 +39,15 @@ dependencyResolutionManagement {
 
 include(":shared")
 project(":shared").projectDir = file("library/modules/build-logic/shared")
-
-includeBuild("library/modules/build-logic")
+include(":plugin")
+project(":plugin").projectDir = file("library/modules/build-logic/plugin")
+/*
+includeBuild("library/modules/build-logic") {
+    //dependencySubstitution {
+    //    substitute(project(":shared"))
+    //        .using(project(":kmp-template:modules:build-logic:shared"))
+    //}
+}*/
 
 // --------------------
 // include modules
@@ -63,6 +70,7 @@ folderLibrary
     .walk()
     .maxDepth(10)
     .filter { it.isDirectory && File(it, "build.gradle.kts").exists() }
+    .filter { !it.path.contains("build-logic") }
     .forEach { dir ->
         val relativePath = dir.relativeTo(folderLibrary)
         val relativeRoot = generateSequence(relativePath) { it.parentFile }.last()
