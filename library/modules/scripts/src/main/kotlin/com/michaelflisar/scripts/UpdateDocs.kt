@@ -20,6 +20,8 @@ private val NAV_TO_IGNORE = "usage.md"
 private val REL_PATH_DOCS_CUSTOM_PARTS_FEATURES = "parts/features.md"
 private val REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS = "parts/platform_comments.md"
 
+private val
+
 /*
  * generates the documentation files in the "documentation" folder
  *
@@ -29,16 +31,11 @@ fun buildDocs(
     relativePathDocsCustom: String = "documentation/custom",
     relativePathGeneratedDocsOutput: String = "documentation/gen/docs",
     relativeModulesPath: String = "library",
-    relativeDemosPath: String = "demo",
-    root: (root: File) -> File = { it }
+    relativeDemosPath: String = "demo"
 ) {
 
     val ci = System.getenv("CI")?.toBoolean() == true
-    var root = root(rootFolder())
-    if (ci) {
-        // in this case we are running inside the scripts folder => we must fix the root to avoid issues with relative paths
-        //root = root.parentFile.parentFile
-    }
+    val root = rootFolder()
 
     println("Building docs [ci = $ci]...")
 
@@ -98,6 +95,14 @@ fun buildDocs(
     )
 
     println("Building docs finished successfully!")
+}
+
+fun deployDocs(
+    relativePathGeneratedDocsOutput: String = "documentation/gen/docs"
+) {
+    val cmd = "mkdocs gh-deploy --force"
+    val workingDirectory = File(rootFolder(), relativePathGeneratedDocsOutput)
+
 }
 
 private fun copyDoc(
@@ -347,7 +352,7 @@ private fun generateProjectYaml(
                 appendLine("    description: ${module.description}")
                 appendLine("    optional: ${module.optional}")
                 appendArray("    ", "platforms", buildGradleFile.platforms)
-                appendLine("  - platform-info: ${module.platformInfo ?: ""}")
+                appendLine("    platform-info: \"${module.platformInfo ?: ""}\"")
                 if (module.dependencies?.isNotEmpty() == true) {
                     appendLine("    dependencies:")
                     module.dependencies!!.forEach { dep ->
