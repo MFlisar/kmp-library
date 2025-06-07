@@ -15,4 +15,23 @@ enum class Target(
     ;
 
     val nameMain = "${targetName}Main"
+
+    companion object {
+
+        /*
+         * parser function names from the Targets class
+         */
+        fun parseParameterName(name: String): Target {
+            return when (name.lowercase()) {
+                "android" -> Target.ANDROID
+                "ios" -> Target.IOS
+                "windows" -> Target.JVM
+                "macos" -> Target.MACOS
+                "linux" -> Target.LINUX
+                "wasm" -> Target.WASM_JS
+                "js" -> Target.JS
+                else -> throw RuntimeException("Unknown parameter name: $name")
+            }
+        }
+    }
 }

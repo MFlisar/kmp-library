@@ -236,9 +236,6 @@ private fun generateProjectYaml(
         .map { it.platforms }
         .flatten()
         .distinct()
-        .map { t ->
-            Target.entries.find { it.targetName == t } ?: throw RuntimeException("Target not found: ${t} in Target Enum!")
-        }
     val screenshots = setup.library.screenshots
     val branch = File(root, ".git/HEAD")
         .readText(Charsets.UTF_8)
@@ -345,7 +342,7 @@ private fun generateProjectYaml(
                 appendLine("    group: ${module.group}")
                 appendLine("    description: ${module.description}")
                 appendLine("    optional: ${module.optional}")
-                appendArray("    ", "platforms", buildGradleFile.platforms)
+                appendArray("    ", "platforms", buildGradleFile.platforms.map { it.targetName })
                 appendLine("    platform-info: \"${module.platformInfo ?: ""}\"")
                 if (module.dependencies?.isNotEmpty() == true) {
                     appendLine("    dependencies:")
@@ -581,6 +578,6 @@ class BuildGradleFile(
     val platforms by lazy {
         val targets = findKotlinFunctionNamedParameters(content, "Targets")
         targets.filter { it.value == "true" }
-            .map { it.key }
+            .map { Target.parseParameterName(it.key) }
     }
 }
