@@ -4,7 +4,13 @@
 yaml =                          "0.80.1"
 ktoml-core =                    "0.7.0"
 ktoml-file =                    "0.7.0"
-jsoup =                        "1.16.1"
+jsoup =                         "1.16.1"
+
+kmp-template =                  "unspecified" # local test version: unspecified
+
+[plugins]
+
+kmp-template-gradle-plugin =        { id = "io.github.mflisar.kmp-template.build-plugin",               version.ref = "kmp-template" }
 
 [libraries]
 
@@ -13,3 +19,5 @@ yaml =                              { module = "com.charleskorn.kaml:kaml",     
 ktoml-core =                        { module = "com.akuleshov7:ktoml-core",                                 version.ref = "ktoml-core" }
 ktoml-file =                        { module = "com.akuleshov7:ktoml-file",                                 version.ref = "ktoml-file" }
 jsoup =                             { module = "org.jsoup:jsoup",                                           version.ref = "jsoup" }
+
+kmp-template-scripts =              { module = "io.github.mflisar.kmp-template:scripts",                version.ref = "kmp-template" }

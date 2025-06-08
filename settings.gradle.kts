@@ -5,6 +5,7 @@ pluginManagement {
         mavenCentral()
         google()
         gradlePluginPortal()
+        mavenLocal()
     }
 
 }
@@ -17,6 +18,7 @@ dependencyResolutionManagement {
         google()
         gradlePluginPortal()
         maven("https://jitpack.io")
+        mavenLocal()
     }
 
     versionCatalogs {
@@ -38,11 +40,3 @@ project(":build-logic:plugin").projectDir = file("library/modules/build-logic/pl
 
 include(":scrips")
 project(":scrips").projectDir = file("library/modules/scripts")
-
-/*
-includeBuild("library/modules/build-logic") {
-    //dependencySubstitution {
-    //    substitute(project(":shared"))
-    //        .using(project(":kmp-template:modules:build-logic:shared"))
-    //}
-}*/

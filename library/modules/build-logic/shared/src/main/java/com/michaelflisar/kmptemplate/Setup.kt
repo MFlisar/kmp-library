@@ -101,7 +101,9 @@ class Setup(
         val license: License,
         val screenshots: List<String>
     ) {
-        val id = name.replace(" ", "-").lowercase()
+        val id = name.lowercase().split(" ")
+            .mapIndexed { index, word -> if (index == 0) word else word.replaceFirstChar { it.uppercase() } }
+            .joinToString("")
 
         @Serializable
         class License(

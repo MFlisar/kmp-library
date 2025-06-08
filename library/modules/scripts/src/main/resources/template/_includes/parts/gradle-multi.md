@@ -11,7 +11,7 @@
     // {{ group["gradle-comment" ]}}
     {% for module in project["modules"] -%}
     {% if module["group"] == group["name"] -%}
-    implementation("{{ project["library"]["maven"] }}:{{ module["name"] }}:${{'{'}}{{ project["library"]["id"] | lower }}{{'}'}}")
+    implementation("{{ project["library"]["maven"] }}:{{ module["name"] }}:${{ project["library"]["id"] | lower }}")
     {% endif -%}
     {%- endfor -%}
     {%- endfor -%}

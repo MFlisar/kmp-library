@@ -297,10 +297,14 @@ private fun generateProjectYaml(
         appendLine("  maven: $maven")
         appendLine("  maven-main-library: $mavenArtifact")
         appendLine("  multiplatform: $multiplatform")
-        appendLine("  platforms:")
-        for (p in supportedPlatforms) {
-            appendLine("    - name: ${p.targetName}")
-            appendLine("      color: ${p.color}")
+        if (supportedPlatforms.isEmpty()) {
+            appendLine("  platforms: []")
+        } else {
+            appendLine("  platforms:")
+            for (p in supportedPlatforms) {
+                appendLine("    - name: ${p.targetName}")
+                appendLine("      color: ${p.color}")
+            }
         }
         appendArray("  ", "screenshots", screenshots)
         appendLine("  branch: $branch")
@@ -341,7 +345,7 @@ private fun generateProjectYaml(
             appendLine("modules:")
             setup.modules.forEach { module ->
                 val buildGradleFile = allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() } ?:
-                    throw RuntimeException("BuildGradleFile not found for module: ${module.relativePath} in [${allModuleBuildGradleFile.map { it.relativeModulePath }}]")
+                    throw RuntimeException("BuildGradleFile not found for module: ${module.relativePath} in ${allModuleBuildGradleFile.map { it.relativeModulePath }}")
                 appendLine("  - id: ${module.artifactId}")
                 appendLine("    group: ${module.group}")
                 appendLine("    description: ${module.description}")
@@ -525,14 +529,14 @@ private fun findKotlinFunctionNamedParameters(
     functionName: String,
 ): Map<String, String> {
     val parameters =
-        content.findBetween("$functionName(", ")")!!.removeComments().split(",").map { it.trim() }
-    return parameters.mapNotNull {
+        content.findBetween("$functionName(", ")")?.removeComments()?.split(",")?.map { it.trim() }
+    return parameters?.mapNotNull {
         val parts = it.split("=").map { it.trim() }
         if (parts.size != 2) {
             return@mapNotNull null
         }
         parts[0] to parts[1].removeSurrounding("\"")
-    }.toMap()
+    }?.toMap() ?: emptyMap()
 }
 
 private fun String.normalizePath(): String {

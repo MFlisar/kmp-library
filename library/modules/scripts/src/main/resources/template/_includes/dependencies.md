@@ -12,7 +12,7 @@ More details about the jetpack dependencies can be found in [JetBrains Release N
 
 !!! warning
 
-    I try to use as few experimental APIs as possible, but this library does use a few experimental APIs which are still marked as experimental in material3 `{{ project["dependencies"]["material3"] }}`. I will provide new versions as soon as possible if experimental APIs change or become stable.
+    I try to use as few experimental APIs as possible, but this library does use a few experimental APIs which are still marked as experimental in material3 `{{ project["dependencies"]["jetpack-compose-material3"] }}`. I will provide new versions as soon as possible if experimental APIs change or become stable.
 
 {% endif %}
 

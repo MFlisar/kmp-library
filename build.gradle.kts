@@ -12,4 +12,32 @@ plugins {
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.gradle.maven.publish.plugin) apply false
     alias(libs.plugins.kotlin.jvm) apply false
+
+    alias(deps.plugins.kmp.template.gradle.plugin) apply false
+}
+
+
+// ------------------------
+// Build mkdocs
+// ------------------------
+
+buildscript {
+    dependencies {
+        classpath(deps.kmp.template.scripts)
+    }
+}
+
+tasks.register("buildDocs") {
+    doLast {
+        // read env from build-mkdocs.yml
+        val generatedDocsDir = project.findProperty("generatedDocsDir") as String? ?: "gen/docs"
+        com.michaelflisar.kmptemplate.scripts.buildDocs(
+            relativePathDocsCustom = "documentation/custom",
+            relativePathGeneratedDocsOutput = generatedDocsDir,
+            relativeModulesPath = "library",
+            relativeDemosPath = "demo"
+        )
+
+        println("Docs have been build!")
+    }
 }
