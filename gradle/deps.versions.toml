@@ -6,7 +6,7 @@ ktoml-core =                    "0.7.0"
 ktoml-file =                    "0.7.0"
 jsoup =                         "1.16.1"
 
-kmp-template =                  "unspecified" # local test version: unspecified
+kmp-template =                  "1.0-alpha01" # local test version: unspecified
 
 [plugins]
 
