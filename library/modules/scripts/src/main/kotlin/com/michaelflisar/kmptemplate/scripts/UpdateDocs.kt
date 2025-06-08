@@ -1,11 +1,11 @@
-package com.michaelflisar.scripts
+package com.michaelflisar.kmptemplate.scripts
 
 import com.akuleshov7.ktoml.Toml
 import com.akuleshov7.ktoml.tree.nodes.TomlFile
 import com.akuleshov7.ktoml.tree.nodes.TomlKeyValuePrimitive
-import com.michaelflisar.buildlogic.shared.Setup
-import com.michaelflisar.buildlogic.shared.SetupData
-import com.michaelflisar.buildlogic.shared.Target
+import com.michaelflisar.kmptemplate.Target
+import com.michaelflisar.kmptemplate.Setup
+import com.michaelflisar.kmptemplate.Setup.YamlValue
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.io.File
@@ -42,7 +42,8 @@ fun buildDocs(
     val docCustom = File(root, relativePathDocsCustom)
 
     println("Creating setup data...")
-    val setupData = SetupData.read(root)
+    val setup = Setup.read(root)
+    val yamlValues = Setup.readYaml(root)
 
     // 1) copy all doc files from the template folder including the custom files
     println("1) Copy all doc files from the template folder including the custom files...")
@@ -55,7 +56,7 @@ fun buildDocs(
     println("2) Update all placeholders in the documentation files...")
     updatePlaceholders(
         documentationFolder = documentationFolder,
-        setupData = setupData
+        yamlValues = yamlValues
     )
 
     // 3) update placeholders with part files in index.md
@@ -81,7 +82,7 @@ fun buildDocs(
     generateProjectYaml(
         root = root,
         documentationFolder = documentationFolder,
-        setup = setupData.setup,
+        setup = setup,
         relativeModulesPath = relativeModulesPath,
         relativeDemosPath = relativeDemosPath,
     )
@@ -90,7 +91,7 @@ fun buildDocs(
     println("6) Generate other-projects.yaml...")
     generateOtherProjectsYaml(
         documentationFolder = documentationFolder,
-        setup = setupData.setup
+        setup = setup
     )
 
     println("Building docs finished successfully!")
@@ -124,14 +125,14 @@ private fun copyDoc(
 
 private fun updatePlaceholders(
     documentationFolder: File,
-    setupData: SetupData,
+    yamlValues: List<YamlValue>
 ) {
     // 4) iterate the generated documentation files and replace the placeholders
     documentationFolder.walkTopDown().forEach { file ->
         if (file.isFile) {
             val originalContent = file.readText()
             var content = originalContent
-            for (yamlValue in setupData.yaml) {
+            for (yamlValue in yamlValues) {
                 val placeholder = "<${yamlValue.path}>"
                 val value = yamlValue.value
                 content = content.replace(placeholder, value)

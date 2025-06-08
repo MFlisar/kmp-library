@@ -36,12 +36,12 @@ gradlePlugin {
     plugins {
         create("$groupID.build-plugin") {
             id = "$groupID.build-plugin"
-            implementationClass = "com.michaelflisar.buildlogic.BuildPlugin"
+            implementationClass = "com.michaelflisar.kmptemplate.BuildFilePlugin"
         }
-        create("$groupID.settings-plugin") {
-            id = "$groupID.settings-plugin"
-            implementationClass = "com.michaelflisar.buildlogic.SettingsPlugin"
-        }
+        //create("$groupID.settings-plugin") {
+        //    id = "$groupID.settings-plugin"
+        //    implementationClass = "com.michaelflisar.kmptemplate.SettingFilePlugin"
+        //}
         isAutomatedPublishing = true
     }
 }

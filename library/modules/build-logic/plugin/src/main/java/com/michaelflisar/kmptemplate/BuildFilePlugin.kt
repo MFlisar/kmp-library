@@ -1,9 +1,7 @@
-package com.michaelflisar.buildlogic
+package com.michaelflisar.kmptemplate
 
 import com.android.build.gradle.LibraryExtension
-import com.michaelflisar.buildlogic.classes.Targets
-import com.michaelflisar.buildlogic.shared.Setup
-import com.michaelflisar.buildlogic.shared.SetupData
+import com.michaelflisar.kmptemplate.Setup
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -17,14 +15,14 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-class BuildPlugin : Plugin<Project> {
+class BuildFilePlugin : Plugin<Project> {
 
     private lateinit var project: Project
     private lateinit var setup: Setup
 
     override fun apply(project: Project) {
         this.project = project
-        setup = SetupData.read(project.rootDir).setup
+        setup = Setup.read(project.rootDir)
     }
 
     fun setupMavenPublish(
@@ -34,7 +32,7 @@ class BuildPlugin : Plugin<Project> {
         ),
         autoPublishReleases: Boolean = true,
         tag: String = System.getenv("TAG").orEmpty(), // is set by the github action workflow
-        sign: Boolean = System.getenv("CI")?.toBoolean() == true
+        sign: Boolean = System.getenv("CI")?.toBoolean() == true,
     ) {
         val path = project.projectDir.relativeTo(project.rootDir).path
         val module = setup.getModuleByPath(path)
@@ -85,7 +83,7 @@ class BuildPlugin : Plugin<Project> {
     }
 
     fun setupTargets(
-        targets: Targets
+        targets: Targets,
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
 
@@ -142,7 +140,7 @@ class BuildPlugin : Plugin<Project> {
     fun setupAndroid(
         androidNamespace: String,
         compileSdk: Provider<String>,
-        minSdk: Provider<String>
+        minSdk: Provider<String>,
     ) {
         project.extensions.configure(LibraryExtension::class.java) {
             namespace = androidNamespace

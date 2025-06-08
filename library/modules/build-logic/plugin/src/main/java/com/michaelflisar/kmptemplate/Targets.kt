@@ -1,6 +1,5 @@
-package com.michaelflisar.buildlogic.classes
+package com.michaelflisar.kmptemplate
 
-import com.michaelflisar.buildlogic.shared.Target
 import org.gradle.api.NamedDomainObjectContainer
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
@@ -18,10 +17,10 @@ class Targets(
             when (it) {
                 Target.ANDROID -> android
                 Target.IOS -> iOS
-                Target.JVM -> windows
+                Target.WINDOWS -> windows
                 Target.MACOS -> macOS
                 Target.LINUX -> linux
-                Target.WASM_JS -> wasm
+                Target.WASM -> wasm
                 Target.JS -> js
             }
         }

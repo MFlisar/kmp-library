@@ -1,10 +1,7 @@
-package com.michaelflisar.buildlogic
+package com.michaelflisar.kmptemplate
 
-import org.gradle.api.Plugin
-import org.gradle.api.initialization.Settings
-import java.io.File
-
-class SettingsPlugin : Plugin<Settings> {
+/*
+class SettingFilePlugin : Plugin<Settings> {
 
     private lateinit var settings: Settings
 
@@ -42,4 +39,4 @@ class SettingsPlugin : Plugin<Settings> {
                 }
         }
     }
-}
+}*/

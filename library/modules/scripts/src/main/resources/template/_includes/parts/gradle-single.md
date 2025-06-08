@@ -8,7 +8,7 @@
 
     val {{ project["library"]["id"] | lower }} = "<LATEST-VERSION>"
 
-    implementation("{{ project["library"]["maven"] }}:{{ project["library"]["maven-main-library"] }}:${{ project["library"]["id"] | lower }}")
+    implementation("{{ project["library"]["maven"] }}:{{ project["library"]["maven-main-library"] }}:${{'{'}}{{ project["library"]["id"] | lower }}{{'}'}}")
     ```
 
 === "Version Catalog"

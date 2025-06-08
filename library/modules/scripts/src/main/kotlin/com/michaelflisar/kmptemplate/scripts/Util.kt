@@ -1,8 +1,6 @@
-package com.michaelflisar.scripts
+package com.michaelflisar.kmptemplate.scripts
 
 import java.io.File
-import java.io.FileInputStream
-import java.util.Properties
 
 fun rootFolder() = File(System.getProperty("user.dir"))
 

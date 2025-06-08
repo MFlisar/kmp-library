@@ -1,4 +1,4 @@
-package com.michaelflisar.buildlogic.shared
+package com.michaelflisar.kmptemplate
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlList
@@ -11,23 +11,40 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.io.File
 
-class SetupData(
-    val setup: Setup,
-    val yaml: List<YamlValue>
+@Serializable
+class Setup(
+    val developer: Developer,
+    @SerialName("java-version") val javaVersion: String,
+    val library: Library,
+    val maven: Maven,
+    val groups: List<Group>? = null,
+    val modules: List<Module>,
+    @SerialName("other-projects") val otherProjects: List<OtherProjectGroup>?
 ) {
     companion object {
 
-        fun read(root: File, relativePath: String = "documentation/setup.yml"): SetupData {
-            val setupFile = File(root, relativePath)
+        val RELATIVE_YAML_FILE_PATH = "documentation/setup.yml"
+
+        fun read(root: File): Setup {
+            val file = File(root, RELATIVE_YAML_FILE_PATH)
             return try {
-                val content = setupFile.readText(Charsets.UTF_8)
-                val setup = Yaml.default.decodeFromString(Setup.serializer(), content)
-                val yaml = Yaml.default.parseToYamlNode(content)
-                val values = collectYamlValues(yaml)
-                SetupData(setup, values)
+                val content = file.readText(Charsets.UTF_8)
+                Yaml.default.decodeFromString(serializer(), content)
             } catch (e: Exception) {
                 e.printStackTrace()
-                throw RuntimeException("Failed to read setup file: ${setupFile.path}", e)
+                throw RuntimeException("Failed to read setup from path '${file.path}'", e)
+            }
+        }
+
+        fun readYaml(root: File): List<YamlValue> {
+            val file = File(root, RELATIVE_YAML_FILE_PATH)
+            return try {
+                val content = file.readText(Charsets.UTF_8)
+                val yaml = Yaml.default.parseToYamlNode(content)
+                collectYamlValues(yaml)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                throw RuntimeException("Failed to read setup from path '${file.path}'", e)
             }
         }
 
@@ -59,32 +76,8 @@ class SetupData(
             }
             return result
         }
-    }
 
-    fun getYamlValue(path: String): YamlValue {
-        return yaml.firstOrNull { it.path == path }!!
     }
-
-    class YamlValue(
-        val value: String,
-        val path: String
-    ) {
-        override fun toString(): String {
-            return "YamlValue(value='$value', path='$path')"
-        }
-    }
-}
-
-@Serializable
-class Setup(
-    val developer: Developer,
-    @SerialName("java-version") val javaVersion: String,
-    val library: Library,
-    val maven: Maven,
-    val groups: List<Group>? = null,
-    val modules: List<Module>,
-    @SerialName("other-projects") val otherProjects: List<OtherProjectGroup>?
-) {
     fun getModuleByPath(path: String): Module {
         return modules.find { it.relativePath.replace("\\", "/") == path.replace("\\", "/") }
             ?: throw RuntimeException("module setup definition not found for path: $path")
@@ -100,7 +93,6 @@ class Setup(
 
     @Serializable
     class Library(
-        val id: String,
         val name: String,
         val release: Int,
         @SerialName("link-docs") val linkDocs: String,
@@ -109,6 +101,8 @@ class Setup(
         val license: License,
         val screenshots: List<String>
     ) {
+        val id = name.replace(" ", "-").lowercase()
+
         @Serializable
         class License(
             val name: String,
@@ -167,4 +161,9 @@ class Setup(
             val description: String,
         )
     }
+
+    class YamlValue(
+        val value: String,
+        val path: String
+    )
 }
