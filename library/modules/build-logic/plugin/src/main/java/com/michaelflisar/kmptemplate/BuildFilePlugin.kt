@@ -25,13 +25,29 @@ class BuildFilePlugin : Plugin<Project> {
         setup = Setup.read(project.rootDir)
     }
 
+    /*
+        * Configures the project for publishing to Maven Central.
+        * This includes setting up the Maven coordinates, POM metadata, and signing.
+        *
+        * Usage:
+        *
+        * to only auto-publish releases without suffixes like "-debug", "-alpha", "-test" use following:
+        * <pre><code>
+        * // TAG is set by github action workflow
+        * autoReleaseOnMavenCentral = !System.getenv("TAG").orEmpty().contains("-")
+        * </code></pre>
+        *
+        * @param platform The platform configuration for the publication.
+        * @param autoReleaseOnMavenCentral A function that determines if releases should be automatically published.
+        * @param tag The tag used for the versioning, typically set by CI/CD.
+        * @param sign Whether to sign the publications.
+     */
     fun setupMavenPublish(
         platform: Platform = KotlinMultiplatform(
             javadocJar = JavadocJar.Dokka("dokkaHtml"),
             sourcesJar = true
         ),
-        autoPublishReleases: Boolean = true,
-        tag: String = System.getenv("TAG").orEmpty(), // is set by the github action workflow
+        autoReleaseOnMavenCentral: Boolean = true,
         sign: Boolean = System.getenv("CI")?.toBoolean() == true,
     ) {
         val path = project.projectDir.relativeTo(project.rootDir).path
@@ -71,8 +87,6 @@ class BuildFilePlugin : Plugin<Project> {
             }
 
             // Configure publishing to Maven Central
-            val autoReleaseOnMavenCentral =
-                autoPublishReleases && !tag.contains("-") // debug, alpha and test builds end like "-debug", "-alpha", "-test" and should not be released automatically
             publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, autoReleaseOnMavenCentral)
 
             // Enable GPG signing for all publications

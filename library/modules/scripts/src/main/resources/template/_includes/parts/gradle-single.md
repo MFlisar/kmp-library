@@ -6,9 +6,9 @@
 
     ```kotlin title="build.gradle.kts"
 
-    val {{ project["library"]["id"] | lower }} = "<LATEST-VERSION>"
+    val {{ project["library"]["id"] }} = "<LATEST-VERSION>"
 
-    implementation("{{ project["library"]["maven"] }}:{{ project["library"]["maven-main-library"] }}:${{ project["library"]["id"] | lower }}")
+    implementation("{{ project["library"]["maven"] }}:{{ project["library"]["maven-main-library"] }}:${{ project["library"]["id"] }}")
     ```
 
 === "Version Catalog"
@@ -17,20 +17,20 @@
 
     ```toml title="libs.versions.toml"
     [versions]
-    {{ project["library"]["id"] | lower }} = "<LATEST-VERSION>"
+    {{ project["library"]["id"] }} = "<LATEST-VERSION>"
     
     [libraries]
    
     {%- set module = project["library"]["maven-main-library"] -%}
-    {%- set name = project["library"]["id"] | lower ~ " =" -%}
+    {%- set name = project["library"]["id"] ~ " =" -%}
     {% set module2 = "\"" ~ project["library"]["maven"] ~ ":" ~ module ~ "\"," %}
-    {{ name }} { module = {{ module2 }} version.ref = "{{ project["library"]["id"] | lower }}" }
+    {{ name }} { module = {{ module2 }} version.ref = "{{ project["library"]["id"] }}" }
     ```
 
     And then use the definitions in your projects like following:
 
     ```kotlin title="build.gradle.kts"
-    implementation(libs.{{ project["library"]["id"] | lower }})
+    implementation(libs.{{ project["library"]["id"] }})
     ```
 
 {% endif %}

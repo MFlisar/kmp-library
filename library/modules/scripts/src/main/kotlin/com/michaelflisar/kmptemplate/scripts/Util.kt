@@ -2,9 +2,9 @@ package com.michaelflisar.kmptemplate.scripts
 
 import java.io.File
 
-fun rootFolder() = File(System.getProperty("user.dir"))
+internal fun rootFolder() = File(System.getProperty("user.dir"))
 
-fun File.update(oldString: String, newString: String) {
+internal fun File.update(oldString: String, newString: String) {
     val content = readText()
     val updatedContent = content.replace(oldString, newString)
     if (content != updatedContent) {
@@ -13,29 +13,29 @@ fun File.update(oldString: String, newString: String) {
     }
 }
 
-fun deleteEmptyDirs(folder: File) {
+internal fun deleteEmptyDirs(folder: File) {
     folder.walkBottomUp()
         .filter { it.isDirectory && it.listFiles()?.isEmpty() == true }
         .forEach { it.delete() }
 }
 
-fun File.walkTopDownFiltered(filter: (File) -> Boolean = { true }): Sequence<File> {
+internal fun File.walkTopDownFiltered(filter: (File) -> Boolean = { true }): Sequence<File> {
     return this.walkTopDown().filter(filter)
 }
 
-fun File.saveDeleteRecursively() {
+internal fun File.saveDeleteRecursively() {
     if (exists()) {
         deleteRecursively()
     }
 }
 
-fun File.saveDelete() {
+internal fun File.saveDelete() {
     if (exists()) {
         delete()
     }
 }
 
-fun File.deleteIfEmpty() {
+internal fun File.deleteIfEmpty() {
     if (isDirectory && listFiles()?.isEmpty() == true) {
         delete()
     }

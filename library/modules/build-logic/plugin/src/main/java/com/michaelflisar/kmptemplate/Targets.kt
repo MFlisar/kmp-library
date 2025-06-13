@@ -12,7 +12,7 @@ class Targets(
     val wasm: Boolean = false,
     val js: Boolean = false,
 ) {
-    val enabledTargets = Target.values()
+    private val enabledTargets = Target.values()
         .filter {
             when (it) {
                 Target.ANDROID -> android

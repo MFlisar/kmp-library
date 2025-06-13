@@ -6,12 +6,12 @@
 
     ```kotlin title="build.gradle.kts"
 
-    val {{ project["library"]["id"] | lower }} = "<LATEST-VERSION>"
+    val {{ project["library"]["id"] }} = "<LATEST-VERSION>"
     {% for group in project["groups"] %}
     // {{ group["gradle-comment" ]}}
     {% for module in project["modules"] -%}
     {% if module["group"] == group["name"] -%}
-    implementation("{{ project["library"]["maven"] }}:{{ module["name"] }}:${{ project["library"]["id"] | lower }}")
+    implementation("{{ project["library"]["maven"] }}:{{ module["name"] }}:${{ project["library"]["id"] }}")
     {% endif -%}
     {%- endfor -%}
     {%- endfor -%}
@@ -24,7 +24,7 @@
     ```toml title="libs.versions.toml"
     [versions]
 
-    {{ project["library"]["id"] | lower }} = "<LATEST-VERSION>"
+    {{ project["library"]["id"] }} = "<LATEST-VERSION>"
     
     {%- set l1 = project["library"]["id"] | length -%}
     {%- set ns = namespace(maxLength=0) -%}
@@ -45,9 +45,9 @@
     # {{ group["gradle-comment" ]}}
     {% for module in project["modules"] -%}
     {% if module["group"] == group["name"] -%}
-      {%- set name = project["library"]["id"] | lower ~ "-" ~ module["name"] ~ " =" -%}
+      {%- set name = project["library"]["id"] ~ "-" ~ module["name"] ~ " =" -%}
       {%- set module2 = "\"" ~ project["library"]["maven"] ~ ":" ~ module["name"] ~ "\"," -%}
-    {{ name.ljust(padding) }} { module = {{ module2.ljust(padding2) }} version.ref = "{{ project["library"]["id"] | lower }}" }
+    {{ name.ljust(padding) }} { module = {{ module2.ljust(padding2) }} version.ref = "{{ project["library"]["id"] }}" }
     {% endif -%}
     {% endfor %}
     {%- endfor -%}
@@ -60,7 +60,7 @@
     # {{ group["gradle-comment" ]}}
     {% for module in project["modules"] -%}
     {% if module["group"] == group["name"] -%}
-    implementation(libs.{{ project["library"]["id"] | lower }}.{{ module["name"] | replace("-", ".") }})
+    implementation(libs.{{ project["library"]["id"] }}.{{ module["name"] | replace("-", ".") }})
     {% endif -%}
     {% endfor %}
     {%- endfor -%}
