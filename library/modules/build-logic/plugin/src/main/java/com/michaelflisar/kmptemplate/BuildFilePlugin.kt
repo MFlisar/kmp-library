@@ -99,8 +99,7 @@ class BuildFilePlugin : Plugin<Project> {
     }
 
     fun setupTargets(
-        targets: Targets,
-        javaVersion: String = this.javaVersion ?: setup.javaVersion
+        targets: Targets
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
 
@@ -109,7 +108,7 @@ class BuildFilePlugin : Plugin<Project> {
                 androidTarget {
                     publishLibraryVariants("release")
                     compilerOptions {
-                        jvmTarget.set(JvmTarget.fromTarget(javaVersion))
+                        jvmTarget.set(JvmTarget.fromTarget(javaVersion ?: setup.javaVersion))
                     }
                 }
             }
@@ -159,8 +158,7 @@ class BuildFilePlugin : Plugin<Project> {
         compileSdk: Provider<String>,
         minSdk: Provider<String>,
         compose: Boolean,
-        buildConfig: Boolean,
-        javaVersion: String = this.javaVersion ?: setup.javaVersion
+        buildConfig: Boolean
     ) {
         project.extensions.configure(LibraryExtension::class.java) {
             namespace = androidNamespace
@@ -177,8 +175,8 @@ class BuildFilePlugin : Plugin<Project> {
             }
 
             compileOptions {
-                sourceCompatibility = JavaVersion.toVersion(javaVersion)
-                targetCompatibility = JavaVersion.toVersion(javaVersion)
+                sourceCompatibility = JavaVersion.toVersion(javaVersion ?: setup.javaVersion)
+                targetCompatibility = JavaVersion.toVersion(javaVersion ?: setup.javaVersion)
             }
         }
     }
