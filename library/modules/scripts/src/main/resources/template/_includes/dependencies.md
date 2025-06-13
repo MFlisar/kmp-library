@@ -19,27 +19,27 @@ More details about the jetpack dependencies can be found in [JetBrains Release N
 {% endif %}
 
 {% macro row_dependencies(dependencies) %}
-  {% if dependencies|length > 0 %}
-    <td>
-      {% for d in dependencies %}
-      <a href={{ d["link"] }} target="_blank">{{ d["name"] }}</a><br>
-      {% endfor %}
-    </td>
-    <td>
-      {% for d in dependencies %}
-      <code>{{ d["version"] }}</code><br>
-      {% endfor %}
-    </td>
-  {% else %}
-    <td>-</td>
-    <td></td>
-  {% endif %}
+{% if dependencies|length > 0 %}
+<td>
+{% for d in dependencies %}
+<a href={{ d["link"] }} target="_blank">{{ d["name"] }}</a><br>
+{% endfor %}
+</td>
+<td>
+{% for d in dependencies %}
+<code>{{ d["version"] }}</code><br>
+{% endfor %}
+</td>
+{% else %}
+<td>-</td>
+<td></td>
+{% endif %}
 {% endmacro %}
 
 {% if project["modules"] is not defined or project["modules"] | length == 1 %}
-  {% if  project["modules"] is not defined or project["modules"][0]["dependencies"] | length == 0 %}
-  This library does not have any dependencies! 
-  {% else %}
+{% if  project["modules"] is not defined or project["modules"][0]["dependencies"] | length == 0 %}
+This library does not have any dependencies!
+{% else %}
 This library does have following dependencies.
 <table>
   <tr>
@@ -62,15 +62,15 @@ This library does have following dependencies.
     <th>Version</th>
   </tr>
 
-  {% for group in project["groups"] %}
+{% for group in project["groups"] %}
 
     <tr><td colspan="3" style="background-color:var(--md-primary-fg-color--light);">{{ group["label"] }}</td></tr>
 
     {% for module in project["modules"] %}
-      {% if module["group"] == group["name"] %}
+      {% if module["group"] == group["id"] %}
           
         <tr>
-          <td><code>{{ module["name"] }}</code></td>
+          <td><code>{{ module["id"] }}</code></td>
 
           {% if module["dependencies"]|length > 0 %}
             <td>
@@ -92,7 +92,7 @@ This library does have following dependencies.
       {% endif %}
     {% endfor %}
 
-  {% endfor %}
+{% endfor %}
 
 </table>
 

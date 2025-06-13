@@ -5,9 +5,7 @@ import com.akuleshov7.ktoml.tree.nodes.TomlFile
 import com.akuleshov7.ktoml.tree.nodes.TomlKeyValuePrimitive
 import com.michaelflisar.kmptemplate.Target
 import com.michaelflisar.kmptemplate.Setup
-import com.michaelflisar.kmptemplate.Setup.OtherProjectGroup
 import com.michaelflisar.kmptemplate.Setup.YamlValue
-import com.michaelflisar.kmptemplate.SetupOtherProjects
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.io.File
@@ -15,6 +13,8 @@ import java.util.Properties
 import java.util.jar.JarFile
 
 private val PLACEHOLDER_CUSTOM_NAV = "# <CUSTOM-NAV>"
+private val PLACEHOLDER_MORE_NAV = "# <MORE-NAV>"
+
 private val PLACEHOLDER_INDEX_INFO_FEATURES = "# <INFO_FEATURES>"
 private val PLACEHOLDER_INDEX_INFO_PLATFORMS = "# <INFO_PLATFORMS>"
 
@@ -55,6 +55,16 @@ fun buildDocs(
         setup = setup.copy(otherProjects = otherProjects.otherProjects)
     }
 
+    // 0) check integrity of the setup
+    for (module in setup.modules) {
+        val group = module.group
+        if (group != null) {
+            if (setup.groups?.find { it.id == group } == null) {
+                throw RuntimeException("Module '${module.artifactId}' has group '$group' but no group with this id is defined in the setup!")
+            }
+        }
+    }
+
     // 1) copy all doc files from the template folder including the custom files
     println("1) Copy all doc files from the template folder including the custom files...")
     copyDoc(
@@ -85,6 +95,8 @@ fun buildDocs(
         documentationFolder = documentationFolder,
         docCustom = docCustom,
         prioritizedFolders = listOf("modules", "migration"),
+        addOtherProjects = setup.otherProjects != null,
+        addAboutMe = setup.library.aboutMe
     )
 
     // 5) generate project.yaml
@@ -168,6 +180,8 @@ private fun updateCustomNav(
     documentationFolder: File,
     docCustom: File,
     prioritizedFolders: List<String>,
+    addOtherProjects: Boolean,
+    addAboutMe: Boolean
 ) {
     val file = File(documentationFolder, "mkdocs.yml")
 
@@ -214,6 +228,19 @@ private fun updateCustomNav(
 
     val replacement = customNavLines.joinToString("\n")
     file.update(PLACEHOLDER_CUSTOM_NAV, replacement)
+
+    var replacement2 =
+        listOfNotNull(
+            "    - Other Libraries: other-libraries.md".takeIf { addOtherProjects },
+            "    - About Me: me.md".takeIf { addAboutMe }
+        )
+    if (replacement2.isEmpty()) {
+        file.update(PLACEHOLDER_MORE_NAV, "")
+    } else {
+        replacement2 = listOf("  - More:") + replacement2
+        file.update(PLACEHOLDER_MORE_NAV, replacement2.joinToString("\n"))
+    }
+
 }
 
 private fun generateProjectYaml(
@@ -351,32 +378,29 @@ private fun generateProjectYaml(
         appendLine("# Modules")
         appendLine("# -------")
         appendLine("")
-        setup.modules.forEach {
-            appendLine("modules:")
-            setup.modules.forEach { module ->
-                val buildGradleFile = allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() } ?:
-                    throw RuntimeException("BuildGradleFile not found for module: ${module.relativePath} in ${allModuleBuildGradleFile.map { it.relativeModulePath }}")
-                appendLine("  - id: ${module.artifactId}")
-                appendLine("    group: ${module.group}")
-                appendLine("    description: ${module.description}")
-                appendLine("    optional: ${module.optional}")
-                appendArray("    ", "platforms", buildGradleFile.platforms.map { it.targetName })
-                appendLine("    platform-info: \"${module.platformInfo ?: ""}\"")
-                if (module.dependencies?.isNotEmpty() == true) {
-                    appendLine("    dependencies:")
-                    module.dependencies!!.forEach { dep ->
-                        val toml = loadToml(root, dep.versionsFile)
-                        val version = toml.findKey("versions", dep.versionsKey)
-                        appendLine("      - name: ${dep.name}")
-                        appendLine("        link: ${dep.link}")
-                        appendLine("        version: $version")
-                    }
-                } else {
-                    appendLine("    dependencies: []")
+        appendLine("modules:")
+        setup.modules.forEach { module ->
+            val buildGradleFile = allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() } ?:
+                throw RuntimeException("BuildGradleFile not found for module: ${module.relativePath} in ${allModuleBuildGradleFile.map { it.relativeModulePath }}")
+            appendLine("  - id: ${module.artifactId}")
+            appendLine("    group: ${module.group}")
+            appendLine("    description: ${module.description}")
+            appendLine("    optional: ${module.optional}")
+            appendArray("    ", "platforms", buildGradleFile.platforms.map { it.targetName })
+            appendLine("    platform-info: \"${module.platformInfo ?: ""}\"")
+            if (module.dependencies?.isNotEmpty() == true) {
+                appendLine("    dependencies:")
+                module.dependencies!!.forEach { dep ->
+                    val toml = loadToml(root, dep.versionsFile)
+                    val version = toml.findKey("versions", dep.versionsKey)
+                    appendLine("      - name: ${dep.name}")
+                    appendLine("        link: ${dep.link}")
+                    appendLine("        version: $version")
                 }
+            } else {
+                appendLine("    dependencies: []")
             }
         }
-
     }
 
     file.parentFile.mkdirs()

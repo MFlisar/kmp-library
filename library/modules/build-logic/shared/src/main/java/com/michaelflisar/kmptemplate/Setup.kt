@@ -111,7 +111,8 @@ data class Setup(
         @SerialName("link-repo") val linkRepo: String,
         @SerialName("repo-name") val repoName: String,
         val license: License,
-        val screenshots: List<String>
+        val screenshots: List<String>,
+        val aboutMe: Boolean
     ) {
         val id = name.lowercase().split(" ")
             .mapIndexed { index, word -> if (index == 0) word else word.replaceFirstChar { it.uppercase() } }
@@ -145,7 +146,7 @@ data class Setup(
         val description: String,
         val optional: Boolean,
         @SerialName("platforms-info") val platformInfo: String?,
-        val dependencies: List<Dependency>?,
+        val dependencies: List<Dependency>?
     ) {
         fun libraryDescription(setup: Setup): String {
             val library = setup.library.name
