@@ -7,19 +7,20 @@ import com.charleskorn.kaml.YamlNode
 import com.charleskorn.kaml.YamlNull
 import com.charleskorn.kaml.YamlScalar
 import com.charleskorn.kaml.YamlTaggedNode
+import com.michaelflisar.kmptemplate.Setup.OtherProjectGroup
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.io.File
 
 @Serializable
-class Setup(
+data class Setup(
     val developer: Developer,
     @SerialName("java-version") val javaVersion: String,
     val library: Library,
     val maven: Maven,
     val groups: List<Group>? = null,
     val modules: List<Module>,
-    @SerialName("other-projects") val otherProjects: List<OtherProjectGroup>?
+    @SerialName("other-projects") val otherProjects: List<OtherProjectGroup>? = null
 ) {
     companion object {
 
@@ -33,6 +34,16 @@ class Setup(
             } catch (e: Exception) {
                 e.printStackTrace()
                 throw RuntimeException("Failed to read setup from path '${file.path}'", e)
+            }
+        }
+
+        fun readOtherProjects(load: () -> String, customOtherProjectsYamlUrl: String): SetupOtherProjects{
+            return try {
+                val content = load()
+                Yaml.default.decodeFromString(SetupOtherProjects.serializer(), content)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                throw RuntimeException("Failed to read setup for other projects from path '$customOtherProjectsYamlUrl'", e)
             }
         }
 
@@ -78,6 +89,7 @@ class Setup(
         }
 
     }
+
     fun getModuleByPath(path: String): Module {
         return modules.find { it.relativePath.replace("\\", "/") == path.replace("\\", "/") }
             ?: throw RuntimeException("module setup definition not found for path: $path")
@@ -169,3 +181,8 @@ class Setup(
         val path: String
     )
 }
+
+@Serializable
+class SetupOtherProjects(
+    @SerialName("other-projects") val otherProjects: List<OtherProjectGroup>
+)

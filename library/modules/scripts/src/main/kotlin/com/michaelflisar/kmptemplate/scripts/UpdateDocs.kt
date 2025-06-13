@@ -5,7 +5,9 @@ import com.akuleshov7.ktoml.tree.nodes.TomlFile
 import com.akuleshov7.ktoml.tree.nodes.TomlKeyValuePrimitive
 import com.michaelflisar.kmptemplate.Target
 import com.michaelflisar.kmptemplate.Setup
+import com.michaelflisar.kmptemplate.Setup.OtherProjectGroup
 import com.michaelflisar.kmptemplate.Setup.YamlValue
+import com.michaelflisar.kmptemplate.SetupOtherProjects
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.io.File
@@ -30,7 +32,8 @@ fun buildDocs(
     relativePathDocsCustom: String = "documentation/custom",
     relativePathGeneratedDocsOutput: String = "gen/docs",
     relativeModulesPath: String = "library",
-    relativeDemosPath: String = "demo"
+    relativeDemosPath: String = "demo",
+    customOtherProjectsYamlUrl: String? = null
 ) {
 
     val ci = System.getenv("CI")?.toBoolean() == true
@@ -42,8 +45,15 @@ fun buildDocs(
     val docCustom = File(root, relativePathDocsCustom)
 
     println("Creating setup data...")
-    val setup = Setup.read(root)
+    var setup = Setup.read(root)
     val yamlValues = Setup.readYaml(root)
+
+    if (customOtherProjectsYamlUrl != null) {
+        val otherProjects = Setup.readOtherProjects({
+            Jsoup.connect(customOtherProjectsYamlUrl).execute().body()
+        }, customOtherProjectsYamlUrl)
+        setup = setup.copy(otherProjects = otherProjects.otherProjects)
+    }
 
     // 1) copy all doc files from the template folder including the custom files
     println("1) Copy all doc files from the template folder including the custom files...")
