@@ -19,10 +19,12 @@ class BuildFilePlugin : Plugin<Project> {
 
     private lateinit var project: Project
     private lateinit var setup: Setup
+    private var javaVersion: String? = null
 
     override fun apply(project: Project) {
         this.project = project
         setup = Setup.read(project.rootDir)
+        javaVersion = project.findProperty("KMP-TEMPLATE-JAVA-VERSION") as String?
     }
 
     /*
@@ -98,7 +100,7 @@ class BuildFilePlugin : Plugin<Project> {
 
     fun setupTargets(
         targets: Targets,
-        javaVersion: String = setup.javaVersion
+        javaVersion: String = this.javaVersion ?: setup.javaVersion
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
 
@@ -158,7 +160,7 @@ class BuildFilePlugin : Plugin<Project> {
         minSdk: Provider<String>,
         compose: Boolean,
         buildConfig: Boolean,
-        javaVersion: String = setup.javaVersion
+        javaVersion: String = this.javaVersion ?: setup.javaVersion
     ) {
         project.extensions.configure(LibraryExtension::class.java) {
             namespace = androidNamespace
