@@ -18,13 +18,19 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 class BuildFilePlugin : Plugin<Project> {
 
     private lateinit var project: Project
-    private lateinit var setup: Setup
+    private var setup: Setup? = null
     private var javaVersion: String? = null
 
     override fun apply(project: Project) {
         this.project = project
-        setup = Setup.read(project.rootDir)
+        val skipSetup = project.findProperty("KMP-TEMPLATE-SKIP-SETUP")?.toString()?.toBoolean() ?: false
+        if (!skipSetup)
+            setup = Setup.read(project.rootDir)
         javaVersion = project.findProperty("KMP-TEMPLATE-JAVA-VERSION") as String?
+    }
+
+    private fun javaVersion(): String {
+        return javaVersion ?: setup?.javaVersion ?: throw IllegalStateException("Setup is not initialized nor is a java version provided in the project!")
     }
 
     /*
@@ -52,6 +58,8 @@ class BuildFilePlugin : Plugin<Project> {
         autoReleaseOnMavenCentral: Boolean = true,
         sign: Boolean = System.getenv("CI")?.toBoolean() == true,
     ) {
+        val setup = setup ?: throw IllegalStateException("Setup is not initialized. Please ensure the plugin is applied after the Setup is created.")
+
         val path = project.projectDir.relativeTo(project.rootDir).path
         val module = setup.getModuleByPath(path)
         project.extensions.configure(MavenPublishBaseExtension::class.java) {
@@ -108,7 +116,7 @@ class BuildFilePlugin : Plugin<Project> {
                 androidTarget {
                     publishLibraryVariants("release")
                     compilerOptions {
-                        jvmTarget.set(JvmTarget.fromTarget(javaVersion ?: setup.javaVersion))
+                        jvmTarget.set(JvmTarget.fromTarget(javaVersion()))
                     }
                 }
             }
@@ -175,8 +183,8 @@ class BuildFilePlugin : Plugin<Project> {
             }
 
             compileOptions {
-                sourceCompatibility = JavaVersion.toVersion(javaVersion ?: setup.javaVersion)
-                targetCompatibility = JavaVersion.toVersion(javaVersion ?: setup.javaVersion)
+                sourceCompatibility = JavaVersion.toVersion(javaVersion())
+                targetCompatibility = JavaVersion.toVersion(javaVersion())
             }
         }
     }
