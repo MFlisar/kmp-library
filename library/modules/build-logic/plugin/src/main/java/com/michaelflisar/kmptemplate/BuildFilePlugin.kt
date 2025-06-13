@@ -155,11 +155,18 @@ class BuildFilePlugin : Plugin<Project> {
         androidNamespace: String,
         compileSdk: Provider<String>,
         minSdk: Provider<String>,
+        compose: Boolean,
+        buildConfig: Boolean
     ) {
         project.extensions.configure(LibraryExtension::class.java) {
             namespace = androidNamespace
 
             this.compileSdk = compileSdk.get().toInt()
+
+            buildFeatures {
+                this.compose = compose
+                this.buildConfig = buildConfig
+            }
 
             defaultConfig {
                 this.minSdk = minSdk.get().toInt()
