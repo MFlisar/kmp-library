@@ -538,8 +538,11 @@ private fun findKotlinFunctionNamedParameters(
     content: String,
     functionName: String,
 ): Map<String, String> {
-    val parameters =
-        content.findBetween("$functionName(", ")")?.removeComments()?.split(",")?.map { it.trim() }
+    val parameters = content.findBetween("$functionName(", ")")
+        ?.removeComments()
+        ?.split(",")
+        ?.map { it.trim() }
+        ?.filter { !it.startsWith("//") }
     return parameters?.mapNotNull {
         val parts = it.split("=").map { it.trim() }
         if (parts.size != 2) {
