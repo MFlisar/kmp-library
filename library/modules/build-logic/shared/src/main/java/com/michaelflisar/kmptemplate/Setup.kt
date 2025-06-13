@@ -112,7 +112,7 @@ data class Setup(
         @SerialName("repo-name") val repoName: String,
         val license: License,
         val screenshots: List<String>,
-        val aboutMe: Boolean
+        @SerialName("about-me")val aboutMe: Boolean
     ) {
         val id = name.lowercase().split(" ")
             .mapIndexed { index, word -> if (index == 0) word else word.replaceFirstChar { it.uppercase() } }
