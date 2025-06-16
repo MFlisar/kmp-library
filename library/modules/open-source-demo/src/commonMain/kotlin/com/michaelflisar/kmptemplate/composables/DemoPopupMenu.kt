@@ -19,6 +19,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.michaelflisar.kmptemplate.removeFirstSave
 
 // TODO: Marker nutzen, aktuelle Lösung ging mit compiler 1.5.3 / Kotlin 1.9.10 nicht mehr...
 
@@ -430,7 +431,5 @@ data class MenuState(
         return currentItems
     }
 
-    private fun <T> MutableList<T>.removeFirstSave() : T {
-        return removeAt(0)
-    }
+
 }
