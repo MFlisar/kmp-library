@@ -1,7 +1,6 @@
 package com.michaelflisar.kmptemplate
 
 import com.android.build.gradle.LibraryExtension
-import com.michaelflisar.kmptemplate.Setup
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -29,7 +28,7 @@ class BuildFilePlugin : Plugin<Project> {
         javaVersion = project.findProperty("KMP-TEMPLATE-JAVA-VERSION") as String?
     }
 
-    private fun javaVersion(): String {
+    fun javaVersion(): String {
         return javaVersion ?: setup?.javaVersion ?: throw IllegalStateException("Setup is not initialized nor is a java version provided in the project!")
     }
 
