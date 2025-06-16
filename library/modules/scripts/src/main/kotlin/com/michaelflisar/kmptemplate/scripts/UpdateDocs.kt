@@ -604,7 +604,7 @@ class NavItem(
     val folderPathElements = relativeFolderPath.split(File.separatorChar).filter { it.isNotEmpty() }
 
     val name = file.nameWithoutExtension
-    val navPath = relativeFilePath.replace(File.separatorChar, '/')
+    val navPath = relativeFilePath.replace(File.separatorChar, '/').replace(" ", "-").lowercase()
 
     fun allFolderPathsTopDown(): List<Path> {
         if (relativeFolderPath.isEmpty())
