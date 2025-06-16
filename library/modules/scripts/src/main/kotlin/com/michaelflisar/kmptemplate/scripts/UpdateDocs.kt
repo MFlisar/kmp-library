@@ -524,7 +524,9 @@ private fun loadToml(root: File, fileName: String): TomlFile {
 }
 
 private fun TomlFile.findKey(table: String, key: String): String {
-    return (findTableInAstByName(table)!!.children.find { it.name == key } as TomlKeyValuePrimitive).value.content.toString()
+    val table = findTableInAstByName(table) ?: throw RuntimeException("Table '$table' not found in TOML file")
+    val key = table.children.find { it.name == key } ?: throw RuntimeException("Key '$key' not found in TOML table '$table'")
+    return (key as TomlKeyValuePrimitive).value.content.toString()
 }
 
 private fun String.findBetween(from: String, to: String): String? {
