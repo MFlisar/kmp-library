@@ -38,5 +38,8 @@ project(":build-logic:shared").projectDir = file("library/modules/build-logic/sh
 include(":build-logic:plugin")
 project(":build-logic:plugin").projectDir = file("library/modules/build-logic/plugin")
 
-include(":scrips")
-project(":scrips").projectDir = file("library/modules/scripts")
+include(":docs")
+project(":docs").projectDir = file("library/modules/docs")
+
+include(":open-source-demo")
+project(":open-source-demo").projectDir = file("library/modules/open-source-demo")

@@ -1,11 +1,13 @@
-import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    application
-    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.dokka)
     alias(libs.plugins.gradle.maven.publish.plugin)
 }
@@ -14,10 +16,10 @@ plugins {
 // Informations
 // -------------------
 
-val description = "a collection of scripts to generate mkdocs based documentation for the kmp library"
+val description = "a collection of UI elements for my open source demo projects"
 
 // Module
-val artifactId = "scripts"
+val artifactId = "open-source-demo"
 
 // Library
 val libraryName = "kmp-template"
@@ -32,21 +34,65 @@ val licenseUrl = "$github/blob/main/LICENSE"
 // Setup
 // -------------------
 
-dependencies {
-    implementation(deps.ktoml.core)
-    implementation(deps.ktoml.file)
-    implementation(deps.jsoup)
-    implementation(deps.yaml)
+val androidNamespace = "com.michaelflisar.kmp-template.open-source-demo"
 
-    implementation(project(":build-logic:shared"))
-}
+kotlin {
 
-// allows to run the application with `./gradlew run -PmainClass=com.michaelflisar.scripts.UpdateDocsKt`
-if (System.getenv("CI")?.toBoolean() == true) {
-    application {
-        val mc = project.findProperty("mainClass") as? String
-        if (mc != null) {
-            mainClass.set(mc)
+    //-------------
+    // Targets
+    //-------------
+
+    // Android
+    androidTarget {
+        publishLibraryVariants("release")
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget("17"))
+        }
+    }
+
+    // iOS
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    // Windows
+    jvm()
+
+    // macOS
+    macosX64()
+    macosArm64()
+
+    // Linux
+    //linuxX64()
+    //linuxArm64()
+
+    // WASM
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        nodejs()
+    }
+
+    // JavaScript
+    js()
+    js(IR)
+
+    // -------
+    // Sources
+    // -------
+
+    sourceSets {
+
+        commonMain.dependencies {
+
+            // Kotlin
+            implementation(kotlinx.coroutines.core)
+
+            // AndroidX / Google
+            implementation(libs.compose.runtime)
+            api(libs.compose.material3)
+            api(libs.compose.material.icons.core)
+            api(libs.compose.material.icons.extended)
+
         }
     }
 }
@@ -58,7 +104,7 @@ if (System.getenv("CI")?.toBoolean() == true) {
 mavenPublishing {
 
     configure(
-        JavaLibrary(
+        KotlinMultiplatform(
             javadocJar = JavadocJar.Dokka("dokkaHtml"),
             sourcesJar = true
         )
