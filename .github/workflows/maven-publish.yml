@@ -10,7 +10,7 @@ jobs:
 
   build-on-ubuntu:
     name: Publish to Maven Central
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
 
