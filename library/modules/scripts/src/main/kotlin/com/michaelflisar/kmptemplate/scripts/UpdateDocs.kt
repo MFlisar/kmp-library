@@ -136,16 +136,23 @@ private fun copyDoc(
     //docTemplateFolder.copyRecursively(documentationFolder, overwrite = true)
 
     // 3) copy the custom folder
-    docCustom.copyRecursively(documentationFolder, overwrite = false)
-    documentationFolder
-        .walkTopDownFiltered { it.isFile }
-        .forEach {
-            val renamed = it.name.cleanFileName()
-            if (renamed != it.name) {
-                val newFile = File(it.parentFile, renamed)
-                it.renameTo(newFile)
-            }
-        }
+    val files = docCustom.walkTopDownFiltered { it.isFile }
+    for (f in files) {
+        val relativePath = f.relativeTo(docCustom).path.cleanFileName()
+        val targetFile = File(documentationFolder, relativePath)
+        targetFile.parentFile.mkdirs()
+        f.copyTo(targetFile, overwrite = true)
+    }
+   //docCustom.copyRecursively(documentationFolder, overwrite = false)
+   //documentationFolder
+   //    .walkTopDownFiltered { it.isFile }
+   //    .forEach {
+   //        val renamed = it.name.cleanFileName()
+   //        if (renamed != it.name) {
+   //            val newFile = File(it.parentFile, renamed)
+   //            it.renameTo(newFile)
+   //        }
+   //    }
 
     // 4) delete parts folders
     val partFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_FEATURES)
