@@ -28,6 +28,9 @@ dependencyResolutionManagement {
         create("deps") {
             from(files("gradle/deps.versions.toml"))
         }
+        create("app") {
+            from(files("gradle/app.versions.toml"))
+        }
     }
 
 }

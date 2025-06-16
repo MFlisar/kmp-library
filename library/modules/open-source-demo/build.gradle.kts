@@ -97,6 +97,22 @@ kotlin {
     }
 }
 
+android {
+
+    namespace = androidNamespace
+
+    compileSdk = app.versions.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = app.versions.minSdk.get().toInt()
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
 // -------------------
 // Configurations
 // -------------------
