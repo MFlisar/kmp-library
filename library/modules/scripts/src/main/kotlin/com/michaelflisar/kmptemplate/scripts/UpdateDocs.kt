@@ -17,11 +17,13 @@ private val PLACEHOLDER_MORE_NAV = "# <MORE-NAV>"
 
 private val PLACEHOLDER_INDEX_INFO_FEATURES = "# <INFO_FEATURES>"
 private val PLACEHOLDER_INDEX_INFO_PLATFORMS = "# <INFO_PLATFORMS>"
+private val PLACEHOLDER_INDEX_INFO_BOTTOM = "# <INFO_BOTTOM>"
 
 private val NAV_TO_IGNORE = "usage.md"
 
-private val REL_PATH_DOCS_CUSTOM_PARTS_FEATURES = "parts/features.md"
-private val REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS = "parts/platform_comments.md"
+private val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_FEATURES = "parts/index_features.md"
+private val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_PLATFORM_COMMENTS = "parts/index_platform_comments.md"
+private val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_BOTTOM = "parts/index_bottom.md"
 
 /*
  * generates the documentation files in the "documentation" folder
@@ -137,11 +139,12 @@ private fun copyDoc(
     docCustom.copyRecursively(documentationFolder, overwrite = false)
 
     // 4) delete parts folders
-    val partFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_FEATURES)
-    val partPlatformFeatures =
-        File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS)
+    val partFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_FEATURES)
+    val partPlatformFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_PLATFORM_COMMENTS)
+    val partBottom = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_BOTTOM)
     partFeatures.saveDelete()
     partPlatformFeatures.saveDelete()
+    partBottom.saveDelete()
     partPlatformFeatures.parentFile.deleteIfEmpty()
 }
 
@@ -170,10 +173,18 @@ private fun updatePlaceholdersInIndexMd(
     docCustom: File,
 ) {
     val file = File(documentationFolder, "docs/index.md")
-    val partFeatures = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_FEATURES)
-    val partPlatformComments = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_PLATFORM_COMMENTS)
-    file.update(PLACEHOLDER_INDEX_INFO_FEATURES, partFeatures.readText(Charsets.UTF_8))
-    file.update(PLACEHOLDER_INDEX_INFO_PLATFORMS, partPlatformComments.readText(Charsets.UTF_8))
+
+    val partFeatures = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_FEATURES)
+    val partPlatformComments = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_PLATFORM_COMMENTS)
+    val partBottom = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_BOTTOM)
+
+    val features = partFeatures.takeIf { it.exists() }?.readText(Charsets.UTF_8) ?: ""
+    val platformComments = partPlatformComments.takeIf { it.exists() }?.readText(Charsets.UTF_8) ?: ""
+    val bottom = partBottom.takeIf { it.exists() }?.readText(Charsets.UTF_8) ?: ""
+
+    file.update(PLACEHOLDER_INDEX_INFO_FEATURES, features)
+    file.update(PLACEHOLDER_INDEX_INFO_PLATFORMS, platformComments)
+    file.update(PLACEHOLDER_INDEX_INFO_BOTTOM, bottom)
 }
 
 private fun updateCustomNav(

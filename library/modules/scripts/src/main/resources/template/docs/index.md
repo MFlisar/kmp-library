@@ -19,3 +19,5 @@ icon: material/information-variant
 # <INFO_PLATFORMS>
 
 {% include 'demo.md' %}
+
+# <INFO_BOTTOM>
