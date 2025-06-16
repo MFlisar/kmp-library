@@ -137,6 +137,15 @@ private fun copyDoc(
 
     // 3) copy the custom folder
     docCustom.copyRecursively(documentationFolder, overwrite = false)
+    documentationFolder
+        .walkTopDownFiltered { it.isFile }
+        .forEach {
+            val renamed = it.name.cleanFileName()
+            if (renamed != it.name) {
+                val newFile = File(it.parentFile, renamed)
+                it.renameTo(newFile)
+            }
+        }
 
     // 4) delete parts folders
     val partFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_FEATURES)
@@ -591,6 +600,10 @@ private fun String.normalizePath(): String {
     return replace("\\", "/")
 }
 
+private fun String.cleanFileName(): String {
+    return replace(" ", "-").lowercase()
+}
+
 // ----------------------------
 // Classes
 // ----------------------------
@@ -604,7 +617,7 @@ class NavItem(
     val folderPathElements = relativeFolderPath.split(File.separatorChar).filter { it.isNotEmpty() }
 
     val name = file.nameWithoutExtension
-    val navPath = relativeFilePath.replace(File.separatorChar, '/').replace(" ", "-").lowercase()
+    val navPath = relativeFilePath.replace(File.separatorChar, '/').cleanFileName()
 
     fun allFolderPathsTopDown(): List<Path> {
         if (relativeFolderPath.isEmpty())
