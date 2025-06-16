@@ -34,7 +34,7 @@ val licenseUrl = "$github/blob/main/LICENSE"
 // Setup
 // -------------------
 
-val androidNamespace = "com.michaelflisar.kmp-template.open-source-demo"
+val androidNamespace = "com.michaelflisar.kmptemplate.opensourcedemo"
 
 kotlin {
 
