@@ -73,8 +73,10 @@ kotlin {
     }
 
     // JavaScript
-    js()
-    js(IR)
+    //js {
+    //    browser()
+    //}
+    //js(IR)
 
     // -------
     // Sources
