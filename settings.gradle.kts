@@ -44,5 +44,8 @@ project(":build-logic:plugin").projectDir = file("library/modules/build-logic/pl
 include(":docs")
 project(":docs").projectDir = file("library/modules/docs")
 
+include(":scripts")
+project(":scripts").projectDir = file("library/modules/scripts")
+
 include(":open-source-demo")
 project(":open-source-demo").projectDir = file("library/modules/open-source-demo")

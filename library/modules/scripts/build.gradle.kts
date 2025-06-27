@@ -1,10 +1,10 @@
-import com.vanniktech.maven.publish.GradlePlugin
+import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-    `kotlin-dsl`
-    `java-gradle-plugin`
+    alias(libs.plugins.kotlin.jvm)
+    application
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dokka)
     alias(libs.plugins.gradle.maven.publish.plugin)
@@ -14,10 +14,10 @@ plugins {
 // Informations
 // -------------------
 
-val description = "a gradle plugin that provides common functions for kmp libraries"
+val description = "scripts for kmp projects"
 
 // Module
-val artifactId = "gradle-plugin"
+val artifactId = "scripts"
 
 // Library
 val libraryName = "kmp-template"
@@ -29,37 +29,21 @@ val license = "Apache License 2.0"
 val licenseUrl = "$github/blob/main/LICENSE"
 
 // -------------------
-// Plugins
+// Setup
 // -------------------
 
-gradlePlugin {
-    plugins {
-        create("$groupID.build-plugin") {
-            id = "$groupID.build-plugin"
-            implementationClass = "com.michaelflisar.kmptemplate.BuildFilePlugin"
-        }
-        //create("$groupID.settings-plugin") {
-        //    id = "$groupID.settings-plugin"
-        //    implementationClass = "com.michaelflisar.kmptemplate.SettingFilePlugin"
-        //}
-        isAutomatedPublishing = true
-    }
-}
-
 dependencies {
-
-    implementation(libs.gradle.maven.publish.plugin)
-    implementation(libs.kotlin.multiplatform)
-    implementation(libs.android.build.tools)
-    implementation(deps.yaml)
-
-    api(project(":build-logic:shared"))
+    implementation(project(":build-logic:shared"))
 }
+
+// -------------------
+// Configurations
+// -------------------
 
 mavenPublishing {
 
     configure(
-        GradlePlugin(
+        JavaLibrary(
             javadocJar = JavadocJar.Dokka("dokkaHtml"),
             sourcesJar = true
         )

@@ -1,0 +1,53 @@
+package com.michaelflisar.kmptemplate.scripts
+
+import java.io.File
+
+/*
+ * example:
+ * folder: File(rootDir, "app/feature")
+ * base: page1
+ * new: page1
+ */
+fun createNewModule(
+    rootDir: File,
+    folder: String,
+    baseFeatureName: String,
+    newFeatureName: String,
+    exclude: (file: File, relativePath: String) -> Boolean = { file, relativePath ->
+        relativePath.startsWith("build\\") ||
+                relativePath == "build"
+    }
+) {
+
+    // Input
+    val baseFeature = "$folder/$baseFeatureName"
+    val newFeature = "$folder/$newFeatureName"
+
+    // create copy + replace
+    val sourceDir = File(rootDir, baseFeature)
+    val targetDir = File(rootDir, newFeature)
+
+
+    if (!sourceDir.exists()) throw Exception("Quellverzeichnis existiert nicht: ${sourceDir.path}")
+    if (targetDir.exists()) throw Exception("Zielverzeichnis existiert bereits: ${targetDir.path}")
+    sourceDir
+        .walkTopDown()
+        .filter {
+            val relativePath = it.relativeTo(sourceDir).path
+            !exclude(it, relativePath)
+        }
+        .forEach { file ->
+            val relPath =
+                file.relativeTo(sourceDir).path.replace(baseFeatureName, newFeatureName)
+            val targetFile = File(targetDir, relPath)
+            if (file.isDirectory) {
+                targetFile.mkdirs()
+            } else {
+                var content = file.readText()
+                content = content.replace(baseFeatureName, newFeatureName)
+                targetFile.writeText(content)
+            }
+        }
+    println("module cop created: $baseFeatureName => $newFeatureName")
+
+}

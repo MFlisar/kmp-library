@@ -6,6 +6,12 @@ import com.akuleshov7.ktoml.tree.nodes.TomlKeyValuePrimitive
 import com.michaelflisar.kmptemplate.Target
 import com.michaelflisar.kmptemplate.Setup
 import com.michaelflisar.kmptemplate.Setup.YamlValue
+import com.michaelflisar.kmptemplate.deleteIfEmpty
+import com.michaelflisar.kmptemplate.rootFolder
+import com.michaelflisar.kmptemplate.saveDelete
+import com.michaelflisar.kmptemplate.saveDeleteRecursively
+import com.michaelflisar.kmptemplate.update
+import com.michaelflisar.kmptemplate.walkTopDownFiltered
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.io.File
