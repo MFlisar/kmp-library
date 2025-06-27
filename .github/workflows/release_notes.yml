@@ -1,21 +1,29 @@
-name: 'CI'
+name: Update Release Notes
+
 on:
-  push:
-    tags:
-      - '*'
+  release:
+    types: [published]
 
 jobs:
-  release:
-    if: startsWith(github.ref, 'refs/tags/')
+  update-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Build Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout Repo
+        uses: actions/checkout@v3
 
-      - name: Create Release
-        uses: mikepenz/action-gh-release@v0.2.0-a03 #softprops/action-gh-release
-        with:
-          body: ${{steps.github_release.outputs.changelog}}
+      - name: Get Commits since previous tag
+        id: get_commits
+        run: |
+          TAG_NAME=${{ github.event.release.tag_name }}
+          COMMITS=$(git log $(git describe --abbrev=0 --tags ${TAG_NAME}^)..${TAG_NAME} --pretty=format:"- %s")
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Update Release Notes via gh CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release edit ${{ github.event.release.tag_name }} \
+            --repo ${{ github.repository }} \
+            --notes "${{ steps.get_commits.outputs.commits }}"
