@@ -18,6 +18,53 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@v5
         with:
           mode: "COMMIT"
+          ignorePreReleases: true
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "categories": [
+                {
+                    "title": "## ➕ New",
+                    "labels": ["new"]
+                },
+                {
+                    "title": "## ❌ Removed",
+                    "labels": ["removed", "deleted", "rem", "del"]
+                },
+                {
+                    "title": "## ✅ Bugfixes",
+                    "labels": ["fix", "bug", "bugfix",]
+                },
+                {
+                    "title": "## 💀 Deprecated",
+                    "labels": ["deprecated", "depr"]
+                },
+                {
+                    "title": "## 📦 Dependencies",
+                    "labels": ["dependencies", "dep"]
+                },
+                {
+                    "title": "## ✏️ Changes",
+                    "labels": ["change"]
+                },
+                {
+                    "title": "## 📝 Documentation",
+                    "labels": ["docs", "documentation"]
+                },
+                {
+                    "title": "## 🧪 Tests",
+                    "labels": ["test"]
+                },
+                {
+                    "title": "## 🎨 UI",
+                    "labels": ["ui", "design"]
+                },
+                {
+                    "title": "## ⚙️ Build",
+                    "labels": ["build", "ci", "cd"]
+                }
+              ]
+            }
 
       - name: Create Release
         uses: mikepenz/action-gh-release@v0.2.0-a03
