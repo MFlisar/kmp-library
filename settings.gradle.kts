@@ -35,17 +35,17 @@ dependencyResolutionManagement {
 
 }
 
-include(":build-logic:shared")
-project(":build-logic:shared").projectDir = file("library/modules/build-logic/shared")
+fun includeModule(
+    moduleName: String,
+    path: String)
+{
+    include(moduleName)
+    project(moduleName).projectDir = file(path)
+}
 
-include(":build-logic:plugin")
-project(":build-logic:plugin").projectDir = file("library/modules/build-logic/plugin")
+includeModule(":build-logic:shared","library/modules/build-logic/shared")
+includeModule(":build-logic:plugin", "library/modules/build-logic/plugin")
 
-include(":docs")
-project(":docs").projectDir = file("library/modules/docs")
-
-include(":scripts")
-project(":scripts").projectDir = file("library/modules/scripts")
-
-include(":open-source-demo")
-project(":open-source-demo").projectDir = file("library/modules/open-source-demo")
+includeModule(":docs", "library/modules/docs")
+includeModule(":scripts", "library/modules/scripts")
+includeModule(":open-source-demo", "library/modules/open-source-demo")
