@@ -1,4 +1,4 @@
-package com.michaelflisar.kmptemplate.scripts
+package com.michaelflisar.kmptemplate.docs
 
 import com.akuleshov7.ktoml.Toml
 import com.akuleshov7.ktoml.tree.nodes.TomlFile

@@ -4,10 +4,13 @@ import java.io.File
 
 /*
  * example:
- * folder: File(rootDir, "app/feature")
- * base: page1
- * new: page1
- */
+ * createNewModule(
+        rootDir = rootDir,
+        folder = "app/feature",
+        baseFeatureName = "feature1",
+        newFeatureName = "feature2"
+    )
+*/
 fun createNewModule(
     rootDir: File,
     folder: String,
@@ -27,9 +30,8 @@ fun createNewModule(
     val sourceDir = File(rootDir, baseFeature)
     val targetDir = File(rootDir, newFeature)
 
-
-    if (!sourceDir.exists()) throw Exception("Quellverzeichnis existiert nicht: ${sourceDir.path}")
-    if (targetDir.exists()) throw Exception("Zielverzeichnis existiert bereits: ${targetDir.path}")
+    if (!sourceDir.exists()) throw Exception("Source folder not found: ${sourceDir.path}")
+    if (targetDir.exists()) throw Exception("Target folder exists already: ${targetDir.path}")
     sourceDir
         .walkTopDown()
         .filter {
@@ -48,6 +50,5 @@ fun createNewModule(
                 targetFile.writeText(content)
             }
         }
-    println("module cop created: $baseFeatureName => $newFeatureName")
-
+    println("module copy created: $baseFeatureName => $newFeatureName")
 }

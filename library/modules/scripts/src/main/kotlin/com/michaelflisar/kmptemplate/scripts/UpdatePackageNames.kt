@@ -1,5 +1,9 @@
 package com.michaelflisar.kmptemplate.scripts
 
+import com.michaelflisar.kmptemplate.deleteEmptyDirs
+import com.michaelflisar.kmptemplate.rootFolder
+import com.michaelflisar.kmptemplate.update
+import com.michaelflisar.kmptemplate.walkTopDownFiltered
 import java.io.File
 
 fun updatePackageNames(
