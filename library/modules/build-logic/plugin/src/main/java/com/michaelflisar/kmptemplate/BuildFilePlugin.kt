@@ -164,7 +164,7 @@ class BuildFilePlugin : Plugin<Project> {
         androidNamespace: String,
         compileSdk: Provider<String>,
         minSdk: Provider<String>,
-        compose: Boolean,
+        //compose: Boolean,
         buildConfig: Boolean
     ) {
         project.extensions.configure(LibraryExtension::class.java) {
@@ -173,7 +173,7 @@ class BuildFilePlugin : Plugin<Project> {
             this.compileSdk = compileSdk.get().toInt()
 
             buildFeatures {
-                this.compose = compose
+                //this.compose = compose
                 this.buildConfig = buildConfig
             }
 
