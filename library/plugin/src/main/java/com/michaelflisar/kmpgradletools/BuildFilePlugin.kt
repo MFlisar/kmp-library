@@ -55,6 +55,7 @@ class BuildFilePlugin : Plugin<Project> {
         ),
         autoReleaseOnMavenCentral: Boolean = true,
         sign: Boolean = System.getenv("CI")?.toBoolean() == true,
+        version: String = System.getenv("TAG") ?: "UNSPECIFIED"
     ) {
        if (setupModules == null) {
             setupModules = SetupModules.read(project.rootDir)
@@ -68,7 +69,7 @@ class BuildFilePlugin : Plugin<Project> {
             coordinates(
                 groupId = setupLibrary.maven.groupId,
                 artifactId = module.artifactId,
-                version = System.getenv("TAG")
+                version = version
             )
 
             pom {
