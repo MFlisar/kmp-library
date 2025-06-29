@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.dokka) apply false
     alias(libs.plugins.gradle.maven.publish.plugin) apply false
     alias(libs.plugins.kotlin.jvm) apply false
+    `kotlin-dsl` apply false
 }

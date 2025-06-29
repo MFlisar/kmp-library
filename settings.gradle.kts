@@ -43,9 +43,8 @@ fun includeModule(
     project(moduleName).projectDir = file(path)
 }
 
-includeModule(":build-logic:shared","library/modules/build-logic/shared")
-includeModule(":build-logic:plugin", "library/modules/build-logic/plugin")
+includeModule(":shared","library/shared")
 
-includeModule(":docs", "library/modules/docs")
-includeModule(":scripts", "library/modules/scripts")
-includeModule(":open-source-demo", "library/modules/open-source-demo")
+includeModule(":plugin", "library/plugin")
+includeModule(":docs", "library/docs")
+includeModule(":scripts", "library/scripts")

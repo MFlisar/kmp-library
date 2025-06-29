@@ -21,7 +21,7 @@ jobs:
           ignorePreReleases: true
           configurationJson: |
             {
-              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "template": "#{{CHANGELOG}}",
               "categories": [
                 {
                     "title": "## ➕ New",
@@ -62,6 +62,10 @@ jobs:
                 {
                     "title": "## ⚙️ Build",
                     "labels": ["build", "ci", "cd"]
+                },
+                {
+                    "title": "## Others",
+                    "labels": [""]
                 }
               ]
             }

@@ -1,10 +1,10 @@
 [versions]
 
 # scripts
-yaml =                          "0.80.1"
+yaml =                          "0.83.0"
 ktoml-core =                    "0.7.0"
 ktoml-file =                    "0.7.0"
-jsoup =                         "1.16.1"
+jsoup =                         "1.21.1"
 
 [libraries]
 
