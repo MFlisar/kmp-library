@@ -1,5 +1,6 @@
 package com.michaelflisar.kmpgradletools
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.LibraryExtension
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
@@ -107,13 +108,13 @@ class BuildFilePlugin : Plugin<Project> {
         }
     }
 
-    fun setupTargets(
+    fun setupTargetsLibrary(
         targets: Targets
     ) {
         setupTargets(targets, listOf("release"))
     }
 
-    fun setupTargetsForApp(
+    fun setupTargetsApp(
         targets: Targets
     ) {
         setupTargets(targets, emptyList())
@@ -176,7 +177,7 @@ class BuildFilePlugin : Plugin<Project> {
         }
     }
 
-    fun setupAndroid(
+    fun setupAndroidLibrary(
         androidNamespace: String,
         compileSdk: Provider<String>,
         minSdk: Provider<String>,
@@ -201,4 +202,38 @@ class BuildFilePlugin : Plugin<Project> {
             }
         }
     }
+
+    fun setupAndroidApp(
+        androidNamespace: String,
+        compileSdk: Provider<String>,
+        minSdk: Provider<String>,
+        targetSdk: Provider<String>,
+        versionCode: Int,
+        versionName: String,
+        buildConfig: Boolean
+    ) {
+        project.extensions.configure(ApplicationExtension::class.java) {
+            namespace = androidNamespace
+
+            this.compileSdk = compileSdk.get().toInt()
+
+            buildFeatures {
+                this.buildConfig = buildConfig
+            }
+
+            defaultConfig {
+                this.minSdk = minSdk.get().toInt()
+                this.targetSdk = targetSdk.get().toInt()
+                this.versionCode = versionCode
+                this.versionName = versionName
+            }
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.toVersion(javaVersion())
+                targetCompatibility = JavaVersion.toVersion(javaVersion())
+            }
+        }
+    }
+
+
 }
