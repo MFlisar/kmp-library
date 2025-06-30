@@ -67,7 +67,7 @@ mavenPublishing {
     coordinates(
         groupId = groupID,
         artifactId = artifactId,
-        version = System.getenv("TAG") ?: "LOCAL"
+        version = System.getenv("TAG") ?: "LOCAL-SNAPSHOT"
     )
 
     pom {

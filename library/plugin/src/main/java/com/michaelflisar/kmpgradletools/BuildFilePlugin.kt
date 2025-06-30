@@ -39,23 +39,22 @@ class BuildFilePlugin : Plugin<Project> {
         *
         * to only auto-publish releases without suffixes like "-debug", "-alpha", "-test" use following:
         * <pre><code>
-        * // TAG is set by github action workflow
-        * autoReleaseOnMavenCentral = !System.getenv("TAG").orEmpty().contains("-")
+        * autoReleaseOnMavenCentral = { version -> !version.contains("-") }
         * </code></pre>
         *
         * @param platform The platform configuration for the publication.
         * @param autoReleaseOnMavenCentral A function that determines if releases should be automatically published.
-        * @param tag The tag used for the versioning, typically set by CI/CD.
         * @param sign Whether to sign the publications.
+        * @param version The version of the library, defaults to the value of the "TAG" environment variable (TAG is set by github action workflow) or "LOCAL-SNAPSHOT".
      */
     fun setupMavenPublish(
         platform: Platform = KotlinMultiplatform(
             javadocJar = JavadocJar.Dokka("dokkaHtml"),
             sourcesJar = true
         ),
-        autoReleaseOnMavenCentral: Boolean = true,
+        autoReleaseOnMavenCentral: (version: String) -> Boolean = { true },
         sign: Boolean = System.getenv("CI")?.toBoolean() == true,
-        version: String = System.getenv("TAG") ?: "UNSPECIFIED"
+        version: String = System.getenv("TAG") ?: "LOCAL-SNAPSHOT"
     ) {
        if (setupModules == null) {
             setupModules = SetupModules.read(project.rootDir)
@@ -99,7 +98,7 @@ class BuildFilePlugin : Plugin<Project> {
             }
 
             // Configure publishing to Maven Central
-            publishToMavenCentral(autoReleaseOnMavenCentral)
+            publishToMavenCentral(autoReleaseOnMavenCentral(version))
 
             // Enable GPG signing for all publications
             if (sign) {
@@ -109,14 +108,15 @@ class BuildFilePlugin : Plugin<Project> {
     }
 
     fun setupTargets(
-        targets: Targets
+        targets: Targets,
+        publishLibraryVariantsNames: List<String> = listOf("release")
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
 
             // Android
             if (targets.android) {
                 androidTarget {
-                    publishLibraryVariants("release")
+                    publishLibraryVariants(*publishLibraryVariantsNames.toTypedArray())
                     compilerOptions {
                         jvmTarget.set(JvmTarget.fromTarget(javaVersion()))
                     }
