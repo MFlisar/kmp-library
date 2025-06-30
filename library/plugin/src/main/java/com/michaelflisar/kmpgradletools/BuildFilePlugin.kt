@@ -2,6 +2,7 @@ package com.michaelflisar.kmpgradletools
 
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.LibraryExtension
+import com.android.tools.r8.internal.wa
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -13,6 +14,7 @@ import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 class BuildFilePlugin : Plugin<Project> {
 
@@ -111,18 +113,23 @@ class BuildFilePlugin : Plugin<Project> {
     fun setupTargetsLibrary(
         targets: Targets
     ) {
-        setupTargets(targets, listOf("release"))
+        setupTargets(targets, listOf("release"), false, "", "")
     }
 
     fun setupTargetsApp(
-        targets: Targets
+        targets: Targets,
+        wasmModuleName: String = "app",
+        wasmOutputFileName: String = "app.js"
     ) {
-        setupTargets(targets, emptyList())
+        setupTargets(targets, emptyList(), true, wasmModuleName, wasmOutputFileName)
     }
 
     private fun setupTargets(
         targets: Targets,
-        publishLibraryVariantsNames: List<String>
+        publishLibraryVariantsNames: List<String>,
+        isApp: Boolean,
+        wasmModuleName: String,
+        wasmOutputFileName: String
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
 
@@ -165,7 +172,24 @@ class BuildFilePlugin : Plugin<Project> {
             if (targets.wasm) {
                 @OptIn(ExperimentalWasmDsl::class)
                 wasmJs {
-                    nodejs()
+                    if (isApp) {
+                        outputModuleName.set(wasmModuleName)
+                        val rootDirPath = project.rootDir.path
+                        browser {
+                            commonWebpackConfig {
+                                outputFileName = wasmOutputFileName
+                                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                                    static = (static ?: mutableListOf()).apply {
+                                        // Serve sources to debug inside browser
+                                        add(rootDirPath)
+                                    }
+                                }
+                            }
+                        }
+                        binaries.executable()
+                    } else {
+                        nodejs()
+                    }
                 }
             }
 
