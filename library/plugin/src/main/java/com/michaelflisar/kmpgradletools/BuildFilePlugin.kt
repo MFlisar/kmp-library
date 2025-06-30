@@ -108,15 +108,28 @@ class BuildFilePlugin : Plugin<Project> {
     }
 
     fun setupTargets(
+        targets: Targets
+    ) {
+        setupTargets(targets, listOf("release"))
+    }
+
+    fun setupTargetsForApp(
+        targets: Targets
+    ) {
+        setupTargets(targets, emptyList())
+    }
+
+    private fun setupTargets(
         targets: Targets,
-        publishLibraryVariantsNames: List<String> = listOf("release")
+        publishLibraryVariantsNames: List<String>
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
 
             // Android
             if (targets.android) {
                 androidTarget {
-                    publishLibraryVariants(*publishLibraryVariantsNames.toTypedArray())
+                    if (publishLibraryVariantsNames.isNotEmpty())
+                        publishLibraryVariants(*publishLibraryVariantsNames.toTypedArray())
                     compilerOptions {
                         jvmTarget.set(JvmTarget.fromTarget(javaVersion()))
                     }
