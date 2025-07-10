@@ -35,7 +35,7 @@ private val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_PLATFORM_COMMENTS = "parts/index_pl
 private val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_BOTTOM = "parts/index_bottom.md"
 
 /*
- * generates the documentation files in the "documentation" folder
+ * generates the documentation files in the <relativePathGeneratedDocsOutput> folder
  *
  * automatically detects all gradle properties that start with "DOC_", "LIBRARY_" or "DEVELOPER_" and uses them as placeholders for the replacement logic
  */
