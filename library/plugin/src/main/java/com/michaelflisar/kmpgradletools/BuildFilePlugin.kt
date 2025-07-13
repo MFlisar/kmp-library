@@ -14,7 +14,14 @@ import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 class BuildFilePlugin : Plugin<Project> {
 
@@ -129,7 +136,15 @@ class BuildFilePlugin : Plugin<Project> {
         publishLibraryVariantsNames: List<String>,
         isApp: Boolean,
         wasmModuleName: String,
-        wasmOutputFileName: String
+        wasmOutputFileName: String,
+        configAndroid: (KotlinAndroidTarget.() -> Unit) = {},
+        configIOS: (KotlinNativeTarget.() -> Unit) = {},
+        configIOSTests: (KotlinNativeTargetWithSimulatorTests.() -> Unit) = {},
+        configWindows: (KotlinJvmTarget.() -> Unit) = {},
+        configMacOS: (KotlinNativeTargetWithHostTests.() -> Unit) = {},
+        configLinux: (KotlinNativeTarget.() -> Unit) = {},
+        configWASM: (KotlinWasmJsTargetDsl.() -> Unit) = {},
+        configJS: (KotlinJsTargetDsl.() -> Unit) = {},
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
 
@@ -141,31 +156,50 @@ class BuildFilePlugin : Plugin<Project> {
                     compilerOptions {
                         jvmTarget.set(JvmTarget.fromTarget(javaVersion()))
                     }
+                    configAndroid()
                 }
             }
 
             // iOS
             if (targets.iOS) {
-                iosX64()
-                iosArm64()
-                iosSimulatorArm64()
+                iosX64 {
+                    configIOS()
+                    configIOSTests()
+                }
+                iosArm64 {
+                    configIOS()
+                }
+                iosSimulatorArm64 {
+                    configIOS()
+                    configIOSTests()
+                }
             }
 
             // Windows
             if (targets.windows) {
-                jvm()
+                jvm {
+                    configWindows()
+                }
             }
 
             // macOS
             if (targets.macOS) {
-                macosX64()
-                macosArm64()
+                macosX64 {
+                    configMacOS()
+                }
+                macosArm64 {
+                    configMacOS()
+                }
             }
 
             // Linux
             if (targets.linux) {
-                linuxX64()
-                linuxArm64()
+                linuxX64 {
+                    configLinux()
+                }
+                linuxArm64 {
+                    configLinux()
+                }
             }
 
             // WASM
@@ -190,13 +224,18 @@ class BuildFilePlugin : Plugin<Project> {
                     } else {
                         nodejs()
                     }
+                    configWASM()
                 }
             }
 
             // JavaScript
             if (targets.js) {
-                js()
-                js(IR)
+                js {
+                    configJS()
+                }
+                js(IR) {
+                    configJS()
+                }
             }
         }
     }
