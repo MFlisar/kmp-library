@@ -118,25 +118,7 @@ class BuildFilePlugin : Plugin<Project> {
     }
 
     fun setupTargetsLibrary(
-        targets: Targets
-    ) {
-        setupTargets(targets, listOf("release"), false, "", "")
-    }
-
-    fun setupTargetsApp(
         targets: Targets,
-        wasmModuleName: String = "app",
-        wasmOutputFileName: String = "app.js"
-    ) {
-        setupTargets(targets, emptyList(), true, wasmModuleName, wasmOutputFileName)
-    }
-
-    private fun setupTargets(
-        targets: Targets,
-        publishLibraryVariantsNames: List<String>,
-        isApp: Boolean,
-        wasmModuleName: String,
-        wasmOutputFileName: String,
         configAndroid: (KotlinAndroidTarget.() -> Unit) = {},
         configIOS: (KotlinNativeTarget.() -> Unit) = {},
         configIOSTests: (KotlinNativeTargetWithSimulatorTests.() -> Unit) = {},
@@ -145,6 +127,68 @@ class BuildFilePlugin : Plugin<Project> {
         configLinux: (KotlinNativeTarget.() -> Unit) = {},
         configWASM: (KotlinWasmJsTargetDsl.() -> Unit) = {},
         configJS: (KotlinJsTargetDsl.() -> Unit) = {},
+    ) {
+        setupTargets(
+            targets = targets,
+            publishLibraryVariantsNames = listOf("release"),
+            isApp = false,
+            wasmModuleName = "",
+            wasmOutputFileName = "",
+            configAndroid = configAndroid,
+            configIOS = configIOS,
+            configIOSTests = configIOSTests,
+            configWindows = configWindows,
+            configMacOS = configMacOS,
+            configLinux = configLinux,
+            configWASM = configWASM,
+            configJS = configJS
+        )
+    }
+
+    fun setupTargetsApp(
+        targets: Targets,
+        wasmModuleName: String = "app",
+        wasmOutputFileName: String = "app.js",
+        configAndroid: (KotlinAndroidTarget.() -> Unit) = {},
+        configIOS: (KotlinNativeTarget.() -> Unit) = {},
+        configIOSTests: (KotlinNativeTargetWithSimulatorTests.() -> Unit) = {},
+        configWindows: (KotlinJvmTarget.() -> Unit) = {},
+        configMacOS: (KotlinNativeTargetWithHostTests.() -> Unit) = {},
+        configLinux: (KotlinNativeTarget.() -> Unit) = {},
+        configWASM: (KotlinWasmJsTargetDsl.() -> Unit) = {},
+        configJS: (KotlinJsTargetDsl.() -> Unit) = {},
+    ) {
+        setupTargets(
+            targets = targets,
+            publishLibraryVariantsNames = emptyList(),
+            isApp = true,
+            wasmModuleName = wasmModuleName,
+            wasmOutputFileName = wasmOutputFileName,
+            configAndroid = configAndroid,
+            configIOS = configIOS,
+            configIOSTests = configIOSTests,
+            configWindows = configWindows,
+            configMacOS = configMacOS,
+            configLinux = configLinux,
+            configWASM = configWASM,
+            configJS = configJS
+        )
+    }
+
+    private fun setupTargets(
+        targets: Targets,
+        publishLibraryVariantsNames: List<String>,
+        isApp: Boolean,
+        wasmModuleName: String,
+        wasmOutputFileName: String,
+        configAndroid: (KotlinAndroidTarget.() -> Unit),
+        configIOS: (KotlinNativeTarget.() -> Unit),
+        configIOSTests: (KotlinNativeTargetWithSimulatorTests.() -> Unit),
+        configWindows: (KotlinJvmTarget.() -> Unit),
+        configMacOS: (KotlinNativeTargetWithHostTests.() -> Unit),
+        configLinux: (KotlinNativeTarget.() -> Unit),
+        configWASM: (KotlinWasmJsTargetDsl.() -> Unit),
+        configJS: (KotlinJsTargetDsl.() -> Unit)
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
 
