@@ -6,7 +6,6 @@ import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.Platform
-import edu.sc.seis.launch4j.tasks.DefaultLaunch4jTask
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -26,8 +25,6 @@ import org.jetbrains.compose.desktop.application.dsl.JvmApplication
 import org.jetbrains.compose.desktop.application.dsl.JvmApplicationDistributions
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.text.get
-import kotlin.text.set
 import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
 
 class BuildFilePlugin : Plugin<Project> {
@@ -349,58 +346,56 @@ class BuildFilePlugin : Plugin<Project> {
         }
     }
 
-    fun setupWindowApp(
-        desktopSetup: DesktopSetup,
+    fun JvmApplication.setupWindowApp(
+        setup: DesktopSetup,
         configNativeDistribution: JvmApplicationDistributions.() -> Unit = {}
     ) {
-        project.extensions.configure(JvmApplication::class.java) {
-            this.mainClass = desktopSetup.mainClass
+        this.mainClass = setup.mainClass
 
-            nativeDistributions {
+        nativeDistributions {
 
-                configNativeDistribution()
+            configNativeDistribution()
 
-                val now = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val now = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
-                packageName = desktopSetup.appName // entspricht dem exe Name
-                packageVersion = desktopSetup.appVersionName
-                description = "${desktopSetup.appName} - Build at ${now.format(formatter)}"
-                copyright = "©${now.year} ${desktopSetup.author}. All rights reserved."
-                vendor = desktopSetup.author
+            packageName = setup.appName // entspricht dem exe Name
+            packageVersion = setup.appVersionName
+            description = "${setup.appName} - Build at ${now.format(formatter)}"
+            copyright = "©${now.year} ${setup.author}. All rights reserved."
+            vendor = setup.author
 
-                // https://github.com/JetBrains/compose-multiplatform/issues/1154
-                // => suggestRuntimeModules task ausführen um zu prüfen, was man hier hinzufügen sollte
-                // modules("java.instrument", "java.security.jgss", "java.sql", "java.xml.crypto", "jdk.unsupported")
+            // https://github.com/JetBrains/compose-multiplatform/issues/1154
+            // => suggestRuntimeModules task ausführen um zu prüfen, was man hier hinzufügen sollte
+            // modules("java.instrument", "java.security.jgss", "java.sql", "java.xml.crypto", "jdk.unsupported")
 
-                windows {
-                    iconFile.set(project.file(desktopSetup.ico))
-                    //includeAllModules = true
-                }
+            windows {
+                iconFile.set(project.file(setup.ico))
+                //includeAllModules = true
             }
         }
     }
 
     fun setupLaunch4J(
-        desktopSetup: DesktopSetup,
+        setup: DesktopSetup,
         jarTask: String = "flattenReleaseJars"
     ) {
         project.extensions.configure(Launch4jLibraryTask::class.java) {
 
-            mainClassName.set(desktopSetup.mainClass)
-            icon.set(project.file(desktopSetup.ico).absolutePath)
+            mainClassName.set(setup.mainClass)
+            icon.set(project.file(setup.ico).absolutePath)
             setJarTask(project.tasks.getByName(jarTask))
-            outfile.set("${desktopSetup.appName}.exe")
+            outfile.set("${setup.appName}.exe")
 
             val now = LocalDateTime.now()
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
-            productName.set(desktopSetup.appName)
-            version.set(desktopSetup.appVersionName)
-            textVersion.set(desktopSetup.appVersionName)
-            description = "${desktopSetup.appName} - Build at ${now.format(formatter)}"
-            copyright.set("©${now.year} ${desktopSetup.author}. All rights reserved.")
-            companyName.set(desktopSetup.author)
+            productName.set(setup.appName)
+            version.set(setup.appVersionName)
+            textVersion.set(setup.appVersionName)
+            description = "${setup.appName} - Build at ${now.format(formatter)}"
+            copyright.set("©${now.year} ${setup.author}. All rights reserved.")
+            companyName.set(setup.author)
 
             doLast {
 
