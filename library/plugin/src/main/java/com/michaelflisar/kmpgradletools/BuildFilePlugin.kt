@@ -376,40 +376,37 @@ class BuildFilePlugin : Plugin<Project> {
         }
     }
 
-    fun setupLaunch4J(
+    fun Launch4jLibraryTask.setupLaunch4J(
         setup: DesktopSetup,
         jarTask: String = "flattenReleaseJars"
     ) {
-        project.extensions.configure(Launch4jLibraryTask::class.java) {
+        mainClassName.set(setup.mainClass)
+        icon.set(project.file(setup.ico).absolutePath)
+        setJarTask(project.tasks.getByName(jarTask))
+        outfile.set("${setup.appName}.exe")
 
-            mainClassName.set(setup.mainClass)
-            icon.set(project.file(setup.ico).absolutePath)
-            setJarTask(project.tasks.getByName(jarTask))
-            outfile.set("${setup.appName}.exe")
+        val now = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
-            val now = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        productName.set(setup.appName)
+        version.set(setup.appVersionName)
+        textVersion.set(setup.appVersionName)
+        description = "${setup.appName} - Build at ${now.format(formatter)}"
+        copyright.set("©${now.year} ${setup.author}. All rights reserved.")
+        companyName.set(setup.author)
 
-            productName.set(setup.appName)
-            version.set(setup.appVersionName)
-            textVersion.set(setup.appVersionName)
-            description = "${setup.appName} - Build at ${now.format(formatter)}"
-            copyright.set("©${now.year} ${setup.author}. All rights reserved.")
-            companyName.set(setup.author)
+        doLast {
 
-            doLast {
+            val exe = dest.get().asFile
 
-                val exe = dest.get().asFile
-
-                println("")
-                println("##############################")
-                println("#          LAUNCH4J          #")
-                println("##############################")
-                println("")
-                println("Executable wurde in folgendem Ordner erstellt:")
-                println("file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + "")
-                println("")
-            }
+            println("")
+            println("##############################")
+            println("#          LAUNCH4J          #")
+            println("##############################")
+            println("")
+            println("Executable wurde in folgendem Ordner erstellt:")
+            println("file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + "")
+            println("")
         }
     }
 
