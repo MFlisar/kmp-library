@@ -4,6 +4,7 @@ import com.vanniktech.maven.publish.JavadocJar
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dokka)
     alias(libs.plugins.gradle.maven.publish.plugin)
@@ -50,6 +51,10 @@ dependencies {
     implementation(libs.gradle.maven.publish.plugin)
     implementation(libs.kotlin.multiplatform)
     implementation(libs.android.build.tools)
+    implementation(libs.compose)
+    implementation(libs.kotlin.compose)
+    implementation(libs.launch4j)
+
     implementation(deps.yaml)
 
     api(project(":shared"))
