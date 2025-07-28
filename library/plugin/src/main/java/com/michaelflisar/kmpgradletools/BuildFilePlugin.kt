@@ -345,70 +345,73 @@ class BuildFilePlugin : Plugin<Project> {
             }
         }
     }
+}
 
-    fun JvmApplication.setupWindowApp(
-        setup: DesktopSetup,
-        configNativeDistribution: JvmApplicationDistributions.() -> Unit = {}
-    ) {
-        this.mainClass = setup.mainClass
+// ----------------
+// Extensions
+// ----------------
 
-        nativeDistributions {
+fun JvmApplication.setupWindowApp(
+    project: Project,
+    setup: DesktopSetup,
+    configNativeDistribution: JvmApplicationDistributions.() -> Unit = {}
+) {
+    this.mainClass = setup.mainClass
 
-            configNativeDistribution()
+    nativeDistributions {
 
-            val now = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-
-            packageName = setup.appName // entspricht dem exe Name
-            packageVersion = setup.appVersionName
-            description = "${setup.appName} - Build at ${now.format(formatter)}"
-            copyright = "©${now.year} ${setup.author}. All rights reserved."
-            vendor = setup.author
-
-            // https://github.com/JetBrains/compose-multiplatform/issues/1154
-            // => suggestRuntimeModules task ausführen um zu prüfen, was man hier hinzufügen sollte
-            // modules("java.instrument", "java.security.jgss", "java.sql", "java.xml.crypto", "jdk.unsupported")
-
-            windows {
-                iconFile.set(project.file(setup.ico))
-                //includeAllModules = true
-            }
-        }
-    }
-
-    fun Launch4jLibraryTask.setupLaunch4J(
-        setup: DesktopSetup,
-        jarTask: String = "flattenReleaseJars"
-    ) {
-        mainClassName.set(setup.mainClass)
-        icon.set(project.file(setup.ico).absolutePath)
-        setJarTask(project.tasks.getByName(jarTask))
-        outfile.set("${setup.appName}.exe")
+        configNativeDistribution()
 
         val now = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
-        productName.set(setup.appName)
-        version.set(setup.appVersionName)
-        textVersion.set(setup.appVersionName)
+        packageName = setup.appName // entspricht dem exe Name
+        packageVersion = setup.appVersionName
         description = "${setup.appName} - Build at ${now.format(formatter)}"
-        copyright.set("©${now.year} ${setup.author}. All rights reserved.")
-        companyName.set(setup.author)
+        copyright = "©${now.year} ${setup.author}. All rights reserved."
+        vendor = setup.author
 
-        doLast {
+        // https://github.com/JetBrains/compose-multiplatform/issues/1154
+        // => suggestRuntimeModules task ausführen um zu prüfen, was man hier hinzufügen sollte
+        // modules("java.instrument", "java.security.jgss", "java.sql", "java.xml.crypto", "jdk.unsupported")
 
-            val exe = dest.get().asFile
-
-            println("")
-            println("##############################")
-            println("#          LAUNCH4J          #")
-            println("##############################")
-            println("")
-            println("Executable wurde in folgendem Ordner erstellt:")
-            println("file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + "")
-            println("")
+        windows {
+            iconFile.set(project.file(setup.ico))
+            //includeAllModules = true
         }
     }
+}
 
+fun Launch4jLibraryTask.setupLaunch4J(
+    setup: DesktopSetup,
+    jarTask: String = "flattenReleaseJars"
+) {
+    mainClassName.set(setup.mainClass)
+    icon.set(project.file(setup.ico).absolutePath)
+    setJarTask(project.tasks.getByName(jarTask))
+    outfile.set("${setup.appName}.exe")
 
+    val now = LocalDateTime.now()
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+    productName.set(setup.appName)
+    version.set(setup.appVersionName)
+    textVersion.set(setup.appVersionName)
+    description = "${setup.appName} - Build at ${now.format(formatter)}"
+    copyright.set("©${now.year} ${setup.author}. All rights reserved.")
+    companyName.set(setup.author)
+
+    doLast {
+
+        val exe = dest.get().asFile
+
+        println("")
+        println("##############################")
+        println("#          LAUNCH4J          #")
+        println("##############################")
+        println("")
+        println("Executable wurde in folgendem Ordner erstellt:")
+        println("file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + "")
+        println("")
+    }
 }
