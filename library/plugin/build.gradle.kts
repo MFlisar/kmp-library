@@ -4,7 +4,6 @@ import com.vanniktech.maven.publish.JavadocJar
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dokka)
     alias(libs.plugins.gradle.maven.publish.plugin)
