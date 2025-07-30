@@ -390,7 +390,7 @@ private fun generateProjectYaml(
                 appendLine("    - name: ${s.name}")
                 appendLine("      images:")
                 for (i in s.images) {
-                    appendLine("      - $i")
+                    appendLine("        - $i")
                 }
             }
         }
