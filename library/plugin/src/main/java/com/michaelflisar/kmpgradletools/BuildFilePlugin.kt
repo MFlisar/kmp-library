@@ -26,6 +26,7 @@ import org.jetbrains.compose.desktop.application.dsl.JvmApplicationDistributions
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
+import kotlin.text.set
 
 class BuildFilePlugin : Plugin<Project> {
 
@@ -52,6 +53,16 @@ class BuildFilePlugin : Plugin<Project> {
     fun javaVersion(): String {
         return javaVersion ?: setupLibrary.javaVersion
     }
+
+    /*fun setupBinaryCompatibilityValidator() {
+        project.extensions.configure(KotlinMultiplatformExtension::class.java) {
+            @OptIn(org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation::class)
+            abiValidation {
+                // Use the set() function to ensure compatibility with older Gradle versions
+                enabled.set(true)
+            }
+        }
+    }*/
 
     /**
         * Configures the project for publishing to Maven Central.

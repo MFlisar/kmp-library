@@ -48,7 +48,7 @@ gradlePlugin {
 dependencies {
 
     implementation(libs.gradle.maven.publish.plugin)
-    implementation(libs.kotlin.multiplatform)
+    implementation(libs.kotlin.gradle.plugin)
     implementation(libs.android.build.tools)
     implementation(libs.compose)
     implementation(libs.kotlin.compose)

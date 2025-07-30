@@ -382,7 +382,19 @@ private fun generateProjectYaml(
                 appendLine("      color: ${p.color}")
             }
         }
-        appendArray("  ", "screenshots", screenshots)
+        if (screenshots.isEmpty()) {
+            appendLine("  screenshots: []")
+        } else {
+            appendLine("  screenshots:")
+            for (s in screenshots) {
+                appendLine("    - name: ${s.name}")
+                appendLine("      images: ${s.images}")
+                for (i in s.images) {
+                    appendLine("       - $i")
+                }
+            }
+        }
+
         appendLine("  branch: $branch")
         if (demo) {
             appendLine("  demo-path: $demoPath")

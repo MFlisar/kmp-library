@@ -48,7 +48,7 @@ data class SetupLibrary(
         @SerialName("link-repo") val linkRepo: String,
         @SerialName("repo-name") val repoName: String,
         val license: License,
-        val screenshots: List<String>,
+        val screenshots: List<Screenshot>,
         @SerialName("about-me") val aboutMe: Boolean,
     ) {
         val id = name.lowercase().split(" ")
@@ -59,6 +59,12 @@ data class SetupLibrary(
         class License(
             val name: String,
             val link: String,
+        )
+
+        @Serializable
+        class Screenshot(
+            val name: String,
+            val images: List<String>
         )
     }
 
