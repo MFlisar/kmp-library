@@ -52,7 +52,7 @@ other-projects:
     projects:
     - name: ComposeChangelog
       link: https://mflisar.github.io/ComposeChangelog
-      image: https://raw.githubusercontent.com/MFlisar/ComposeChangelog/main/documentation/docs/screenshots/core/overview.jpg
+      image: https://raw.githubusercontent.com/MFlisar/ComposeChangelog/main/documentation/docs/screenshots/core/changelog1.png
       maven: io.github.mflisar.composechangelog/core
       description: This library offers you a a <b>changelog dialog</b> for compose including the ability to show new logs on app start only as well as filtering and customisation.
     - name: ComposeColors
@@ -62,7 +62,7 @@ other-projects:
       description: A simple collection of colors that can be used inside any KMP compose project.
     - name: ComposeDebugDrawer
       link: https://mflisar.github.io/ComposeDebugDrawer
-      image: https://raw.githubusercontent.com/MFlisar/ComposeDebugDrawer/main/documentation/docs/screenshots/core/demo2.jpg
+      image: https://raw.githubusercontent.com/MFlisar/ComposeDebugDrawer/blob/main/documentation/custom/docs/screenshots/core/demo2.jpg
       maven: io.github.mflisar.composedebugdrawer/core
       description: This library offers you a <b>simple</b> and easily extendable <b>debug drawer</b>.
     - name: ComposeDialogs
