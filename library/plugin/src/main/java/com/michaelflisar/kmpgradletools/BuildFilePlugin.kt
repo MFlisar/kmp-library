@@ -41,12 +41,12 @@ class BuildFilePlugin : Plugin<Project> {
         javaVersion = project.findProperty("KMP-TEMPLATE-JAVA-VERSION") as String?
     }
 
-    fun useLiveDependencies(): Boolean {
-        if (!project.providers.gradleProperty("useLiveDependencies").isPresent) {
+    fun checkGradleProperty(property: String): Boolean? {
+        if (!project.providers.gradleProperty(property).isPresent) {
             // Default to false if the property is not set
-            return false
+            return null
         }
-        return project.providers.gradleProperty("useLiveDependencies").get().toBoolean()
+        return project.providers.gradleProperty(property).get().toBoolean()
     }
 
     fun javaVersion(): String {
