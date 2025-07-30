@@ -37,6 +37,7 @@ class BuildFilePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         this.project = project
+        project.pluginManager.apply("edu.sc.seis.launch4j")
         setupLibrary = SetupLibrary.read(project.rootDir)
         javaVersion = project.findProperty("KMP-TEMPLATE-JAVA-VERSION") as String?
     }
