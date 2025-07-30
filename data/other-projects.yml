@@ -62,7 +62,7 @@ other-projects:
       description: A simple collection of colors that can be used inside any KMP compose project.
     - name: ComposeDebugDrawer
       link: https://mflisar.github.io/ComposeDebugDrawer
-      image: https://raw.githubusercontent.com/MFlisar/ComposeDebugDrawer/blob/main/documentation/custom/docs/screenshots/core/demo2.jpg
+      image: https://raw.githubusercontent.com/MFlisar/ComposeDebugDrawer/main/documentation/custom/docs/screenshots/core/demo2.jpg
       maven: io.github.mflisar.composedebugdrawer/core
       description: This library offers you a <b>simple</b> and easily extendable <b>debug drawer</b>.
     - name: ComposeDialogs
