@@ -388,7 +388,7 @@ private fun generateProjectYaml(
             appendLine("  screenshots:")
             for (s in screenshots) {
                 appendLine("    - name: ${s.name}")
-                appendLine("      images: ${s.images}")
+                appendLine("      images:")
                 for (i in s.images) {
                     appendLine("       - $i")
                 }
