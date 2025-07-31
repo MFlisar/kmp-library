@@ -365,6 +365,30 @@ class BuildFilePlugin : Plugin<Project> {
             }
         }
     }
+
+    fun KotlinDependencyHandler.implementation(
+        dependencyNotationLive: Any,
+        dependencyNotationNotLive: Any,
+        gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
+    ) {
+        if (checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
+            implementation(dependencyNotationLive)
+        } else {
+            implementation(dependencyNotationNotLive)
+        }
+    }
+
+    fun KotlinDependencyHandler.api(
+        dependencyNotationLive: Any,
+        dependencyNotationNotLive: Any,
+        gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
+    ) {
+        if (checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
+            api(dependencyNotationLive)
+        } else {
+            api(dependencyNotationNotLive)
+        }
+    }
 }
 
 // ----------------
@@ -433,31 +457,5 @@ fun Launch4jLibraryTask.setupLaunch4J(
         println("Executable wurde in folgendem Ordner erstellt:")
         println("file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + "")
         println("")
-    }
-}
-
-fun KotlinDependencyHandler.implementation(
-    plugin: BuildFilePlugin,
-    dependencyNotationLive: Any,
-    dependencyNotationNotLive: Any,
-    gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
-) {
-    if (plugin.checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
-        implementation(dependencyNotationLive)
-    } else {
-        implementation(dependencyNotationNotLive)
-    }
-}
-
-fun KotlinDependencyHandler.api(
-    plugin: BuildFilePlugin,
-    dependencyNotationLive: Any,
-    dependencyNotationNotLive: Any,
-    gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
-) {
-    if (plugin.checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
-        api(dependencyNotationLive)
-    } else {
-        api(dependencyNotationNotLive)
     }
 }
