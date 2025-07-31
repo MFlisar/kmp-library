@@ -27,20 +27,20 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
-import kotlin.text.set
 
 class BuildFilePlugin : Plugin<Project> {
 
     private lateinit var project: Project
-    private lateinit var setupLibrary: SetupLibrary
-    private var javaVersion: String? = null
+    private var setupApp: SetupApp? = null
+    private var setupLibrary: SetupLibrary? = null
 
     private var setupModules: SetupModules? = null
 
     override fun apply(project: Project) {
         this.project = project
-        setupLibrary = SetupLibrary.read(project.rootDir)
-        javaVersion = project.findProperty("KMP-TEMPLATE-JAVA-VERSION") as String?
+        setupApp = SetupApp.tryRead(project.rootDir)
+        if (setupApp != null)
+            setupLibrary = SetupLibrary.read(project.rootDir)
     }
 
     fun checkGradleProperty(property: String): Boolean? {
@@ -52,7 +52,7 @@ class BuildFilePlugin : Plugin<Project> {
     }
 
     fun javaVersion(): String {
-        return javaVersion ?: setupLibrary.javaVersion
+        return setupApp?.javaVersion ?: setupLibrary!!.javaVersion
     }
 
     /*fun setupBinaryCompatibilityValidator() {
@@ -94,6 +94,7 @@ class BuildFilePlugin : Plugin<Project> {
             setupModules = SetupModules.read(project.rootDir)
         }
         val setup = setupModules!!
+        val setupLibrary = setupLibrary!!
 
         val path = project.projectDir.relativeTo(project.rootDir).path
         val module = setup.getModuleByPath(path)
@@ -365,30 +366,6 @@ class BuildFilePlugin : Plugin<Project> {
             }
         }
     }
-
-    fun KotlinDependencyHandler.implementation(
-        dependencyNotationLive: Any,
-        dependencyNotationNotLive: Any,
-        gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
-    ) {
-        if (checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
-            implementation(dependencyNotationLive)
-        } else {
-            implementation(dependencyNotationNotLive)
-        }
-    }
-
-    fun KotlinDependencyHandler.api(
-        dependencyNotationLive: Any,
-        dependencyNotationNotLive: Any,
-        gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
-    ) {
-        if (checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
-            api(dependencyNotationLive)
-        } else {
-            api(dependencyNotationNotLive)
-        }
-    }
 }
 
 // ----------------
@@ -457,5 +434,31 @@ fun Launch4jLibraryTask.setupLaunch4J(
         println("Executable wurde in folgendem Ordner erstellt:")
         println("file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + "")
         println("")
+    }
+}
+
+fun KotlinDependencyHandler.implementation(
+    live: Any,
+    project: String,
+    plugin: BuildFilePlugin,
+    gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
+) {
+    if (plugin.checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
+        implementation(live)
+    } else {
+        implementation(project(project))
+    }
+}
+
+fun KotlinDependencyHandler.api(
+    live: Any,
+    project: String,
+    plugin: BuildFilePlugin,
+    gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
+) {
+    if (plugin.checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
+        api(live)
+    } else {
+        api(project(project))
     }
 }

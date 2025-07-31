@@ -14,7 +14,7 @@ data class SetupLibrary(
 ) {
     companion object {
 
-        private val YML_FILE = ".kmp-gradle-tools/library.yml"
+        private const val YML_FILE = ".kmp-gradle-tools/library.yml"
 
         fun file(root: File): File {
             return File(root, YML_FILE)
