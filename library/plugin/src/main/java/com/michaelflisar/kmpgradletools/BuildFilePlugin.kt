@@ -39,13 +39,12 @@ class BuildFilePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         this.project = project
         setupApp = SetupApp.tryRead(project.rootDir)
-        if (setupApp != null)
+        if (setupApp == null)
             setupLibrary = SetupLibrary.read(project.rootDir)
     }
 
     fun checkGradleProperty(property: String): Boolean? {
         if (!project.providers.gradleProperty(property).isPresent) {
-            // Default to false if the property is not set
             return null
         }
         return project.providers.gradleProperty(property).get().toBoolean()
