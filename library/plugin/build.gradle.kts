@@ -33,11 +33,11 @@ val licenseUrl = "$github/blob/main/LICENSE"
 
 gradlePlugin {
     plugins {
-        create(groupID) {
+        create("Build Gradle Plugin") {
             id = "$groupID.build-gradle-plugin"
             implementationClass = "com.michaelflisar.kmpgradletools.BuildFilePlugin"
         }
-        create(groupID) {
+        create("Settings Gradle Plugin") {
             id = "$groupID.settings-gradle-plugin"
             implementationClass = "com.michaelflisar.kmpgradletools.SettingsFilePlugin"
         }
