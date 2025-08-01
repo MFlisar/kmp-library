@@ -48,6 +48,7 @@ open class SettingsFilePluginExtension {
             false
         } else {
             if (project == "Lumberjack") {
+                // exclude old view based and timber modules
                 val exclusions = listOf(
                     "library\\extensions\\viewer",
                     "library\\implementations\\timber",
@@ -56,10 +57,10 @@ open class SettingsFilePluginExtension {
                 )
                 !exclusions.any { relativePath == it }
             } else if (project == "ComposeChangelog") {
+                // exclude gradle plugin
                 val exclusions = listOf(
                     "library\\gradle-plugin",
-                    "library\\gradle-plugin\\plugin",
-                    "library\\gradle-plugin\\shared",
+                    "library\\gradle-plugin\\plugin"
                 )
                 !exclusions.any { relativePath == it }
             }
