@@ -1,5 +1,22 @@
 package com.michaelflisar.kmpgradletools
 
+import org.gradle.api.Plugin
+import org.gradle.api.initialization.Settings
+
+class SettingFilePlugin : Plugin<Settings> {
+
+    private lateinit var settings: Settings
+
+    override fun apply(settings: Settings) {
+        this.settings = settings
+    }
+
+    fun test() {
+        println("Hello from SettingFilePlugin!")
+    }
+
+}
+
 /*
 class SettingFilePlugin : Plugin<Settings> {
 

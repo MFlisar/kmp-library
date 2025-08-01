@@ -37,10 +37,10 @@ gradlePlugin {
             id = "$groupID.gradle-plugin"
             implementationClass = "com.michaelflisar.kmpgradletools.BuildFilePlugin"
         }
-        //create("$groupID.settings-plugin") {
-        //    id = "$groupID.settings-plugin"
-        //    implementationClass = "com.michaelflisar.kmpgradletools.SettingFilePlugin"
-        //}
+        create("$groupID.settings-plugin") {
+            id = "$groupID.settings-plugin"
+            implementationClass = "com.michaelflisar.kmpgradletools.SettingFilePlugin"
+        }
         isAutomatedPublishing = true
     }
 }
