@@ -42,9 +42,9 @@ open class SettingsFilePluginExtension {
     )
 
     val libFilter: (project: String, relativePath: String) -> Boolean = { project, relativePath ->
-        if (relativePath.contains("\\demo\\") || relativePath.endsWith("\\demo")) {
-            false
-        } else if (relativePath.contains("\\test\\") || relativePath.endsWith("\\test")) {
+        val excludedPathParts = listOf("demo", "test")
+        val parts = relativePath.split("\\")
+        if (parts.any { it in excludedPathParts }) {
             false
         } else {
             if (project == "Lumberjack") {
