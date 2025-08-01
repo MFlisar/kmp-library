@@ -57,8 +57,9 @@ open class SettingsFilePluginExtension {
                 !exclusions.any { relativePath == it }
             } else if (project == "ComposeChangelog") {
                 val exclusions = listOf(
-                    "gradle-plugin\\plugin",
-                    "gradle-plugin\\shared",
+                    "library\\gradle-plugin",
+                    "library\\gradle-plugin\\plugin",
+                    "library\\gradle-plugin\\shared",
                 )
                 !exclusions.any { relativePath == it }
             }
