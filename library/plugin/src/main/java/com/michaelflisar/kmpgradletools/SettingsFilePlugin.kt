@@ -3,12 +3,27 @@ package com.michaelflisar.kmpgradletools
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 
+class SettingsFilePluginExtension {
+    var test: Boolean = false
+}
+
 class SettingsFilePlugin : Plugin<Settings> {
 
     private lateinit var settings: Settings
 
     override fun apply(settings: Settings) {
         this.settings = settings
+
+        val extension = settings.extensions.create(
+            "settingsFilePlugin",
+            SettingsFilePluginExtension::class.java
+        )
+        // Zugriff auf die Konfiguration z.B. nach der Auswertung:
+        settings.gradle.settingsEvaluated {
+            if (extension.test) {
+                test()
+            }
+        }
     }
 
     fun test() {
