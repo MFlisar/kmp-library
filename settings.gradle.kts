@@ -45,6 +45,7 @@ fun includeModule(
 
 includeModule(":shared","library/shared")
 
-includeModule(":plugin", "library/plugin")
+includeModule(":build-plugin", "library/build-plugin")
+includeModule(":settings-plugin", "library/settings-plugin")
 includeModule(":docs", "library/docs")
 includeModule(":scripts", "library/scripts")

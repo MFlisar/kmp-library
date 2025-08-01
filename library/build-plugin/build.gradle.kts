@@ -13,10 +13,10 @@ plugins {
 // Informations
 // -------------------
 
-val description = "a gradle plugin that provides common functions for kmp libraries"
+val description = "a gradle build file plugin that provides common functions for kmp libraries"
 
 // Module
-val artifactId = "gradle-plugin"
+val artifactId = "build-gradle-plugin"
 
 // Library
 val libraryName = "kmp-gradle-tools"
@@ -34,12 +34,8 @@ val licenseUrl = "$github/blob/main/LICENSE"
 gradlePlugin {
     plugins {
         create("Build Gradle Plugin") {
-            id = "$groupID.build-gradle-plugin"
+            id = "$groupID.$artifactId"
             implementationClass = "com.michaelflisar.kmpgradletools.BuildFilePlugin"
-        }
-        create("Settings Gradle Plugin") {
-            id = "$groupID.settings-gradle-plugin"
-            implementationClass = "com.michaelflisar.kmpgradletools.SettingsFilePlugin"
         }
         isAutomatedPublishing = true
     }
