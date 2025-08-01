@@ -3,7 +3,7 @@ package com.michaelflisar.kmpgradletools
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 
-class SettingsFilePluginExtension {
+open class SettingsFilePluginExtension {
     var test: Boolean = false
 }
 
