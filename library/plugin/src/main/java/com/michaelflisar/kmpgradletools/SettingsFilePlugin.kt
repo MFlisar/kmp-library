@@ -3,7 +3,7 @@ package com.michaelflisar.kmpgradletools
 import org.gradle.api.Plugin
 import org.gradle.api.initialization.Settings
 
-class SettingFilePlugin : Plugin<Settings> {
+class SettingsFilePlugin : Plugin<Settings> {
 
     private lateinit var settings: Settings
 
