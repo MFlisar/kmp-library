@@ -16,6 +16,16 @@ More details about the jetpack dependencies can be found in [JetBrains Release N
 
 {% endif %}
 
+{% else %}
+
+{% if project["dependencies"] is defined and project["dependencies"]["experimental"] %}
+
+!!! warning
+
+    I try to use as few experimental APIs as possible, but this library does use a few experimental APIs which are still marked as experimental. I will provide new versions as soon as possible if experimental APIs change or become stable.
+
+{% endif %}
+
 {% endif %}
 
 {% macro row_dependencies(dependencies) %}

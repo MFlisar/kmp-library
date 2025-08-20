@@ -375,13 +375,17 @@ private fun generateProjectYaml(
     val demo = relativeDemosPath?.let { File(root, it) }?.takeIf { it.exists() }
 
     // data dependencies
-    val versionCMP = tomlLibs.tryFindKey("versions", "compose")
+    val versionCompose = tomlLibs.tryFindKey("versions", "compose")
     var versionAndroidXMaterial3: String? = null
     var versionAndroidXComposeRuntime: String? = null
     if (multiplatform) {
 
-        val urlMaterial3 = "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionCMP}/material3-${versionCMP}.pom"
-        val urlRuntime = "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionCMP}/runtime-${versionCMP}.pom"
+        if (versionCompose == null) {
+            throw RuntimeException("Version 'compose' not found in libs.versions.toml!")
+        }
+
+        val urlMaterial3 = "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionCompose}/material3-${versionCompose}.pom"
+        val urlRuntime = "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionCompose}/runtime-${versionCompose}.pom"
 
         versionAndroidXMaterial3 =
             findVersionInPOM(urlMaterial3, "androidx.compose.material3")
@@ -417,7 +421,12 @@ private fun generateProjectYaml(
         appendLine("  maven: $maven")
         appendLine("  maven-main-library: $mavenArtifact")
         appendLine("  multiplatform: $multiplatform")
-        if (supportedPlatforms.isEmpty()) {
+        if (!multiplatform) {
+            val p = Target.ANDROID
+            appendLine("  platforms:")
+            appendLine("    - name: ${p.targetName}")
+            appendLine("      color: ${p.color}")
+        } else if (supportedPlatforms.isEmpty()) {
             appendLine("  platforms: []")
         } else {
             appendLine("  platforms:")
@@ -450,7 +459,7 @@ private fun generateProjectYaml(
         appendLine("")
         appendLine("dependencies:")
         if (multiplatform) {
-            appendLine("  compose-multiplatform: $versionCMP # https://github.com/JetBrains/compose-multiplatform/releases")
+            appendLine("  compose-multiplatform: $versionCompose # https://github.com/JetBrains/compose-multiplatform/releases")
             appendLine("  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime")
             appendLine("  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3")
         }
