@@ -26,7 +26,12 @@ import org.jetbrains.compose.desktop.application.dsl.JvmApplicationDistributions
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.kotlin.dsl.creating
+import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import kotlin.text.get
 
 class BuildFilePlugin : Plugin<Project> {
 
@@ -459,5 +464,19 @@ fun KotlinDependencyHandler.api(
         api(live)
     } else {
         api(project(project))
+    }
+}
+
+fun KotlinSourceSet.addAsDependency(
+    sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
+    targets: Targets,
+    vararg target: Target
+) {
+    target.filter { targets.isEnabled(it) }.forEach { target ->
+        val groupMain = sourceSets.maybeCreate(target.nameMain)
+        groupMain.dependsOn(this)
+        target.targets.forEach {
+            sourceSets.getByName("${it}Main").dependsOn(groupMain)
+        }
     }
 }

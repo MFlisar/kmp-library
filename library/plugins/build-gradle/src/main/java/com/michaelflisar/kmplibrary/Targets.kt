@@ -25,17 +25,5 @@ class Targets(
             }
         }
 
-    fun updateSourceSetDependencies(
-        sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
-        apply: (groupMain: KotlinSourceSet, target: Target) -> Unit,
-    ) {
-        enabledTargets
-            .forEach { target ->
-                val groupMain = sourceSets.maybeCreate(target.nameMain)
-                apply(groupMain, target)
-                target.targets.forEach {
-                    sourceSets.getByName("${it}Main").dependsOn(groupMain)
-                }
-            }
-    }
+    fun isEnabled(target: Target) = enabledTargets.contains(target)
 }

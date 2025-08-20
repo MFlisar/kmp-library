@@ -52,6 +52,9 @@ dependencies {
 
     implementation(deps.yaml)
 
+    //implementation(gradleApi())
+    implementation(gradleKotlinDsl())
+
     api(project(":library:plugins:shared"))
 }
 
