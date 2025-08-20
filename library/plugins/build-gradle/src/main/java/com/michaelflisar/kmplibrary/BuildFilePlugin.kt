@@ -480,3 +480,17 @@ fun KotlinSourceSet.addAsDependency(
         }
     }
 }
+
+fun KotlinSourceSet.addAsDependencyForAllExcept(
+    sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
+    targets: Targets,
+    vararg excluded: Target
+) {
+    targets.enabledTargets.filter { !excluded.contains(it) }.forEach { target ->
+        val groupMain = sourceSets.maybeCreate(target.nameMain)
+        groupMain.dependsOn(this)
+        target.targets.forEach {
+            sourceSets.getByName("${it}Main").dependsOn(groupMain)
+        }
+    }
+}
