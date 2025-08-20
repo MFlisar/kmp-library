@@ -12,10 +12,8 @@ data class SetupModules(
 ) {
     companion object {
 
-        private val YML_FILE = ".kmp-library/modules.yml"
-
         fun file(root: File): File {
-            return File(root, YML_FILE)
+            return File(root, Constants.YML_MODULES)
         }
 
         fun read(root: File): SetupModules {
@@ -32,7 +30,7 @@ data class SetupModules(
 
     fun getModuleByPath(path: String): Module {
         return modules.find { it.relativePath.replace("\\", "/") == path.replace("\\", "/") }
-            ?: throw RuntimeException("module setup definition not found for path: $path => make sure to define it inside `$YML_FILE`")
+            ?: throw RuntimeException("module setup definition not found for path: $path => make sure to define it inside `${Constants.YML_MODULES}`")
     }
 
     @Serializable

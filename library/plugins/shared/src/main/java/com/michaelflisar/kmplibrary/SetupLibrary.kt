@@ -14,10 +14,8 @@ data class SetupLibrary(
 ) {
     companion object {
 
-        private const val YML_FILE = ".kmp-library/library.yml"
-
         fun file(root: File): File {
-            return File(root, YML_FILE)
+            return File(root, Constants.YML_LIBRARY)
         }
 
         fun read(root: File): SetupLibrary {
