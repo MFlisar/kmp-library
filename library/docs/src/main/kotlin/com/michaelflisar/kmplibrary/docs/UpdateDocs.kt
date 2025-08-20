@@ -15,6 +15,7 @@ import com.michaelflisar.kmplibrary.saveDelete
 import com.michaelflisar.kmplibrary.saveDeleteRecursively
 import com.michaelflisar.kmplibrary.update
 import com.michaelflisar.kmplibrary.walkTopDownFiltered
+import org.gradle.api.Project
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.io.File
@@ -37,17 +38,19 @@ private const val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_BOTTOM = "parts/index_bottom.
 
 fun registerBuildDocsTasks(
     tasks: TaskContainer,
+    project: Project,
     name: String = "buildDocs",
     relativePathDocsCustom: String = "documentation/custom",
-    relativePathGeneratedDocsOutput: String = "gen/docs",
     relativeModulesPath: String = "library",
     relativeDemosPath: String = "demo",
-    customOtherProjectsYamlUrl: String = "https://raw.githubusercontent.com/MFlisar/kmp-library/refs/heads/main/data/other-projects.yml"
+    customOtherProjectsYamlUrl: String = "https://raw.githubusercontent.com/MFlisar/kmp-library/refs/heads/main/data/other-projects.yml",
+    defaultRelativePathGeneratedDocsOutput: String = "gen/docs",
 ) {
+    val generatedDocsDir = project.findProperty("generatedDocsDir") as String? ?: defaultRelativePathGeneratedDocsOutput
     tasks.registerBuildDocsTasks2(
         name = name,
         relativePathDocsCustom = relativePathDocsCustom,
-        relativePathGeneratedDocsOutput = relativePathGeneratedDocsOutput,
+        relativePathGeneratedDocsOutput = generatedDocsDir,
         relativeModulesPath = relativeModulesPath,
         relativeDemosPath = relativeDemosPath,
         customOtherProjectsYamlUrl = customOtherProjectsYamlUrl
