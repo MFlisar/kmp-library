@@ -19,6 +19,24 @@
 # - image... the image to display in the docs [OPTIONAL]
 # - description... a short description of the project
 other-projects:
+  - group: Unofficial Projects
+    projects:
+      - name: kmp-parcelize
+        link: https://github.com/MFlisar/kmp-parcelize
+        maven: io.github.mflisar.parcelize/core
+        description: a kmp parcelize library that allows you to use the @Parcelize annotation in your kmp projects
+      - name: kmp-library
+        link: https://github.com/MFlisar/kmp-library
+        maven: io.github.mflisar.kmp-library/docs
+        description: a collection of gradle plugins for my demo projects as well as for my own apps
+      - name: kmp-democomposables
+        link: https://github.com/MFlisar/kmp-democomposables
+        maven: io.github.mflisar.democomposables/docs
+        description: a collection of composables that I use for my demo projects
+      - name: Toolbox
+        link: https://github.com/MFlisar/Toolbox
+        maven: io.github.mflisar.toolbox/core
+        description: My personal toolbox library
   - group: Utilities
     projects:
       - name: CacheFileProvider
@@ -29,10 +47,6 @@ other-projects:
         link: https://mflisar.github.io/FeedbackManager
         maven: io.github.mflisar.feedbackmanager/library
         description: This is a very small library that allows you to <b>send feedback</b> from an app <b>without internet permission</b> via email, either directly or via an unintrusive notification.
-      - name: Toolbox
-        link: https://github.com/MFlisar/Toolbox
-        maven: io.github.mflisar.toolbox/core
-        description: My personal toolbox library
   - group: Libraries
     projects:
     - name: KotBilling

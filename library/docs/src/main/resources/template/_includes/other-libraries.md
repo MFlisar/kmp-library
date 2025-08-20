@@ -18,7 +18,7 @@ Here you can find an overview of my main libraries that do all play well togethe
 {% for key, value in other_projects["libraries"].items() %}
     {% set ns = namespace(image=false) %}
     {% for prj in value %}
-        {% if prj["name"] != project["library"]["name"] and prj["name"] != "Toolbox" %}
+        {% if prj["name"] != project["library"]["name"] %}
             {% if prj["image"] is defined %}
                 {% set ns.images = true %}
             {% endif %}
@@ -34,7 +34,7 @@ Here you can find an overview of my main libraries that do all play well togethe
     <th>Description</th>
 </tr>
 {% for prj in value %}
-    {% if prj["name"] != project["library"]["name"] and prj["name"] != "Toolbox" %}
+    {% if prj["name"] != project["library"]["name"] %}
         {{ table_row(prj) }}
     {% endif %}
 {% endfor %}
