@@ -42,7 +42,7 @@ fun registerBuildDocsTasks(
     name: String = "buildDocs",
     relativePathDocsCustom: String = "documentation/custom",
     relativeModulesPath: String = "library",
-    relativeDemosPath: String = "demo",
+    relativeDemosPath: String? = "demo",
     customOtherProjectsYamlUrl: String = "https://raw.githubusercontent.com/MFlisar/kmp-library/refs/heads/main/data/other-projects.yml",
     defaultRelativePathGeneratedDocsOutput: String = "gen/docs",
     multiplatform: Boolean = true
