@@ -19,24 +19,6 @@
 # - image... the image to display in the docs [OPTIONAL]
 # - description... a short description of the project
 other-projects:
-  - group: Unofficial Projects
-    projects:
-      - name: kmp-parcelize
-        link: https://github.com/MFlisar/kmp-parcelize
-        maven: io.github.mflisar.parcelize/core
-        description: a kmp parcelize library that allows you to use the @Parcelize annotation in your kmp projects
-      - name: kmp-library
-        link: https://github.com/MFlisar/kmp-library
-        maven: io.github.mflisar.kmp-library/docs
-        description: a collection of gradle plugins for my demo projects as well as for my own apps
-      - name: kmp-democomposables
-        link: https://github.com/MFlisar/kmp-democomposables
-        maven: io.github.mflisar.democomposables/docs
-        description: a collection of composables that I use for my demo projects
-      - name: Toolbox
-        link: https://github.com/MFlisar/Toolbox
-        maven: io.github.mflisar.toolbox/core
-        description: My personal toolbox library
   - group: Utilities
     projects:
       - name: CacheFileProvider
@@ -94,3 +76,21 @@ other-projects:
       image: https://mflisar.github.io/ComposeThemer/screenshots/defaultpicker/android1.png
       maven: io.github.mflisar.composethemer/core
       description: This is a <b>full compose theme engine</b> that handles applying a theme as well as updating the system ui elements. Extendible and allows to simply apply user selected themes inside your app.
+  - group: Unofficial Projects
+    projects:
+     - name: kmp-parcelize
+       link: https://github.com/MFlisar/kmp-parcelize
+       maven: io.github.mflisar.parcelize/library
+       description: a kmp parcelize library that allows you to use the @Parcelize annotation in your kmp projects
+     - name: kmp-library
+       link: https://github.com/MFlisar/kmp-library
+       maven: io.github.mflisar.kmp-library/docs
+       description: a collection of gradle plugins for my demo projects as well as for my own apps
+     - name: kmp-democomposables
+       link: https://github.com/MFlisar/kmp-demo-composables
+       maven: io.github.mflisar.democomposables/library
+       description: a collection of composables that I use for my demo projects
+     - name: Toolbox
+       link: https://github.com/MFlisar/Toolbox
+       maven: io.github.mflisar.toolbox/core
+       description: My personal toolbox library
