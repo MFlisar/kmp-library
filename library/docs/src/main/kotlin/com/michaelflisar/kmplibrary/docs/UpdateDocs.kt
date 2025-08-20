@@ -44,7 +44,7 @@ fun registerBuildDocsTasks(
     relativeDemosPath: String = "demo",
     customOtherProjectsYamlUrl: String = "https://raw.githubusercontent.com/MFlisar/kmp-library/refs/heads/main/data/other-projects.yml"
 ) {
-    tasks.registerBuildDocsTasks(
+    tasks.registerBuildDocsTasks2(
         name = name,
         relativePathDocsCustom = relativePathDocsCustom,
         relativePathGeneratedDocsOutput = relativePathGeneratedDocsOutput,
@@ -54,7 +54,7 @@ fun registerBuildDocsTasks(
     )
 }
 
-fun TaskContainer.registerBuildDocsTasks(
+private fun TaskContainer.registerBuildDocsTasks2(
     name: String = "buildDocs",
     relativePathDocsCustom: String = "documentation/custom",
     relativePathGeneratedDocsOutput: String = "gen/docs",
