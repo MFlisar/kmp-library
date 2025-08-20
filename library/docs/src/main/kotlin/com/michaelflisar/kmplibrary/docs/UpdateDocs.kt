@@ -375,15 +375,13 @@ private fun generateProjectYaml(
     val demo = relativeDemosPath?.let { File(root, it) }?.takeIf { it.exists() }
 
     // data dependencies
-    val versionCMP = tomlLibs.findKey("versions", "compose")
+    val versionCMP = tomlLibs.tryFindKey("versions", "compose")
     var versionAndroidXMaterial3: String? = null
     var versionAndroidXComposeRuntime: String? = null
     if (multiplatform) {
 
-        val urlMaterial3 =
-            "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionCMP}/material3-${versionCMP}.pom"
-        val urlRuntime =
-            "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionCMP}/runtime-${versionCMP}.pom"
+        val urlMaterial3 = "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionCMP}/material3-${versionCMP}.pom"
+        val urlRuntime = "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionCMP}/runtime-${versionCMP}.pom"
 
         versionAndroidXMaterial3 =
             findVersionInPOM(urlMaterial3, "androidx.compose.material3")
@@ -451,9 +449,11 @@ private fun generateProjectYaml(
         appendLine("# -------")
         appendLine("")
         appendLine("dependencies:")
-        appendLine("  compose-multiplatform: $versionCMP # https://github.com/JetBrains/compose-multiplatform/releases")
-        appendLine("  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime")
-        appendLine("  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3")
+        if (multiplatform) {
+            appendLine("  compose-multiplatform: $versionCMP # https://github.com/JetBrains/compose-multiplatform/releases")
+            appendLine("  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime")
+            appendLine("  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3")
+        }
         appendLine("  experimental: $experimental")
         appendLine("")
         appendLine("# -------")
@@ -603,6 +603,12 @@ private fun loadToml(root: File, fileName: String): TomlFile {
 private fun TomlFile.findKey(table: String, key: String): String {
     val table = findTableInAstByName(table) ?: throw RuntimeException("Table '$table' not found in TOML file")
     val key = table.children.find { it.name == key } ?: throw RuntimeException("Key '$key' not found in TOML table '$table'")
+    return (key as TomlKeyValuePrimitive).value.content.toString()
+}
+
+private fun TomlFile.tryFindKey(table: String, key: String): String? {
+    val table = findTableInAstByName(table) ?: return null
+    val key = table.children.find { it.name == key } ?: return null
     return (key as TomlKeyValuePrimitive).value.content.toString()
 }
 
