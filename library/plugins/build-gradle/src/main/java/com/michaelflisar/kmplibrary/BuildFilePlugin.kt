@@ -467,12 +467,12 @@ fun KotlinDependencyHandler.api(
     }
 }
 
-fun KotlinSourceSet.addAsDependency(
+fun KotlinSourceSet.dependencyOf(
     sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
     targets: Targets,
-    vararg target: Target
+    dependants: List<Target>
 ) {
-    target.filter { targets.isEnabled(it) }.forEach { target ->
+    dependants.filter { targets.isEnabled(it) }.forEach { target ->
         val groupMain = sourceSets.maybeCreate(target.nameMain)
         groupMain.dependsOn(this)
         target.targets.forEach {
@@ -481,12 +481,12 @@ fun KotlinSourceSet.addAsDependency(
     }
 }
 
-fun KotlinSourceSet.addAsDependencyForAllExcept(
+fun KotlinSourceSet.dependencyOfAll(
     sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
     targets: Targets,
-    vararg excluded: Target
+    exclusions: List<Target>
 ) {
-    targets.enabledTargets.filter { !excluded.contains(it) }.forEach { target ->
+    targets.enabledTargets.filter { !exclusions.contains(it) }.forEach { target ->
         val groupMain = sourceSets.maybeCreate(target.nameMain)
         groupMain.dependsOn(this)
         target.targets.forEach {
