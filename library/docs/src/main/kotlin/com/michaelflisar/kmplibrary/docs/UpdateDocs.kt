@@ -45,6 +45,7 @@ fun registerBuildDocsTasks(
     relativeDemosPath: String = "demo",
     customOtherProjectsYamlUrl: String = "https://raw.githubusercontent.com/MFlisar/kmp-library/refs/heads/main/data/other-projects.yml",
     defaultRelativePathGeneratedDocsOutput: String = "gen/docs",
+    multiplatform: Boolean = true
 ) {
     val generatedDocsDir = project.findProperty("generatedDocsDir") as String? ?: defaultRelativePathGeneratedDocsOutput
     tasks.registerBuildDocsTasks2(
@@ -53,17 +54,19 @@ fun registerBuildDocsTasks(
         relativePathGeneratedDocsOutput = generatedDocsDir,
         relativeModulesPath = relativeModulesPath,
         relativeDemosPath = relativeDemosPath,
-        customOtherProjectsYamlUrl = customOtherProjectsYamlUrl
+        customOtherProjectsYamlUrl = customOtherProjectsYamlUrl,
+        multiplatform = multiplatform
     )
 }
 
 private fun TaskContainer.registerBuildDocsTasks2(
-    name: String = "buildDocs",
-    relativePathDocsCustom: String = "documentation/custom",
-    relativePathGeneratedDocsOutput: String = "gen/docs",
-    relativeModulesPath: String = "library",
-    relativeDemosPath: String = "demo",
-    customOtherProjectsYamlUrl: String = "https://raw.githubusercontent.com/MFlisar/kmp-core/refs/heads/main/data/other-projects.yml"
+    name: String,
+    relativePathDocsCustom: String,
+    relativePathGeneratedDocsOutput: String,
+    relativeModulesPath: String,
+    relativeDemosPath: String?,
+    customOtherProjectsYamlUrl: String,
+    multiplatform: Boolean
 ) {
     register(name) { task ->
         task.doLast {
@@ -72,7 +75,8 @@ private fun TaskContainer.registerBuildDocsTasks2(
                 relativePathGeneratedDocsOutput = relativePathGeneratedDocsOutput,
                 relativeModulesPath = relativeModulesPath,
                 relativeDemosPath = relativeDemosPath,
-                customOtherProjectsYamlUrl = customOtherProjectsYamlUrl
+                customOtherProjectsYamlUrl = customOtherProjectsYamlUrl,
+                multiplatform = multiplatform
             )
             println("Docs have been build!")
         }
@@ -85,12 +89,12 @@ private fun TaskContainer.registerBuildDocsTasks2(
  * automatically detects all gradle properties that start with "DOC_", "LIBRARY_" or "DEVELOPER_" and uses them as placeholders for the replacement logic
  */
 private fun buildDocs(
-    relativePathDocsCustom: String = "documentation/custom",
-    relativePathGeneratedDocsOutput: String = "gen/docs",
-    relativeModulesPath: String = "library",
-    relativeDemosPath: String? = "demo",
-    customOtherProjectsYamlUrl: String? = null,
-    multiplatform: Boolean = true
+    relativePathDocsCustom: String,
+    relativePathGeneratedDocsOutput: String,
+    relativeModulesPath: String,
+    relativeDemosPath: String?,
+    customOtherProjectsYamlUrl: String,
+    multiplatform: Boolean
 ) {
 
     val ci = System.getenv("CI")?.toBoolean() == true
