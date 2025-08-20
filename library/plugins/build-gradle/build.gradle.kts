@@ -1,9 +1,9 @@
-import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    application
+    `kotlin-dsl`
+    `java-gradle-plugin`
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dokka)
     alias(libs.plugins.gradle.maven.publish.plugin)
@@ -13,10 +13,10 @@ plugins {
 // Informations
 // -------------------
 
-val description = "functions to build mkdocs documentation for kmp projects"
+val description = "a gradle build file plugin that provides common functions for kmp libraries"
 
 // Module
-val artifactId = "docs"
+val artifactId = "plugins-build-gradle"
 
 // Library
 val libraryName = "kmp-library"
@@ -28,38 +28,37 @@ val license = "Apache License 2.0"
 val licenseUrl = "$github/blob/main/LICENSE"
 
 // -------------------
-// Setup
+// Plugins
 // -------------------
 
-dependencies {
-    implementation(deps.ktoml.core)
-    implementation(deps.ktoml.file)
-    implementation(deps.jsoup)
-    implementation(deps.yaml)
-
-    implementation(gradleApi())
-
-    implementation(project(":library:plugins:shared"))
-}
-
-// allows to run the application with `./gradlew run -PmainClass=com.michaelflisar.scripts.UpdateDocsKt`
-if (System.getenv("CI")?.toBoolean() == true) {
-    application {
-        val mc = project.findProperty("mainClass") as? String
-        if (mc != null) {
-            mainClass.set(mc)
+gradlePlugin {
+    plugins {
+        create("Build Gradle Plugin") {
+            id = "$groupID.$artifactId"
+            implementationClass = "com.michaelflisar.kmplibrary.BuildFilePlugin"
         }
+        isAutomatedPublishing = true
     }
 }
 
-// -------------------
-// Configurations
-// -------------------
+dependencies {
+
+    implementation(libs.gradle.maven.publish.plugin)
+    implementation(libs.kotlin.gradle.plugin)
+    implementation(libs.android.build.tools)
+    implementation(libs.compose)
+    implementation(libs.kotlin.compose)
+    implementation(libs.launch4j)
+
+    implementation(deps.yaml)
+
+    api(project(":library:plugins:shared"))
+}
 
 mavenPublishing {
 
     configure(
-        JavaLibrary(
+        GradlePlugin(
             javadocJar = JavadocJar.Dokka("dokkaHtml"),
             sourcesJar = true
         )

@@ -3,7 +3,6 @@ import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    application
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dokka)
     alias(libs.plugins.gradle.maven.publish.plugin)
@@ -13,10 +12,10 @@ plugins {
 // Informations
 // -------------------
 
-val description = "functions to build mkdocs documentation for kmp projects"
+val description = "a gradle plugin that provides build functions for kmp libraries"
 
 // Module
-val artifactId = "docs"
+val artifactId = "plugins-shared"
 
 // Library
 val libraryName = "kmp-library"
@@ -31,23 +30,14 @@ val licenseUrl = "$github/blob/main/LICENSE"
 // Setup
 // -------------------
 
-dependencies {
-    implementation(deps.ktoml.core)
-    implementation(deps.ktoml.file)
-    implementation(deps.jsoup)
-    implementation(deps.yaml)
+kotlin {
 
-    implementation(gradleApi())
+    sourceSets {
 
-    implementation(project(":library:plugins:shared"))
-}
-
-// allows to run the application with `./gradlew run -PmainClass=com.michaelflisar.scripts.UpdateDocsKt`
-if (System.getenv("CI")?.toBoolean() == true) {
-    application {
-        val mc = project.findProperty("mainClass") as? String
-        if (mc != null) {
-            mainClass.set(mc)
+        val main by getting {
+            dependencies {
+                implementation(deps.yaml)
+            }
         }
     }
 }
@@ -55,6 +45,10 @@ if (System.getenv("CI")?.toBoolean() == true) {
 // -------------------
 // Configurations
 // -------------------
+
+tasks.named<Jar>("jar") {
+    dependsOn(tasks.named("compileJava"))
+}
 
 mavenPublishing {
 

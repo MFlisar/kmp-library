@@ -35,17 +35,12 @@ dependencyResolutionManagement {
 
 }
 
-fun includeModule(
-    moduleName: String,
-    path: String)
-{
-    include(moduleName)
-    project(moduleName).projectDir = file(path)
-}
+// --------------
+// Library
+// --------------
 
-includeModule(":shared","library/shared")
+include(":library:plugins:build-gradle")
+include(":library:plugins:settings-gradle")
+include(":library:plugins:shared")
 
-includeModule(":build-plugin", "library/build-plugin")
-includeModule(":settings-plugin", "library/settings-plugin")
-includeModule(":docs", "library/docs")
-includeModule(":scripts", "library/scripts")
+include(":library:docs")

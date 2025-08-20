@@ -6,8 +6,8 @@ Offers useful gradle functions to set up KMP modules as well as a script to gene
 
 There must be following files:
 
-* `.kmp-gradle-tools/library.yml`... this files contains library specific information
-* `.kmp-gradle-tools/modules.yml`... this file contains the informations about the modules of the library
+* `.kmp-library/library.yml`... this files contains library specific information
+* `.kmp-library/modules.yml`... this file contains the informations about the modules of the library
 
 ## Examples
 
