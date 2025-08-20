@@ -88,8 +88,9 @@ private fun buildDocs(
     relativePathDocsCustom: String = "documentation/custom",
     relativePathGeneratedDocsOutput: String = "gen/docs",
     relativeModulesPath: String = "library",
-    relativeDemosPath: String = "demo",
-    customOtherProjectsYamlUrl: String? = null
+    relativeDemosPath: String? = "demo",
+    customOtherProjectsYamlUrl: String? = null,
+    multiplatform: Boolean = true
 ) {
 
     val ci = System.getenv("CI")?.toBoolean() == true
@@ -165,6 +166,7 @@ private fun buildDocs(
         setupModules = setupModules,
         relativeModulesPath = relativeModulesPath,
         relativeDemosPath = relativeDemosPath,
+        multiplatform = multiplatform
     )
 
     // 6) generate other-projects.yaml
@@ -332,7 +334,8 @@ private fun generateProjectYaml(
     setupLibrary: SetupLibrary,
     setupModules: SetupModules,
     relativeModulesPath: String,
-    relativeDemosPath: String,
+    relativeDemosPath: String?,
+    multiplatform: Boolean
 ) {
     val file = File(documentationFolder, "_data/project.yml")
     val allModuleBuildGradleFile =
@@ -353,8 +356,6 @@ private fun generateProjectYaml(
     val repoName = setupLibrary.library.repoName
     val maven = setupLibrary.maven.groupId
     val mavenArtifact = setupLibrary.maven.primaryArtifactId
-    val multiplatform =
-        "true" // TODO: template is multiplatform... would need another base template???
     val supportedPlatforms = allModuleBuildGradleFile
         .map { it.platforms }
         .flatten()
@@ -370,14 +371,14 @@ private fun generateProjectYaml(
                 null // Detached HEAD oder Commit-Hash
             }
         }
-    val demoPath = relativeDemosPath
-    val demo = File(root, demoPath).exists()
+
+    val demo = relativeDemosPath?.let { File(root, it) }?.takeIf { it.exists() }
 
     // data dependencies
     val versionCMP = tomlLibs.findKey("versions", "compose")
     var versionAndroidXMaterial3: String? = null
     var versionAndroidXComposeRuntime: String? = null
-    val composeMultiplatformVersions = if (multiplatform != null) {
+    if (multiplatform) {
 
         val urlMaterial3 =
             "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionCMP}/material3-${versionCMP}.pom"
@@ -441,8 +442,8 @@ private fun generateProjectYaml(
         }
 
         appendLine("  branch: $branch")
-        if (demo) {
-            appendLine("  demo-path: $demoPath")
+        if (demo != null) {
+            appendLine("  demo-path: $relativeDemosPath")
         }
         appendLine("")
         appendLine("# -------")
