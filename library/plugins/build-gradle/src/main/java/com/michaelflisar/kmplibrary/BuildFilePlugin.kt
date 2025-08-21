@@ -472,20 +472,20 @@ fun KotlinDependencyHandler.api(
 
 fun KotlinSourceSet.setupDependencies(
     sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
-    targets: Targets,
-    dependants: List<Target>
+    buildTargets: Targets,
+    targets: List<Target>,
+    targetsNotSupported: Boolean = false
 ) {
-    dependants.filter { targets.isEnabled(it) }.forEach { target ->
+    val targets = if (targetsNotSupported) {
+        buildTargets.enabledTargets.filter { !targets.contains(it) }
+    } else {
+        targets
+    }
+    targets.filter { buildTargets.isEnabled(it) }.forEach { target ->
         val groupMain = sourceSets.maybeCreate(target.nameMain)
         groupMain.dependsOn(this)
         target.targets.forEach {
             sourceSets.getByName("${it}Main").dependsOn(groupMain)
         }
     }
-}
-
-fun List<Target>.invert(
-    targets: Targets
-): List<Target> {
-    return targets.enabledTargets.filter { !this.contains(it) }
 }
