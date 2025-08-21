@@ -29,6 +29,9 @@ import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import kotlin.text.get
@@ -348,6 +351,12 @@ class BuildFilePlugin : Plugin<Project> {
         versionName: String,
         buildConfig: Boolean
     ) {
+        project.extensions.configure(KotlinAndroidProjectExtension::class.java) {
+            compilerOptions{
+                jvmTarget.set(JvmTarget.fromTarget(javaVersion()))
+            }
+        }
+
         project.extensions.configure(ApplicationExtension::class.java) {
             namespace = androidNamespace
 
@@ -467,7 +476,7 @@ fun KotlinDependencyHandler.api(
     }
 }
 
-fun KotlinSourceSet.dependencyOf(
+fun KotlinSourceSet.setupDependency(
     sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
     targets: Targets,
     dependants: List<Target>
@@ -481,16 +490,8 @@ fun KotlinSourceSet.dependencyOf(
     }
 }
 
-fun KotlinSourceSet.dependencyOfAll(
-    sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
-    targets: Targets,
-    exclusions: List<Target>
-) {
-    targets.enabledTargets.filter { !exclusions.contains(it) }.forEach { target ->
-        val groupMain = sourceSets.maybeCreate(target.nameMain)
-        groupMain.dependsOn(this)
-        target.targets.forEach {
-            sourceSets.getByName("${it}Main").dependsOn(groupMain)
-        }
-    }
+fun List<Target>.invert(
+    targets: Targets
+): List<Target> {
+    return targets.enabledTargets.filter { !this.contains(it) }
 }
