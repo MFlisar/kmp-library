@@ -351,12 +351,6 @@ class BuildFilePlugin : Plugin<Project> {
         versionName: String,
         buildConfig: Boolean
     ) {
-        project.extensions.configure(KotlinAndroidProjectExtension::class.java) {
-            compilerOptions{
-                jvmTarget.set(JvmTarget.fromTarget(javaVersion()))
-            }
-        }
-
         project.extensions.configure(ApplicationExtension::class.java) {
             namespace = androidNamespace
 
@@ -476,7 +470,7 @@ fun KotlinDependencyHandler.api(
     }
 }
 
-fun KotlinSourceSet.setupDependency(
+fun KotlinSourceSet.setupDependencies(
     sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
     targets: Targets,
     dependants: List<Target>
