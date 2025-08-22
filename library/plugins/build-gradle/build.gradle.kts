@@ -33,8 +33,8 @@ val licenseUrl = "$github/blob/main/LICENSE"
 
 gradlePlugin {
     plugins {
-        create("Build Gradle Plugin") {
-            id = artifactId
+        create("buildPlugin") {
+            id = "$groupID.$artifactId"
             implementationClass = "com.michaelflisar.kmplibrary.BuildFilePlugin"
         }
         isAutomatedPublishing = true

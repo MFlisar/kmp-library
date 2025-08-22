@@ -36,6 +36,19 @@ private const val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_FEATURES = "parts/index_featu
 private const val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_PLATFORM_COMMENTS = "parts/index_platform_comments.md"
 private const val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_BOTTOM = "parts/index_bottom.md"
 
+/**
+ * Registers a Gradle task that generates documentation files based on the provided parameters and project properties.
+ *
+ * @param tasks The TaskContainer to register the task in.
+ * @param project The Gradle project context.
+ * @param name The name of the task to be registered. Default is "buildDocs".
+ * @param relativePathDocsCustom The relative path to the custom documentation files. Default is "documentation/custom".
+ * @param relativeModulesPath The relative path to the library modules. Default is "library".
+ * @param relativeDemosPath The relative path to the demo projects. Default is "demo".
+ * @param customOtherProjectsYamlUrl The URL to a custom YAML file containing other projects information. Default is "https://raw.githubusercontent.com/MFlisar/kmp-library/refs/heads/main/data/other-projects.yml".
+ * @param defaultRelativePathGeneratedDocsOutput The default relative path where generated documentation files will be output. Default is "gen/docs".
+ * @param multiplatform A flag indicating whether the library is multiplatform. Default is true.
+ */
 fun registerBuildDocsTasks(
     tasks: TaskContainer,
     project: Project,

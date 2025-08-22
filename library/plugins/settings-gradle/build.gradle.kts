@@ -32,7 +32,7 @@ val licenseUrl = "$github/blob/main/LICENSE"
 
 gradlePlugin {
     plugins {
-        create("Settings Gradle Plugin") {
+        create("settingsPlugin") {
             id = "$groupID.$artifactId"
             implementationClass = "com.michaelflisar.kmplibrary.SettingsFilePlugin"
         }
