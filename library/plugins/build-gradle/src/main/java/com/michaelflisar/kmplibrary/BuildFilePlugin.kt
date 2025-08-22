@@ -6,13 +6,19 @@ import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.Platform
+import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
 import org.gradle.api.JavaVersion
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.jetbrains.compose.desktop.application.dsl.JvmApplication
+import org.jetbrains.compose.desktop.application.dsl.JvmApplicationDistributions
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithHostTests
@@ -21,20 +27,8 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
-import org.jetbrains.compose.desktop.application.dsl.JvmApplication
-import org.jetbrains.compose.desktop.application.dsl.JvmApplicationDistributions
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
-import org.gradle.api.NamedDomainObjectContainer
-import org.gradle.kotlin.dsl.creating
-import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import kotlin.text.get
 
 class BuildFilePlugin : Plugin<Project> {
 
@@ -73,20 +67,20 @@ class BuildFilePlugin : Plugin<Project> {
     }*/
 
     /**
-        * Configures the project for publishing to Maven Central.
-        * This includes setting up the Maven coordinates, POM metadata, and signing.
-        *
-        * Usage:
-        *
-        * to only auto-publish releases without suffixes like "-debug", "-alpha", "-test" use following:
-        * <pre><code>
-        * autoReleaseOnMavenCentral = { version -> !version.contains("-") }
-        * </code></pre>
-        *
-        * @param platform The platform configuration for the publication.
-        * @param autoReleaseOnMavenCentral A function that determines if releases should be automatically published.
-        * @param sign Whether to sign the publications.
-        * @param version The version of the library, defaults to the value of the "TAG" environment variable (TAG is set by github action workflow) or "LOCAL-SNAPSHOT".
+     * Configures the project for publishing to Maven Central.
+     * This includes setting up the Maven coordinates, POM metadata, and signing.
+     *
+     * Usage:
+     *
+     * to only auto-publish releases without suffixes like "-debug", "-alpha", "-test" use following:
+     * <pre><code>
+     * autoReleaseOnMavenCentral = { version -> !version.contains("-") }
+     * </code></pre>
+     *
+     * @param platform The platform configuration for the publication.
+     * @param autoReleaseOnMavenCentral A function that determines if releases should be automatically published.
+     * @param sign Whether to sign the publications.
+     * @param version The version of the library, defaults to the value of the "TAG" environment variable (TAG is set by github action workflow) or "LOCAL-SNAPSHOT".
      */
     fun setupMavenPublish(
         platform: Platform = KotlinMultiplatform(
@@ -97,7 +91,7 @@ class BuildFilePlugin : Plugin<Project> {
         sign: Boolean = System.getenv("CI")?.toBoolean() == true,
         version: String = System.getenv("TAG") ?: "LOCAL-SNAPSHOT"
     ) {
-       if (setupModules == null) {
+        if (setupModules == null) {
             setupModules = SetupModules.read(project.rootDir)
         }
         val setup = setupModules!!
@@ -439,7 +433,9 @@ fun Launch4jLibraryTask.setupLaunch4J(
         println("##############################")
         println("")
         println("Executable wurde in folgendem Ordner erstellt:")
-        println("file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + "")
+        println(
+            "file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + ""
+        )
         println("")
     }
 }

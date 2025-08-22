@@ -19,7 +19,7 @@ enum class Target(
 
     companion object {
 
-        /*
+        /**
          * parser function names from the Targets class
          */
         fun parseParameterName(name: String): Target {
@@ -27,9 +27,32 @@ enum class Target(
                 throw IllegalArgumentException("Unknown target name: $name")
         }
 
+        /**
+         * Targets: [WINDOWS], [MACOS], [LINUX]
+         *
+         * not supported: [ANDROID], [IOS], [WASM], [JS]
+         */
         val LIST_COMPUTER = listOf(WINDOWS, MACOS, LINUX)
+
+        /**
+         * Targets: [IOS], [MACOS]
+         *
+         * not supported: [ANDROID], [WINDOWS], [LINUX], [WASM], [JS]
+         */
         val LIST_APPLE = listOf(IOS, MACOS)
+
+        /**
+         * Targets: [ANDROID], [IOS]
+         *
+         * not supported: [WINDOWS], [MACOS], [LINUX], [WASM], [JS]
+         */
         val LIST_MOBILE = listOf(ANDROID, IOS)
+
+        /**
+         * Targets: [ANDROID], [WINDOWS], [IOS], [MACOS], [LINUX]
+         *
+         * not supported: [WASM], [JS]
+         */
         val LIST_FILE_SUPPORT = listOf(ANDROID, WINDOWS, IOS, MACOS, LINUX)
     }
 }
