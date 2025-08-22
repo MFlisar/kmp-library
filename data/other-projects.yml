@@ -58,17 +58,17 @@ other-projects:
       description: A simple collection of colors that can be used inside any KMP compose project.
     - name: ComposeDebugDrawer
       link: https://mflisar.github.io/ComposeDebugDrawer
-      image: https://raw.githubusercontent.com/MFlisar/ComposeDebugDrawer/main/documentation/custom/docs/screenshots/core/demo2.jpg
+      image: https://raw.githubusercontent.com/MFlisar/ComposeDebugDrawer/main/documentation/docs/screenshots/core/demo2.jpg
       maven: io.github.mflisar.composedebugdrawer/core
       description: This library offers you a <b>simple</b> and easily extendable <b>debug drawer</b>.
     - name: ComposeDialogs
       link: https://mflisar.github.io/ComposeDialogs
-      image: https://raw.githubusercontent.com/MFlisar/ComposeDialogs/main/documentation/custom/docs/screenshots/color/demo_color1.jpg
+      image: https://raw.githubusercontent.com/MFlisar/ComposeDialogs/main/documentation/docs/screenshots/color/demo_color1.jpg
       maven: io.github.mflisar.composedialogs/core
       description: A compose framework for <b>modal dialogs</b>.
     - name: ComposePreferences
       link: https://mflisar.github.io/ComposePreferences
-      image: https://raw.githubusercontent.com/MFlisar/ComposePreferences/main/documentation/custom/docs/screenshots/overview.jpg
+      image: https://raw.githubusercontent.com/MFlisar/ComposePreferences/main/documentation/docs/screenshots/overview.jpg
       maven: io.github.mflisar.composepreferences/core
       description: This library offers you <b>preference screens</b> for compose including the ability of endless nesting subscreens as well as simple integration of custom preferences.
     - name: ComposeThemer
