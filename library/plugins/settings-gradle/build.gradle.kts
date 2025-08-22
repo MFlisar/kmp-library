@@ -36,7 +36,7 @@ gradlePlugin {
             id = "$groupID.$artifactId"
             implementationClass = "com.michaelflisar.kmplibrary.SettingsFilePlugin"
         }
-        //isAutomatedPublishing = true
+        isAutomatedPublishing = false
     }
 }
 
