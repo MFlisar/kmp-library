@@ -81,7 +81,7 @@ other-projects:
      - name: kmp-parcelize
        link: https://github.com/MFlisar/kmp-parcelize
        maven: io.github.mflisar.parcelize/library
-       description: a kmp parcelize library that allows you to use the @Parcelize annotation in your kmp projects
+       description: a kmp parcelize library that allows you to use the `@Parcelize` annotation in your kmp projects
      - name: kmp-library
        link: https://github.com/MFlisar/kmp-library
        maven: io.github.mflisar.kmp-library/docs
