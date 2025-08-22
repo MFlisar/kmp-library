@@ -474,15 +474,16 @@ private fun generateProjectYaml(
         appendLine("# -------")
         appendLine("")
         appendLine("dependencies:")
-        if (versionCompose != null && multiplatform)
-            appendLine("  compose-multiplatform: $versionCompose # https://github.com/JetBrains/compose-multiplatform/releases")
-        if (versionCompose != null && !multiplatform)
-            appendLine("  compose: $versionCompose # https://developer.android.com/jetpack/androidx/releases/compose")
-        if (versionAndroidXComposeRuntime != null)
-            appendLine("  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime")
-        if (versionAndroidXMaterial3 != null)
-            appendLine("  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3")
         appendLine("  experimental: $experimental")
+        if (versionCompose != null) {
+            if (multiplatform) {
+                appendLine("  compose-multiplatform: $versionCompose # https://github.com/JetBrains/compose-multiplatform/releases")
+            } else {
+                appendLine("  compose: $versionCompose # https://developer.android.com/jetpack/androidx/releases/compose")
+            }
+            appendLine("  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime")
+            appendLine("  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3")
+        }
         appendLine("")
         appendLine("# -------")
         appendLine("# Groups")
