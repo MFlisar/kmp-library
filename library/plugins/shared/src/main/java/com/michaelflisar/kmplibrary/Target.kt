@@ -27,7 +27,6 @@ enum class Target(
                 throw IllegalArgumentException("Unknown target name: $name")
         }
 
-        val LIST_WINDOWS = listOf(WINDOWS)
         val LIST_COMPUTER = listOf(WINDOWS, MACOS, LINUX)
         val LIST_APPLE = listOf(IOS, MACOS)
         val LIST_MOBILE = listOf(ANDROID, IOS)

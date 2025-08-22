@@ -23,4 +23,8 @@ class Targets(
         }
 
     fun isEnabled(target: Target) = enabledTargets.contains(target)
+
+    fun getTargets(exclusions: List<Target>) : List<Target> {
+        return enabledTargets.filter { !exclusions.contains(it) }
+    }
 }

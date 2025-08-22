@@ -477,7 +477,7 @@ fun KotlinSourceSet.setupDependencies(
     targetsNotSupported: Boolean = false
 ) {
     val targets = if (targetsNotSupported) {
-        buildTargets.enabledTargets.filter { !targets.contains(it) }
+        buildTargets.getTargets(exclusions = targets)
     } else {
         targets
     }
