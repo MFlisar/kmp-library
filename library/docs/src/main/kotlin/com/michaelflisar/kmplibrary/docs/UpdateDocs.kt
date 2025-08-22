@@ -405,13 +405,11 @@ private fun generateProjectYaml(
         val urlRuntime =
             "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionCompose}/runtime-${versionCompose}.pom"
 
-        versionAndroidXMaterial3 =
-            findVersionInPOM(urlMaterial3, "androidx.compose.material3")
-                ?: throw RuntimeException("Version not found!")
-        versionAndroidXComposeRuntime =
-            findVersionInPOM(urlRuntime, "androidx.compose.runtime")
-                ?: throw RuntimeException("Version not found!")
-    } else null
+        versionAndroidXMaterial3 = findVersionInPOM(urlMaterial3, "androidx.compose.material3")
+            ?: throw RuntimeException("Version for 'androidx.compose.material3' not found!")
+        versionAndroidXComposeRuntime = findVersionInPOM(urlRuntime, "androidx.compose.runtime")
+            ?: throw RuntimeException("Version for 'androidx.compose.runtime' not found!")
+    }
     val experimental = allModuleKtFile
         .filter {
             val found = it.readText(Charsets.UTF_8).lines().any { line ->
@@ -475,24 +473,15 @@ private fun generateProjectYaml(
         appendLine("# Dependencies")
         appendLine("# -------")
         appendLine("")
-        val dependencies = listOfNotNull(
-            "  compose-multiplatform: $versionCompose # https://github.com/JetBrains/compose-multiplatform/releases"
-                .takeIf { versionCompose != null && multiplatform },
-            "  compose: $versionCompose # https://developer.android.com/jetpack/androidx/releases/compose"
-                .takeIf { versionCompose != null && !multiplatform },
-            "  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime"
-                .takeIf { versionAndroidXComposeRuntime != null },
-            "  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3"
-                .takeIf { versionAndroidXMaterial3 != null }
-        )
-        if (dependencies.isEmpty()) {
-            appendLine("dependencies: []")
-        } else {
-            appendLine("dependencies:")
-            for (d in dependencies) {
-                appendLine(d)
-            }
-        }
+        appendLine("dependencies:")
+        if (versionCompose != null && multiplatform)
+            appendLine("  compose-multiplatform: $versionCompose # https://github.com/JetBrains/compose-multiplatform/releases")
+        if (versionCompose != null && !multiplatform)
+            appendLine("  compose: $versionCompose # https://developer.android.com/jetpack/androidx/releases/compose")
+        if (versionAndroidXComposeRuntime != null)
+            appendLine("  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime")
+        if (versionAndroidXMaterial3 != null)
+            appendLine("  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3")
         appendLine("  experimental: $experimental")
         appendLine("")
         appendLine("# -------")
