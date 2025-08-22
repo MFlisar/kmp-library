@@ -30,7 +30,7 @@
     And then use the definitions in your projects like following:
 
     ```kotlin title="build.gradle.kts"
-    implementation(libs.{{ project["library"]["id"] }})
+    implementation(libs.{{ project["library"]["id"] | replace("-", ".") }})
     ```
 
 {% endif %}
