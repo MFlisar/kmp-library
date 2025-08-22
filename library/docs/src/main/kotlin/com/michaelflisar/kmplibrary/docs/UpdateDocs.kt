@@ -16,12 +16,12 @@ import com.michaelflisar.kmplibrary.saveDeleteRecursively
 import com.michaelflisar.kmplibrary.update
 import com.michaelflisar.kmplibrary.walkTopDownFiltered
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskContainer
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import java.io.File
 import java.util.Properties
 import java.util.jar.JarFile
-import org.gradle.api.tasks.TaskContainer
 
 private const val PLACEHOLDER_CUSTOM_NAV = "# <CUSTOM-NAV>"
 private const val PLACEHOLDER_MORE_NAV = "# <MORE-NAV>"
@@ -33,7 +33,8 @@ private const val PLACEHOLDER_INDEX_INFO_BOTTOM = "# <INFO_BOTTOM>"
 private const val NAV_TO_IGNORE = "usage.md"
 
 private const val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_FEATURES = "parts/index_features.md"
-private const val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_PLATFORM_COMMENTS = "parts/index_platform_comments.md"
+private const val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_PLATFORM_COMMENTS =
+    "parts/index_platform_comments.md"
 private const val REL_PATH_DOCS_CUSTOM_PARTS_INDEX_BOTTOM = "parts/index_bottom.md"
 
 /**
@@ -60,7 +61,8 @@ fun registerBuildDocsTasks(
     defaultRelativePathGeneratedDocsOutput: String = "gen/docs",
     multiplatform: Boolean = true
 ) {
-    val generatedDocsDir = project.findProperty("generatedDocsDir") as String? ?: defaultRelativePathGeneratedDocsOutput
+    val generatedDocsDir = project.findProperty("generatedDocsDir") as String?
+        ?: defaultRelativePathGeneratedDocsOutput
     tasks.registerBuildDocsTasks2(
         name = name,
         relativePathDocsCustom = relativePathDocsCustom,
@@ -218,20 +220,21 @@ private fun copyDoc(
         targetFile.parentFile.mkdirs()
         f.copyTo(targetFile, overwrite = true)
     }
-   //docCustom.copyRecursively(documentationFolder, overwrite = false)
-   //documentationFolder
-   //    .walkTopDownFiltered { it.isFile }
-   //    .forEach {
-   //        val renamed = it.name.cleanFileName()
-   //        if (renamed != it.name) {
-   //            val newFile = File(it.parentFile, renamed)
-   //            it.renameTo(newFile)
-   //        }
-   //    }
+    //docCustom.copyRecursively(documentationFolder, overwrite = false)
+    //documentationFolder
+    //    .walkTopDownFiltered { it.isFile }
+    //    .forEach {
+    //        val renamed = it.name.cleanFileName()
+    //        if (renamed != it.name) {
+    //            val newFile = File(it.parentFile, renamed)
+    //            it.renameTo(newFile)
+    //        }
+    //    }
 
     // 4) delete parts folders
     val partFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_FEATURES)
-    val partPlatformFeatures = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_PLATFORM_COMMENTS)
+    val partPlatformFeatures =
+        File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_PLATFORM_COMMENTS)
     val partBottom = File(documentationFolder, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_BOTTOM)
     partFeatures.saveDelete()
     partPlatformFeatures.saveDelete()
@@ -270,7 +273,8 @@ private fun updatePlaceholdersInIndexMd(
     val partBottom = File(docCustom, REL_PATH_DOCS_CUSTOM_PARTS_INDEX_BOTTOM)
 
     val features = partFeatures.takeIf { it.exists() }?.readText(Charsets.UTF_8) ?: ""
-    val platformComments = partPlatformComments.takeIf { it.exists() }?.readText(Charsets.UTF_8) ?: ""
+    val platformComments =
+        partPlatformComments.takeIf { it.exists() }?.readText(Charsets.UTF_8) ?: ""
     val bottom = partBottom.takeIf { it.exists() }?.readText(Charsets.UTF_8) ?: ""
 
     file.update(PLACEHOLDER_INDEX_INFO_FEATURES, features)
@@ -395,14 +399,11 @@ private fun generateProjectYaml(
     val versionCompose = tomlLibs.tryFindKey("versions", "compose")
     var versionAndroidXMaterial3: String? = null
     var versionAndroidXComposeRuntime: String? = null
-    if (multiplatform) {
-
-        if (versionCompose == null) {
-            throw RuntimeException("Version 'compose' not found in libs.versions.toml!")
-        }
-
-        val urlMaterial3 = "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionCompose}/material3-${versionCompose}.pom"
-        val urlRuntime = "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionCompose}/runtime-${versionCompose}.pom"
+    if (versionCompose != null) {
+        val urlMaterial3 =
+            "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionCompose}/material3-${versionCompose}.pom"
+        val urlRuntime =
+            "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionCompose}/runtime-${versionCompose}.pom"
 
         versionAndroidXMaterial3 =
             findVersionInPOM(urlMaterial3, "androidx.compose.material3")
@@ -474,11 +475,23 @@ private fun generateProjectYaml(
         appendLine("# Dependencies")
         appendLine("# -------")
         appendLine("")
-        appendLine("dependencies:")
-        if (multiplatform) {
-            appendLine("  compose-multiplatform: $versionCompose # https://github.com/JetBrains/compose-multiplatform/releases")
-            appendLine("  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime")
-            appendLine("  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3")
+        val dependencies = listOfNotNull(
+            "  compose-multiplatform: $versionCompose # https://github.com/JetBrains/compose-multiplatform/releases"
+                .takeIf { versionCompose != null && multiplatform },
+            "  compose: $versionCompose # https://developer.android.com/jetpack/androidx/releases/compose"
+                .takeIf { versionCompose != null && !multiplatform },
+            "  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime"
+                .takeIf { versionAndroidXComposeRuntime != null },
+            "  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3"
+                .takeIf { versionAndroidXMaterial3 != null }
+        )
+        if (dependencies.isEmpty()) {
+            appendLine("dependencies: []")
+        } else {
+            appendLine("dependencies:")
+            for (d in dependencies) {
+                appendLine(d)
+            }
         }
         appendLine("  experimental: $experimental")
         appendLine("")
@@ -503,8 +516,9 @@ private fun generateProjectYaml(
         appendLine("")
         appendLine("modules:")
         setupModules.modules.forEach { module ->
-            val buildGradleFile = allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() } ?:
-                throw RuntimeException("BuildGradleFile not found for module: ${module.relativePath} in ${allModuleBuildGradleFile.map { it.relativeModulePath }}")
+            val buildGradleFile =
+                allModuleBuildGradleFile.find { it.relativeModulePath.normalizePath() == module.relativePath.normalizePath() }
+                    ?: throw RuntimeException("BuildGradleFile not found for module: ${module.relativePath} in ${allModuleBuildGradleFile.map { it.relativeModulePath }}")
             appendLine("  - id: ${module.artifactId}")
             appendLine("    group: ${module.group}")
             appendLine("    description: ${module.description}")
@@ -627,8 +641,10 @@ private fun loadToml(root: File, fileName: String): TomlFile {
 }
 
 private fun TomlFile.findKey(table: String, key: String): String {
-    val table = findTableInAstByName(table) ?: throw RuntimeException("Table '$table' not found in TOML file")
-    val key = table.children.find { it.name == key } ?: throw RuntimeException("Key '$key' not found in TOML table '$table'")
+    val table = findTableInAstByName(table)
+        ?: throw RuntimeException("Table '$table' not found in TOML file")
+    val key = table.children.find { it.name == key }
+        ?: throw RuntimeException("Key '$key' not found in TOML table '$table'")
     return (key as TomlKeyValuePrimitive).value.content.toString()
 }
 
