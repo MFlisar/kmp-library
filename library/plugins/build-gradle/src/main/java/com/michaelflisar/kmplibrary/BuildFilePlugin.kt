@@ -45,6 +45,10 @@ class BuildFilePlugin : Plugin<Project> {
             setupLibrary = SetupLibrary.read(project.rootDir)
     }
 
+    fun useLiveDependencies(property: String = "useLiveDependencies"): Boolean {
+        return checkGradleProperty(property) != false
+    }
+
     fun checkGradleProperty(property: String): Boolean? {
         if (!project.providers.gradleProperty(property).isPresent) {
             return null
@@ -437,32 +441,6 @@ fun Launch4jLibraryTask.setupLaunch4J(
             "file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + ""
         )
         println("")
-    }
-}
-
-fun KotlinDependencyHandler.implementation(
-    live: Any,
-    project: String,
-    plugin: BuildFilePlugin,
-    gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
-) {
-    if (plugin.checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
-        implementation(live)
-    } else {
-        implementation(project(project))
-    }
-}
-
-fun KotlinDependencyHandler.api(
-    live: Any,
-    project: String,
-    plugin: BuildFilePlugin,
-    gradlePropertyUseLiveDependencies: String = "useLiveDependencies"
-) {
-    if (plugin.checkGradleProperty(gradlePropertyUseLiveDependencies) != false) {
-        api(live)
-    } else {
-        api(project(project))
     }
 }
 
