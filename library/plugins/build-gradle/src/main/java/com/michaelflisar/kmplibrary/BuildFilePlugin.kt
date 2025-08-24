@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -347,7 +348,8 @@ class BuildFilePlugin : Plugin<Project> {
         targetSdk: Provider<String>,
         versionCode: Int,
         versionName: String,
-        buildConfig: Boolean
+        buildConfig: Boolean,
+        checkDebugKeyStoreProperty: Boolean
     ) {
         project.extensions.configure(ApplicationExtension::class.java) {
             namespace = androidNamespace
@@ -368,6 +370,21 @@ class BuildFilePlugin : Plugin<Project> {
             compileOptions {
                 sourceCompatibility = JavaVersion.toVersion(javaVersion())
                 targetCompatibility = JavaVersion.toVersion(javaVersion())
+            }
+
+            // eventually use local custom signing
+            if (checkDebugKeyStoreProperty) {
+                val debugKeyStore = project.providers.gradleProperty("debugKeyStore").orNull
+                if (debugKeyStore != null) {
+                    signingConfigs {
+                        getByName("debug") {
+                            keyAlias = "androiddebugkey"
+                            keyPassword = "android"
+                            storeFile = File(debugKeyStore)
+                            storePassword = "android"
+                        }
+                    }
+                }
             }
         }
     }
