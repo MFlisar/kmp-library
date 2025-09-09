@@ -427,10 +427,7 @@ fun JvmApplication.setupWindowsApp(
 fun Launch4jLibraryTask.setupLaunch4J(
     setup: DesktopSetup,
     jarTask: String = "flattenReleaseJars",
-    onCreated: (exe: File) -> Unit = { exe ->
-        println("Executable wurde in folgendem Ordner erstellt:")
-        println("file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/"))
-    }
+    outputFile: (exe: File) -> File = { it }
 ) {
     mainClassName.set(setup.mainClass)
     icon.set(project.file(setup.ico).absolutePath)
@@ -451,12 +448,22 @@ fun Launch4jLibraryTask.setupLaunch4J(
 
         val exe = dest.get().asFile
 
+        val finalExe = outputFile(exe)
+        if (finalExe != exe) {
+            if (finalExe.exists())
+                finalExe.delete()
+            val moved = exe.renameTo(finalExe)
+            if (!moved)
+                throw Exception("Konnte exe nicht verschieben!")
+        }
+
         println("")
         println("##############################")
         println("#          LAUNCH4J          #")
         println("##############################")
         println("")
-        onCreated(exe)
+        println("Executable wurde in folgendem Ordner erstellt:")
+        println("file:///" + finalExe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/"))
         println("")
     }
 }
