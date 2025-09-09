@@ -42,8 +42,7 @@ class BuildFilePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         this.project = project
         setupApp = SetupApp.tryRead(project.rootDir)
-        if (setupApp == null)
-            setupLibrary = SetupLibrary.read(project.rootDir)
+        setupLibrary = SetupLibrary.tryRead(project.rootDir)
     }
 
     fun useLiveDependencies(property: String = "useLiveDependencies"): Boolean {
@@ -58,7 +57,7 @@ class BuildFilePlugin : Plugin<Project> {
     }
 
     fun javaVersion(): String {
-        return setupApp?.javaVersion ?: setupLibrary!!.javaVersion
+        return setupApp?.javaVersion ?: setupLibrary?.javaVersion ?: throw RuntimeException("Failed to read `${Constants.YML_APP}` and '${Constants.YML_LIBRARY}' so no java version is configured!")
     }
 
     /*fun setupBinaryCompatibilityValidator() {

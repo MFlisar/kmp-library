@@ -18,7 +18,7 @@ data class SetupLibrary(
             return File(root, Constants.YML_LIBRARY)
         }
 
-        fun read(root: File): SetupLibrary {
+        fun tryRead(root: File): SetupLibrary? {
             val file = file(root)
             return try {
                 val content = file.readText(Charsets.UTF_8)
