@@ -18,6 +18,16 @@ data class SetupLibrary(
             return File(root, Constants.YML_LIBRARY)
         }
 
+        fun read(root: File): SetupLibrary {
+            val file = file(root)
+            return try {
+                tryRead(root)!!
+            } catch (e: Exception) {
+                e.printStackTrace()
+                throw RuntimeException("Failed to read `SetupLibrary` from path '${file.path}'", e)
+            }
+        }
+
         fun tryRead(root: File): SetupLibrary? {
             val file = file(root)
             return try {
