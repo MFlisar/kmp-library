@@ -393,7 +393,7 @@ class BuildFilePlugin : Plugin<Project> {
 // Extensions
 // ----------------
 
-fun JvmApplication.setupWindowApp(
+fun JvmApplication.setupWindowsApp(
     project: Project,
     setup: DesktopSetup,
     configNativeDistribution: JvmApplicationDistributions.() -> Unit = {}
@@ -427,7 +427,10 @@ fun JvmApplication.setupWindowApp(
 fun Launch4jLibraryTask.setupLaunch4J(
     setup: DesktopSetup,
     jarTask: String = "flattenReleaseJars",
-    log: Boolean = true
+    onCreated: (exe: File) -> Unit = { exe ->
+        println("Executable wurde in folgendem Ordner erstellt:")
+        println("file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/"))
+    }
 ) {
     mainClassName.set(setup.mainClass)
     icon.set(project.file(setup.ico).absolutePath)
@@ -446,21 +449,15 @@ fun Launch4jLibraryTask.setupLaunch4J(
 
     doLast {
 
-        if (log)
-        {
-            val exe = dest.get().asFile
+        val exe = dest.get().asFile
 
-            println("")
-            println("##############################")
-            println("#          LAUNCH4J          #")
-            println("##############################")
-            println("")
-            println("Executable wurde in folgendem Ordner erstellt:")
-            println(
-                "file:///" + exe.parentFile.absolutePath.replace(" ", "%20").replace("\\", "/") + ""
-            )
-            println("")
-        }
+        println("")
+        println("##############################")
+        println("#          LAUNCH4J          #")
+        println("##############################")
+        println("")
+        onCreated(exe)
+        println("")
     }
 }
 
