@@ -1,5 +1,10 @@
 package com.michaelflisar.kmplibrary
 
+import com.charleskorn.kaml.Yaml
+import com.michaelflisar.kmplibrary.SetupApp.Companion.file
+import com.michaelflisar.kmplibrary.SetupApp.Companion.serializer
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.Serializer
 import java.io.File
 
 fun rootFolder() = File(System.getProperty("user.dir"))
@@ -38,5 +43,24 @@ fun File.saveDelete() {
 fun File.deleteIfEmpty() {
     if (isDirectory && listFiles()?.isEmpty() == true) {
         delete()
+    }
+}
+
+fun <T> Yaml.Companion.tryRead(file: File, deserializer: DeserializationStrategy<T>): T? {
+    return try {
+        val content = file.readText(Charsets.UTF_8)
+        Yaml.default.decodeFromString(deserializer, content)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+inline fun <reified T> Yaml.Companion.read(file: File, deserializer: DeserializationStrategy<T>): T {
+    return try {
+        val content = file.readText(Charsets.UTF_8)
+        Yaml.default.decodeFromString(deserializer, content)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        throw RuntimeException("Failed to read `${T::class.simpleName}` from path '${file.path}'", e)
     }
 }

@@ -16,16 +16,8 @@ data class SetupModules(
             return File(root, Constants.YML_MODULES)
         }
 
-        fun read(root: File): SetupModules {
-            val file = file(root)
-            return try {
-                val content = file.readText(Charsets.UTF_8)
-                Yaml.default.decodeFromString(serializer(), content)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                throw RuntimeException("Failed to read `SetupModules` from path '${file.path}'", e)
-            }
-        }
+        fun read(root: File) = Yaml.read(file(root), serializer())
+        fun tryRead(root: File) = Yaml.tryRead(file(root), serializer())
     }
 
     fun getModuleByPath(path: String): Module {

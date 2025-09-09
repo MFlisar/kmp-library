@@ -15,15 +15,8 @@ data class SetupApp(
             return File(root, Constants.YML_APP)
         }
 
-        fun tryRead(root: File): SetupApp? {
-            val file = file(root)
-            return try {
-                val content = file.readText(Charsets.UTF_8)
-                Yaml.default.decodeFromString(serializer(), content)
-            } catch (e: Exception) {
-                null
-            }
-        }
+        fun read(root: File) = Yaml.read(file(root), serializer())
+        fun tryRead(root: File) = Yaml.tryRead(file(root), serializer())
     }
 }
 
