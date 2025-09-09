@@ -34,8 +34,7 @@ data class SetupLibrary(
                 val content = file.readText(Charsets.UTF_8)
                 Yaml.default.decodeFromString(serializer(), content)
             } catch (e: Exception) {
-                e.printStackTrace()
-                throw RuntimeException("Failed to read `SetupLibrary` from path '${file.path}'", e)
+                null
             }
         }
     }
