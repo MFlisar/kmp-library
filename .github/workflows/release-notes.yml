@@ -21,14 +21,14 @@ jobs:
           ignorePreReleases: true
           configurationJson: |
             {
-              "template": "#{{CHANGELOG}}\n TEST TEMPLATE",
-              "commit_template": "- #{{TITLE}}\n- ##{{BODY}}\n",
+              "template": "#{{CHANGELOG}}",
+              "commit_template": "#{{BODY}}",
               "transformers": [
                 {
                   "name": "MULTI LINE TRANSFORMER",
                   "source": "BODY",
                   "transformer": {
-                    "pattern": "(.*[^\\r\\n)])+",
+                    "pattern": "(.*[^\\n)])+",
                       "method": "regexr",
                       "target": "- $1"
                   }
