@@ -22,17 +22,7 @@ jobs:
           configurationJson: |
             {
               "template": "#{{CHANGELOG}}",
-              "commit_template": "#{{BODY}}",
-              "transformers": [
-                {
-                  "name": "MULTI LINE TRANSFORMER",
-                  "source": "BODY",
-                  "transformer": {
-                    "pattern": "(^.*$)+",
-                    "target": "- $1"
-                  }
-                }
-              ]
+              "commit_template": "#{{BODY}}"
             }
 
       - name: Create Release
