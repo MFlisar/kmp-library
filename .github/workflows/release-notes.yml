@@ -68,18 +68,17 @@ jobs:
                     "labels": [""]
                 }
               ],
-              "reference": {
-                    "pattern": "(.*[^\\r\\n)])+",
-                    "on_property": "body",
-                    "method": "replace",
-                    "target": "$1"
-              },
               "transformers": [
-                  {
-                    "pattern": "(.*[^\\r\\n)])+",
-                    "target": "- $1"
-                  }
-                ]
+                {
+                    "name": "MULTI LINE TRANSFORMER",
+                    "source": "BODY",
+                    "transformer": {
+                        "pattern": "(.*[^\\r\\n)])+",
+                        "method": "regexr",
+                        "target": '- $1'
+                    }
+                }
+              ]
             }
 
       - name: Create Release X
