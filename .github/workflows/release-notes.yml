@@ -21,9 +21,9 @@ jobs:
           ignorePreReleases: true
           configurationJson: |
             {
-              "template": "#{{CHANGELOG}}",
-              "pr_template": "- #{{TITLE}}\n- ##{{BODY}}",
-              "commit_template": "- #{{TITLE}}\n- ##{{BODY}}",
+              "template": "#{{CHANGELOG}}\n TEST TEMPLATE",
+              "pr_template": "- #{{TITLE}}\n- ##{{BODY}}\n TEST PR TEMPLATE",
+              "commit_template": "- #{{TITLE}}\n- ##{{BODY}}\n TEST COMMIT TEMPLATE",
               "categories": [
                 {
                     "title": "## ➕ New",
