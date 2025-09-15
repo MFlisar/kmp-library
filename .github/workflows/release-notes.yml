@@ -22,7 +22,8 @@ jobs:
           configurationJson: |
             {
               "template": "#{{CHANGELOG}}",
-              "commit_template": "- XX #{{TITLE}}\n#{{BODY}},
+              "pr_template": "- TEST #{{TITLE}}\n#{{BODY}},
+              "commit_template": "- TEST #{{TITLE}}\n#{{BODY}},
               "categories": [
                 {
                     "title": "## ➕ New",
