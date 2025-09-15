@@ -68,6 +68,12 @@ jobs:
                     "labels": [""]
                 }
               ],
+              "reference": {
+                    "pattern": "(.*[^\\r\\n)])+",
+                    "on_property": "body",
+                    "method": "replace",
+                    "target": "$1"
+              },
               "transformers": [
                   {
                     "pattern": "(.*[^\\r\\n)])+",
