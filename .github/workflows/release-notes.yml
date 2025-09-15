@@ -67,7 +67,13 @@ jobs:
                     "title": "## Others",
                     "labels": [""]
                 }
-              ]
+              ],
+              "transformers": [
+                  {
+                    "pattern": "(.*[^\\r\\n)])+",
+                    "target": "- $1"
+                  }
+                ]
             }
 
       - name: Create Release
