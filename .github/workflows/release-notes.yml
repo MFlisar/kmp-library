@@ -29,8 +29,8 @@ jobs:
                   "source": "BODY",
                   "transformer": {
                     "pattern": "(.*[^\\n)])+",
-                      "method": "replace",
-                      "target": "- $1"
+                    "method": "replace",
+                    "target": "- $1"
                   }
                 }
               ]
