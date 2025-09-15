@@ -28,7 +28,7 @@ jobs:
                   "name": "MULTI LINE TRANSFORMER",
                   "source": "BODY",
                   "transformer": {
-                    "pattern": "(.*[^\\n)])+",
+                    "pattern": "(^.*$)+",
                     "target": "- $1"
                   }
                 }
