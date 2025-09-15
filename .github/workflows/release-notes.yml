@@ -22,8 +22,18 @@ jobs:
           configurationJson: |
             {
               "template": "#{{CHANGELOG}}\n TEST TEMPLATE",
-              "pr_template": "- #{{TITLE}}\n- ##{{BODY}}\n TEST PR TEMPLATE",
-              "commit_template": "- #{{TITLE}}\n- ##{{BODY}}\n TEST COMMIT TEMPLATE"
+              "commit_template": "- #{{TITLE}}\n- ##{{BODY}}\n",
+              "transformers": [
+                {
+                  "name": "MULTI LINE TRANSFORMER",
+                  "source": "BODY",
+                  "transformer": {
+                    "pattern": "(.*[^\\r\\n)])+",
+                      "method": "regexr",
+                      "target": "- $1"
+                  }
+                }
+              ]
             }
 
       - name: Create Release X
