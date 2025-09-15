@@ -29,14 +29,13 @@ jobs:
                   "source": "BODY",
                   "transformer": {
                     "pattern": "(.*[^\\n)])+",
-                    "method": "replace",
                     "target": "- $1"
                   }
                 }
               ]
             }
 
-      - name: Create Release X
+      - name: Create Release
         uses: mikepenz/action-gh-release@v0.2.0-a03
         with:
           body: ${{steps.github_release.outputs.changelog}}
