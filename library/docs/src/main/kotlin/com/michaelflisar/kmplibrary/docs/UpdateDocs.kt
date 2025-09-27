@@ -397,11 +397,12 @@ private fun generateProjectYaml(
 
     // data dependencies
     val versionCompose = tomlLibs.tryFindKey("versions", "compose")
+    val versionComposeM3 = tomlLibs.tryFindKey("versions", "compose-material3")
     var versionAndroidXMaterial3: String? = null
     var versionAndroidXComposeRuntime: String? = null
     if (versionCompose != null) {
         val urlMaterial3 =
-            "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionCompose}/material3-${versionCompose}.pom"
+            "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionComposeM3}/material3-${versionComposeM3}.pom"
         val urlRuntime =
             "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionCompose}/runtime-${versionCompose}.pom"
 
