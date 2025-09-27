@@ -396,15 +396,15 @@ private fun generateProjectYaml(
     val demo = relativeDemosPath?.let { File(root, it) }?.takeIf { it.exists() }
 
     // data dependencies
-    val versionCompose = tomlLibs.tryFindKey("versions", "compose")
-    val versionComposeM3 = tomlLibs.tryFindKey("versions", "compose-material3")
+    val versionJetbrainsCompose = tomlLibs.tryFindKey("versions", "compose")
+    val versionJetbrainsComposeM3 = tomlLibs.tryFindKey("versions", "compose-material3")
     var versionAndroidXMaterial3: String? = null
     var versionAndroidXComposeRuntime: String? = null
-    if (versionCompose != null) {
+    if (versionJetbrainsCompose != null) {
         val urlMaterial3 =
-            "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionComposeM3}/material3-${versionComposeM3}.pom"
+            "https://repo1.maven.org/maven2/org/jetbrains/compose/material3/material3/${versionJetbrainsComposeM3}/material3-${versionJetbrainsComposeM3}.pom"
         val urlRuntime =
-            "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionCompose}/runtime-${versionCompose}.pom"
+            "https://repo1.maven.org/maven2/org/jetbrains/compose/runtime/runtime/${versionJetbrainsCompose}/runtime-${versionJetbrainsCompose}.pom"
 
         versionAndroidXMaterial3 = findVersionInPOM(urlMaterial3, "androidx.compose.material3")
             ?: throw RuntimeException("Version for 'androidx.compose.material3' not found!")
@@ -476,11 +476,12 @@ private fun generateProjectYaml(
         appendLine("")
         appendLine("dependencies:")
         appendLine("  experimental: $experimental")
-        if (versionCompose != null) {
+        if (versionJetbrainsCompose != null) {
             if (multiplatform) {
-                appendLine("  compose-multiplatform: $versionCompose # https://github.com/JetBrains/compose-multiplatform/releases")
+                appendLine("  compose-multiplatform: $versionJetbrainsCompose # https://github.com/JetBrains/compose-multiplatform/releases")
+                appendLine("  compose-material3: $versionJetbrainsComposeM3")
             } else {
-                appendLine("  compose: $versionCompose # https://developer.android.com/jetpack/androidx/releases/compose")
+                appendLine("  compose: $versionJetbrainsCompose # https://developer.android.com/jetpack/androidx/releases/compose")
             }
             appendLine("  jetpack-compose-runtime: $versionAndroidXComposeRuntime # https://developer.android.com/jetpack/androidx/releases/compose-runtime")
             appendLine("  jetpack-compose-material3: $versionAndroidXMaterial3 # https://developer.android.com/jetpack/androidx/releases/compose-material3")

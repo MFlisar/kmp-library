@@ -2,9 +2,10 @@
 
 ## Compose
 
-|      Dependency       | Version |                     Infos                      |
-|:---------------------:|:-------:|:----------------------------------------------:|
-| Compose Multiplatform | `{{ project["dependencies"]["compose-multiplatform"] }}` | Uses jetpack compose `{{ project["dependencies"]["jetpack-compose-runtime"] }}` and material3 `{{ project["dependencies"]["jetpack-compose-material3"] }}` |
+|      Dependency       |                         Version                          |                                        Infos                                        |
+|:---------------------:|:--------------------------------------------------------:|:-----------------------------------------------------------------------------------:|
+| Compose Multiplatform | `{{ project["dependencies"]["compose-multiplatform"] }}` |   Uses jetpack compose `{{ project["dependencies"]["jetpack-compose-runtime"] }}`   |
+|      Material 3       |   `{{ project["dependencies"]["compose-material3"] }}`   | Uses jetpack material3 `{{ project["dependencies"]["jetpack-compose-material3"] }}` |
 
 More details about the jetpack dependencies can be found in [JetBrains Release Notes](https://github.com/JetBrains/compose-multiplatform/releases){:target="_blank"}.
 
@@ -14,9 +15,10 @@ More details about the jetpack dependencies can be found in [JetBrains Release N
 
 ## Compose
 
-|      Dependency       |                  Version                   |                     Infos                      |
-|:---------------------:|:------------------------------------------:|:----------------------------------------------:|
-| Compose | `{{ project["dependencies"]["compose"] }}` | Uses jetpack compose `{{ project["dependencies"]["jetpack-compose-runtime"] }}` and material3 `{{ project["dependencies"]["jetpack-compose-material3"] }}` |
+| Dependency |                           Version                            |
+|:----------:|:------------------------------------------------------------:|
+| Compose    |  `{{ project["dependencies"]["jetpack-compose-runtime"] }}`  |
+| Material 3 | `{{ project["dependencies"]["jetpack-compose-material3"] }}` |
 
 {% endif %}
 
