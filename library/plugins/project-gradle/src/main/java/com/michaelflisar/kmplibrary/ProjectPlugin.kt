@@ -2,32 +2,24 @@ package com.michaelflisar.kmplibrary
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.file.CopySpec
 import java.io.File
 
 class ProjectPlugin : Plugin<Project> {
 
     private lateinit var project: Project
-    private var logging: Boolean = false
 
     override fun apply(target: Project) {
         project = target
     }
 
-    fun getDevPath() =
-        if (project.providers.gradleProperty("work").isPresent) "D:/dev" else "M:/dev"
-
     fun extractProguardMapFromAAB(
         appName: String,
         versionName: String,
-        outputFolder: () -> String = {
-            val dev = getDevPath()
-            "$dev/06 - retrace"
-        },
+        outputFolder: String
     ) {
         with(project) {
 
-            val outputDir = outputFolder()
+            val outputDir = outputFolder
 
             //val dev = if (providers.gradleProperty("work").isPresent) "D:/dev" else "M:/dev"
             val projectName = project.name
@@ -64,6 +56,26 @@ class ProjectPlugin : Plugin<Project> {
             } else {
                 throw kotlin.Exception("ERROR - ProGuard-Map-Datei wurde NICHT in ${proguardMapOutput.absolutePath} umbenannt!")
             }
+        }
+    }
+}
+
+fun Project.setupExtractProguardMapFromAAB(
+    appName: String,
+    appVersionName: String,
+    outputFolder: String = "${if (project.providers.gradleProperty("work").isPresent) "D:/dev" else "M:/dev"}/06 - retrace"
+) {
+    val projectPlugin = project.plugins.getPlugin(ProjectPlugin::class.java)
+
+    afterEvaluate {
+        tasks.named("bundleRelease").configure {
+            finalizedBy("extractProguardMap")
+        }
+    }
+
+    tasks.register("extractProguardMap") {
+        doLast {
+            projectPlugin.extractProguardMapFromAAB(appName, appVersionName, outputFolder)
         }
     }
 }
