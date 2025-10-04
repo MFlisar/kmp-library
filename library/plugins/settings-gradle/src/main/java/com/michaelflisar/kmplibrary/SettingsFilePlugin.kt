@@ -119,11 +119,11 @@ class SettingsFilePlugin : Plugin<Settings> {
             val relative = moduleFolder.relativeTo(file).path
             val parts = relative.split("\\")
             // Alle Zwischenpfade generieren
-            (1 until parts.size).map { i ->
+            (1 until parts.size).forEach { i ->
                 folders += file.resolve(parts.take(i).joinToString("\\"))
             }
             folders + moduleFolder
-        }.flatten().distinct() + file
+        }.flatten().distinct()
 
         if (extension.logging) {
             println("Project = ${file.absolutePath}")
