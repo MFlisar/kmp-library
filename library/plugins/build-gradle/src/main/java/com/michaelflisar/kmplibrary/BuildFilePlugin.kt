@@ -45,10 +45,6 @@ class BuildFilePlugin : Plugin<Project> {
         setupLibrary = SetupLibrary.tryRead(project.rootDir)
     }
 
-    fun useLiveDependencies(property: String = "useLiveDependencies"): Boolean {
-        return checkGradleProperty(property) ?: true
-    }
-
     fun checkGradleProperty(property: String): Boolean? {
         if (!project.providers.gradleProperty(property).isPresent) {
             return null
