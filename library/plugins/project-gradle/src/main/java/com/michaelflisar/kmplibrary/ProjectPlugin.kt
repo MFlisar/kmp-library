@@ -120,7 +120,7 @@ fun Project.dependencySubstitution(
                     !it.name.contains("kotlinCompiler", ignoreCase = true)
         }.configureEach {
             if (logging)
-            println("Configuring $name | isCanBeResolved: $isCanBeResolved")
+                println("Configuring $name | isCanBeResolved: $isCanBeResolved")
             if (enabled) {
                 resolutionStrategy {
                     dependencySubstitution {

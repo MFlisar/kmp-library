@@ -13,6 +13,8 @@ open class SettingsFilePluginExtension {
 
     var logging: Boolean = false
 
+    var includeIntermediatePaths: Boolean = false
+
     var includeLibraries: Boolean = false
 
     var libsFolder: (settings: Settings) -> String = { settings ->
@@ -114,16 +116,18 @@ class SettingsFilePlugin : Plugin<Settings> {
             }
 
         // 3) root + alle intermidiate Ordner hinzufügen (für gradle >= 9)
-        subProjectFolders = subProjectFolders.map { moduleFolder ->
-            val folders = mutableListOf<File>()
-            val relative = moduleFolder.relativeTo(file).path
-            val parts = relative.split("\\")
-            // Alle Zwischenpfade generieren
-            (1 until parts.size).forEach { i ->
-                folders += file.resolve(parts.take(i).joinToString("\\"))
-            }
-            folders + moduleFolder
-        }.flatten().distinct()
+        if (extension.includeIntermediatePaths) {
+            subProjectFolders = subProjectFolders.map { moduleFolder ->
+                val folders = mutableListOf<File>()
+                val relative = moduleFolder.relativeTo(file).path
+                val parts = relative.split("\\")
+                // Alle Zwischenpfade generieren
+                (1 until parts.size).forEach { i ->
+                    folders += file.resolve(parts.take(i).joinToString("\\"))
+                }
+                folders + moduleFolder
+            }.flatten().distinct()
+        }
 
         if (extension.logging) {
             println("Project = ${file.absolutePath}")
