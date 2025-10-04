@@ -113,7 +113,7 @@ class SettingsFilePlugin : Plugin<Settings> {
                 extension.libFilter(libraryName, relativePath)
             }
 
-        // 3) root + alle intermidiate Ordner hinzufügen (für gradle > 9)
+        // 3) root + alle intermidiate Ordner hinzufügen (für gradle >= 9)
         subProjectFolders = subProjectFolders.map { moduleFolder ->
             val folders = mutableListOf<File>()
             val relative = moduleFolder.relativeTo(file).path
@@ -123,7 +123,7 @@ class SettingsFilePlugin : Plugin<Settings> {
                 folders += file.resolve(parts.take(i).joinToString("\\"))
             }
             folders + moduleFolder
-        }.flatten().distinct()
+        }.flatten().distinct() + file
 
         if (extension.logging) {
             println("Project = ${file.absolutePath}")
