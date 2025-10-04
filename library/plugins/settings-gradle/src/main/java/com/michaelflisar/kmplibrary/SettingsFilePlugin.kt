@@ -104,7 +104,7 @@ class SettingsFilePlugin : Plugin<Settings> {
         val file = File(extension.libsFolder(settings), libraryName)
 
         // 2) alle Ordner mit einem build.gradle.kts File (ohne root, ohne demo) => das sind dann alle Module
-        val subProjectFolders = file.walkTopDown()
+        var subProjectFolders = file.walkTopDown()
             .filter { it.isFile && it.name == "build.gradle.kts" }
             .map { it.parentFile }
             .filter { it != file }
@@ -112,6 +112,18 @@ class SettingsFilePlugin : Plugin<Settings> {
                 val relativePath = it.relativeTo(file).path
                 extension.libFilter(libraryName, relativePath)
             }
+
+        // 3) root + alle intermidiate Ordner hinzufügen (für gradle > 9)
+        subProjectFolders = subProjectFolders.map { moduleFolder ->
+            val folders = mutableListOf<File>()
+            val relative = moduleFolder.relativeTo(file).path
+            val parts = relative.split("\\")
+            // Alle Zwischenpfade generieren
+            (1 until parts.size).map { i ->
+                folders += file.resolve(parts.take(i).joinToString("\\"))
+            }
+            folders + moduleFolder
+        }.flatten().distinct()
 
         if (extension.logging) {
             println("Project = ${file.absolutePath}")

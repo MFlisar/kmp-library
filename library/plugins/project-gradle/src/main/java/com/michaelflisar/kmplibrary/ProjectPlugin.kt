@@ -2,6 +2,11 @@ package com.michaelflisar.kmplibrary
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.DependencySubstitutions
+import org.gradle.api.artifacts.MinimalExternalModuleDependency
+import org.gradle.api.artifacts.ResolutionStrategy
+import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.KotlinBuildScript
 import java.io.File
 
 class ProjectPlugin : Plugin<Project> {
@@ -58,6 +63,7 @@ class ProjectPlugin : Plugin<Project> {
             }
         }
     }
+
 }
 
 fun Project.setupExtractProguardMapFromAAB(
@@ -76,6 +82,34 @@ fun Project.setupExtractProguardMapFromAAB(
     tasks.register("extractProguardMap") {
         doLast {
             projectPlugin.extractProguardMapFromAAB(appName, appVersionName, outputFolder)
+        }
+    }
+}
+
+fun DependencySubstitutions.substitute(
+    lib: Provider<MinimalExternalModuleDependency>,
+    module: String,
+) {
+    val dep = lib.get()
+    val notation = "${dep.module.group}:${dep.module.name}"
+    println("substitute: $notation => $module")
+    substitute(module(notation)).using(project(module))
+}
+
+fun Project.substitute(
+    block: ResolutionStrategy.() -> Unit
+) {
+    subprojects {
+        configurations.matching {
+            it.name.endsWith("Classpath", ignoreCase = true) &&
+                    !it.name.contains("kotlinCompiler", ignoreCase = true)
+        }.configureEach {
+            println("Configuring $name | isCanBeResolved: $isCanBeResolved")
+            if (true) {
+                resolutionStrategy {
+                    block()
+                }
+            }
         }
     }
 }
