@@ -46,7 +46,7 @@ class BuildFilePlugin : Plugin<Project> {
     }
 
     fun useLiveDependencies(property: String = "useLiveDependencies"): Boolean {
-        return checkGradleProperty(property) != false
+        return checkGradleProperty(property) ?: true
     }
 
     fun checkGradleProperty(property: String): Boolean? {

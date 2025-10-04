@@ -5,9 +5,11 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.DependencySubstitutions
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.ResolutionStrategy
+import org.gradle.api.initialization.Settings
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.KotlinBuildScript
 import java.io.File
+import kotlin.text.toBoolean
 
 class ProjectPlugin : Plugin<Project> {
 
@@ -15,6 +17,17 @@ class ProjectPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         project = target
+    }
+
+    fun useLiveDependencies(property: String = "useLiveDependencies"): Boolean {
+        return checkGradleProperty(property) ?: true
+    }
+
+    fun checkGradleProperty(property: String): Boolean? {
+        if (!project.providers.gradleProperty(property).isPresent) {
+            return null
+        }
+        return project.providers.gradleProperty(property).get().toBoolean()
     }
 
     fun extractProguardMapFromAAB(
@@ -96,18 +109,23 @@ fun DependencySubstitutions.substitute(
     substitute(module(notation)).using(project(module))
 }
 
-fun Project.substitute(
-    block: ResolutionStrategy.() -> Unit
+fun Project.dependencySubstitution(
+    enabled: Boolean = true,
+    logging: Boolean = false,
+    block: DependencySubstitutions.() -> Unit
 ) {
     subprojects {
         configurations.matching {
             it.name.endsWith("Classpath", ignoreCase = true) &&
                     !it.name.contains("kotlinCompiler", ignoreCase = true)
         }.configureEach {
+            if (logging)
             println("Configuring $name | isCanBeResolved: $isCanBeResolved")
-            if (true) {
+            if (enabled) {
                 resolutionStrategy {
-                    block()
+                    dependencySubstitution {
+                        block()
+                    }
                 }
             }
         }
