@@ -6,8 +6,8 @@ import java.io.File
 
 open class SettingsFilePluginExtension {
 
-    fun useLiveDependencies(settings: Settings): Boolean {
-        return settings.providers.gradleProperty("useLiveDependencies").takeIf { it.isPresent }
+    fun useLiveDependencies(settings: Settings, property: String = "useLiveDependencies"): Boolean {
+        return settings.providers.gradleProperty(property).takeIf { it.isPresent }
             ?.get()?.toBoolean() ?: true
     }
 
