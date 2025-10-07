@@ -2,13 +2,9 @@ package com.michaelflisar.kmplibrary
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Script
 import org.gradle.api.artifacts.DependencySubstitutions
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
-import org.gradle.api.initialization.Settings
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.KotlinSettingsScript
-import org.gradle.kotlin.dsl.SettingsScriptApi
 import java.io.File
 import kotlin.text.toBoolean
 
@@ -135,38 +131,4 @@ fun Project.dependencySubstitution(
             }
         }
     }
-}
-
-/**
- * include a module like following:
- *
- * includeModule(":toolbox:core") => "$folder\\library\\core"
- */
-fun Settings.includeModule(fullPath: String, name: String) {
-    include(name)
-    project(name).projectDir = File(fullPath)
-}
-
-/**
- * include a module like following:
- *
- * includeToolbox(":toolbox:core") => "$folder\\library\\core"
- * includeToolbox(":toolbox:modules:ui") => "$folder\\library\\modules\\ui"
- * ...
- *
- * or for root based modules:
- * includeToolbox("toolbox:demo", true) => "$folder\\demo"
- * ...
- *
- * @param toolboxFolder the folder where the toolbox library is located
- * @param name the module name
- * @param isInRoot if true, the module is in the root of the toolbox folder, otherwise in the library folder
- */
-fun Settings.includeToolbox(toolboxFolder: String, name: String, isInRoot: Boolean = false) {
-    val folder = "$toolboxFolder\\Toolbox"
-    val relativePath =  name.replaceFirst("toolbox", if (isInRoot) "" else "library")
-        .replace("::", ":")
-        .replace(":", "\\").removePrefix("\\")
-    println("relativePath: $relativePath")
-    includeModule("$folder\\$relativePath", name)
 }
