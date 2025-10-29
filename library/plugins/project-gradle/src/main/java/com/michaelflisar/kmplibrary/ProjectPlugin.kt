@@ -119,11 +119,15 @@ fun DependencySubstitutions.substitute(
 fun Project.dependencySubstitution(
     block: DependencySubstitutions.() -> Unit
 ) {
+    configurations.all {
+        resolutionStrategy {
+            dependencySubstitution {
+                block()
+            }
+        }
+    }
     subprojects {
-        configurations.matching {
-            it.name.contains("Dependencies", ignoreCase = true) ||
-                    it.name.endsWith("Classpath", ignoreCase = true)
-        }.configureEach {
+        configurations.configureEach {
             resolutionStrategy {
                 dependencySubstitution {
                     block()
