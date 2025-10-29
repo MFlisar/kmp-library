@@ -30,12 +30,11 @@ data class SetupLibrary(
 
         fun tryRead(root: File): SetupLibrary? {
             val file = file(root)
-            return try {
-                val content = file.readText(Charsets.UTF_8)
-                Yaml.default.decodeFromString(serializer(), content)
-            } catch (e: Exception) {
-                null
+            if (!file.exists()) {
+                return null
             }
+            val content = file.readText(Charsets.UTF_8)
+            return Yaml.default.decodeFromString(serializer(), content)
         }
     }
 
