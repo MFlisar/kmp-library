@@ -52,7 +52,7 @@ class SettingsFilePlugin : Plugin<Settings> {
         val relativePath =  name.replaceFirst(libraryName, if (isInRoot) "" else "library", true)
             .replace("::", ":")
             .replace(":", "\\").removePrefix("\\")
-        println("relativePath: $relativePath")
+        //println("relativePath: $relativePath")
         includeModule("$libraryFolder\\$relativePath", name)
     }
 

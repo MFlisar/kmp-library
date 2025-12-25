@@ -11,7 +11,7 @@ launch4j =                      "3.0.7"
 
 # android
 android-application = 			    { id = "com.android.application", 	                version.ref = "gradle" }
-android-library = 			        { id = "com.android.library", 	                    version.ref = "gradle" }
+android-library = 			        { id = "com.android.kotlin.multiplatform.library", 	version.ref = "gradle" }
 
 # kotlin
 kotlin-android = 				    { id = "org.jetbrains.kotlin.android", 			    version.ref = "kotlin" }
