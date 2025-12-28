@@ -3,9 +3,7 @@ package com.michaelflisar.kmplibrary.configs
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.gradle.api.Project
 import java.io.File
-import kotlin.io.readText
 
 @Serializable
 data class LibraryConfig(
@@ -16,9 +14,8 @@ data class LibraryConfig(
 ) {
     companion object {
 
-        fun read(project: Project, relativePath: String): LibraryConfig {
-            val file = File(project.projectDir, relativePath)
-            return read(file)
+        fun read(root: File, relativePath: String): LibraryConfig {
+            return read(File(root, relativePath))
         }
 
         fun read(file: File): LibraryConfig {
@@ -42,8 +39,8 @@ data class LibraryConfig(
         }
     }
 
-    fun getModuleForProject(project: Project): Module {
-        val path = project.projectDir.relativeTo(project.rootDir).path
+    fun getModuleForProject(rootDir: File, projectDir: File): Module {
+        val path = projectDir.relativeTo(rootDir).path
         return getModuleByPath(path)
     }
 
