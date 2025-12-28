@@ -42,7 +42,12 @@ data class LibraryConfig(
         }
     }
 
-    fun getModuleByPath(path: String): Module {
+    fun getModuleForProject(project: Project): Module {
+        val path = project.projectDir.relativeTo(project.rootDir).path
+        return getModuleByPath(path)
+    }
+
+    private fun getModuleByPath(path: String): Module {
         return modules.find { it.path.replace("\\", "/") == path.replace("\\", "/") }
             ?: throw RuntimeException("module setup definition not found for path: $path => make sure to define it inside library config yml file")
     }

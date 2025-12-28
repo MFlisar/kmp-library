@@ -54,8 +54,7 @@ object BuildFileUtil {
         sign: Boolean = System.getenv("CI")?.toBoolean() == true,
         version: String = System.getenv("TAG") ?: "LOCAL-SNAPSHOT"
     ) {
-        val path = project.projectDir.relativeTo(project.rootDir).path
-        val module = libraryConfig.getModuleByPath(path)
+        val module = libraryConfig.getModuleForProject(project)
 
         project.extensions.configure(MavenPublishBaseExtension::class.java) {
             configure(platform)
@@ -105,11 +104,11 @@ object BuildFileUtil {
         project: Project,
         config: Config,
         libraryConfig: LibraryConfig,
-        module: LibraryConfig.Module,
         compileSdk: Provider<String>,
         minSdk: Provider<String>,
         buildConfig: Boolean
     ) {
+        val module = libraryConfig.getModuleForProject(project)
         project.extensions.configure(LibraryExtension::class.java) {
 
             namespace = module.androidNamespace(libraryConfig)
