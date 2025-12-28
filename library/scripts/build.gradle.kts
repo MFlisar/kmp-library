@@ -39,7 +39,7 @@ dependencies {
 
     implementation(gradleApi())
 
-    implementation(project(":library:plugins:shared"))
+    api(project(":library:plugins:shared"))
 }
 
 // -------------------

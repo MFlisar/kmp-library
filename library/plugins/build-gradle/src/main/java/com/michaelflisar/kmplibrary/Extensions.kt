@@ -5,6 +5,7 @@ import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
 import org.gradle.api.Project
 import org.jetbrains.compose.desktop.application.dsl.JvmApplication
 import org.jetbrains.compose.desktop.application.dsl.JvmApplicationDistributions
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -12,7 +13,9 @@ import java.time.format.DateTimeFormatter
 fun JvmApplication.setupWindowsApp(
     project: Project,
     setup: DesktopSetup,
-    configNativeDistribution: JvmApplicationDistributions.() -> Unit = {},
+    configNativeDistribution: JvmApplicationDistributions.() -> Unit = {
+        targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+    },
 ) {
     this.mainClass = setup.mainClass
 
