@@ -73,7 +73,7 @@ object BuildFileUtil {
                 licenses {
                     license {
                         name.set(libraryConfig.library.license.name)
-                        url.set(libraryConfig.library.license.link)
+                        url.set(libraryConfig.library.license.getLink(libraryConfig.library))
                     }
                 }
 

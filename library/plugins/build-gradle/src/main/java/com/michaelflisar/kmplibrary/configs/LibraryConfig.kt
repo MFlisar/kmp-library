@@ -16,9 +16,9 @@ data class LibraryConfig(
 ) {
     companion object {
 
-        fun read(project: Project, relativePath: String): Config {
+        fun read(project: Project, relativePath: String): LibraryConfig {
             val file = File(project.projectDir, relativePath)
-            return Config.Companion.read(file)
+            return read(file)
         }
 
         fun read(file: File): LibraryConfig {
@@ -71,8 +71,12 @@ data class LibraryConfig(
         @Serializable
         class License(
             val name: String,
-            val link: String,
-        )
+            val path: String,
+        ) {
+            fun getLink(library: Library) : String {
+                return "${library.linkRepo}/$path".replace("//", "/")
+            }
+        }
     }
 
     @Serializable
