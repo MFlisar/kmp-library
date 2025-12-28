@@ -60,6 +60,7 @@ data class LibraryConfig(
         val name: String,
         val release: Int,
         @SerialName("link-repo") val linkRepo: String,
+        val namespace: String,
         val license: License
     ) {
         @Serializable
@@ -85,6 +86,12 @@ data class LibraryConfig(
         fun libraryDescription(setup: LibraryConfig): String {
             val library = setup.library.name
             return "$library - $artifactId module - $description"
+        }
+
+        fun androidNamespace(setup: LibraryConfig): String {
+            val namespace = setup.library.namespace
+            val artifactIdPart = artifactId.replace("-", ".")
+            return "$namespace.$artifactIdPart"
         }
     }
 }

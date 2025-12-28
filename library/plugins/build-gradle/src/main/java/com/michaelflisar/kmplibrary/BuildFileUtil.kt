@@ -104,13 +104,15 @@ object BuildFileUtil {
     fun setupAndroidLibrary(
         project: Project,
         config: Config,
-        androidNamespace: String,
+        libraryConfig: LibraryConfig,
+        module: LibraryConfig.Module,
         compileSdk: Provider<String>,
         minSdk: Provider<String>,
         buildConfig: Boolean
     ) {
         project.extensions.configure(LibraryExtension::class.java) {
-            namespace = androidNamespace
+
+            namespace = module.androidNamespace(libraryConfig)
 
             this.compileSdk = compileSdk.get().toInt()
 
@@ -142,6 +144,7 @@ object BuildFileUtil {
         checkDebugKeyStoreProperty: Boolean
     ) {
         project.extensions.configure(ApplicationExtension::class.java) {
+
             namespace = androidNamespace
 
             this.compileSdk = compileSdk.get().toInt()
