@@ -13,10 +13,10 @@ plugins {
 // Informations
 // -------------------
 
-val description = "functions and scripts to automate tasks for kmp-library projects"
+val description = "utils and functions for kmp-library projects"
 
 // Module
-val artifactId = "scripts"
+val artifactId = "utils"
 
 // Library
 val libraryName = "kmp-library"
