@@ -36,7 +36,6 @@ object BuildFileUtil {
      * </code></pre>
      *
      * @param project The Gradle project to configure.
-     * @param module The module information for the publication.
      * @param libraryConfig The library configuration for the publication.
      * @param platform The platform configuration for the publication.
      * @param autoReleaseOnMavenCentral A function that determines if releases should be automatically published.

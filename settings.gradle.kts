@@ -22,9 +22,6 @@ dependencyResolutionManagement {
     }
 
     versionCatalogs {
-        create("kotlinx") {
-            from(files("gradle/kotlinx.versions.toml"))
-        }
         create("deps") {
             from(files("gradle/deps.versions.toml"))
         }
