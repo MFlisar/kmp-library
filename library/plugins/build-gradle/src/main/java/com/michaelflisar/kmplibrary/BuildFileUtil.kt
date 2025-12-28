@@ -45,7 +45,6 @@ object BuildFileUtil {
      */
     fun setupMavenPublish(
         project: Project,
-        module: Module,
         libraryConfig: LibraryConfig,
         platform: Platform = KotlinMultiplatform(
             javadocJar = JavadocJar.Dokka("dokkaHtml"),
@@ -55,6 +54,9 @@ object BuildFileUtil {
         sign: Boolean = System.getenv("CI")?.toBoolean() == true,
         version: String = System.getenv("TAG") ?: "LOCAL-SNAPSHOT"
     ) {
+        val path = project.projectDir.relativeTo(project.rootDir).path
+        val module = libraryConfig.getModuleByPath(path)
+
         project.extensions.configure(MavenPublishBaseExtension::class.java) {
             configure(platform)
             coordinates(

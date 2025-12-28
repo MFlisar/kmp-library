@@ -3,6 +3,7 @@ package com.michaelflisar.kmplibrary.configs
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.gradle.api.Project
 import java.io.File
 import kotlin.io.readText
 
@@ -11,8 +12,14 @@ data class LibraryConfig(
     val developer: Developer,
     val library: Library,
     val maven: Maven,
+    val modules: List<Module>
 ) {
     companion object {
+
+        fun read(project: Project, relativePath: String): Config {
+            val file = File(project.projectDir, relativePath)
+            return Config.Companion.read(file)
+        }
 
         fun read(file: File): LibraryConfig {
             return try {
@@ -33,6 +40,11 @@ data class LibraryConfig(
             val content = file.readText(Charsets.UTF_8)
             return Yaml.default.decodeFromString(serializer(), content)
         }
+    }
+
+    fun getModuleByPath(path: String): Module {
+        return modules.find { it.path.replace("\\", "/") == path.replace("\\", "/") }
+            ?: throw RuntimeException("module setup definition not found for path: $path => make sure to define it inside library config yml file")
     }
 
     @Serializable
@@ -62,5 +74,18 @@ data class LibraryConfig(
         @SerialName("group-id") val groupId: String,
         @SerialName("primary-artifact-id") val primaryArtifactId: String,
     )
+
+    @Serializable
+    class Module(
+        val name: String,
+        @SerialName("artifact-id") val artifactId: String,
+        val description: String,
+        val path: String
+    ) {
+        fun libraryDescription(setup: LibraryConfig): String {
+            val library = setup.library.name
+            return "$library - $artifactId module - $description"
+        }
+    }
 }
 
