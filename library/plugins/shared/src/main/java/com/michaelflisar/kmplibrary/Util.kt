@@ -1,10 +1,7 @@
 package com.michaelflisar.kmplibrary
 
 import com.charleskorn.kaml.Yaml
-import com.michaelflisar.kmplibrary.SetupApp.Companion.file
-import com.michaelflisar.kmplibrary.SetupApp.Companion.serializer
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.Serializer
 import java.io.File
 
 fun rootFolder() = File(System.getProperty("user.dir"))
