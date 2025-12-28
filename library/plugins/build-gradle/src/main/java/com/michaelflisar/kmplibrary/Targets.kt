@@ -1,6 +1,10 @@
 package com.michaelflisar.kmplibrary
 
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import com.android.build.api.dsl.androidLibrary
 import com.michaelflisar.kmplibrary.configs.Config
+import com.michaelflisar.kmplibrary.configs.LibraryConfig
+import com.michaelflisar.kmplibrary.setups.AndroidSetup
 import com.michaelflisar.kmplibrary.setups.WasmSetup
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -16,6 +20,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+import kotlin.text.toInt
 
 class Targets(
     val android: Boolean = false,
@@ -69,8 +74,9 @@ class Targets(
     fun setupTargetsLibrary(
         project: Project,
         config: Config,
-        publishLibraryVariantsNames: List<String> = listOf("release"),
-        configureAndroid: (KotlinAndroidTarget.() -> Unit) = {},
+        libraryConfig: LibraryConfig,
+        androidSetup: AndroidSetup?,
+        configureAndroid: (KotlinMultiplatformAndroidLibraryTarget.() -> Unit) = {},
         configureIOS: (KotlinNativeTarget.() -> Unit) = {},
         configureIOSTests: (KotlinNativeTargetWithSimulatorTests.() -> Unit) = {},
         configureWindows: (KotlinJvmTarget.() -> Unit) = {},
@@ -79,7 +85,11 @@ class Targets(
         configureWASM: (KotlinWasmJsTargetDsl.() -> Unit) = {},
         configureJS: (KotlinJsTargetDsl.() -> Unit) = {},
     ) {
-        setupAndroidLibraryTarget(project, config, publishLibraryVariantsNames, configureAndroid)
+        if (androidSetup == null && android) {
+            throw IllegalArgumentException("AndroidSetup must be provided when Android target is enabled")
+        }
+        if (androidSetup != null)
+            setupAndroidLibraryTarget(project, config,  libraryConfig, androidSetup, configureAndroid)
         setupIOSTarget(project, configureIOS, configureIOSTests)
         setupWindowsTarget(project, configureWindows)
         setupMacOSTarget(project, configureMacOS)
@@ -121,17 +131,23 @@ class Targets(
     fun setupAndroidLibraryTarget(
         project: Project,
         config: Config,
-        publishLibraryVariantsNames: List<String> = listOf("release"),
-        configure: (KotlinAndroidTarget.() -> Unit) = {},
+        libraryConfig: LibraryConfig,
+        androidSetup: AndroidSetup,
+        configure: (KotlinMultiplatformAndroidLibraryTarget.() -> Unit) = {},
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
             if (android) {
-                androidTarget {
-                    if (publishLibraryVariantsNames.isNotEmpty())
-                        publishLibraryVariants(*publishLibraryVariantsNames.toTypedArray())
+
+                androidLibrary {
+
+                    namespace = libraryConfig.library.namespace
+                    compileSdk = androidSetup.compileSdk.get().toInt()
+                    minSdk = androidSetup.minSdk.get().toInt()
+
                     compilerOptions {
                         jvmTarget.set(JvmTarget.fromTarget(config.javaVersion))
                     }
+
                     configure()
                 }
             }
