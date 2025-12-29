@@ -14,9 +14,16 @@ object FolderUtil {
         val dirsToRename = root.walkTopDown()
             .filter { it.isDirectory && it.relativeToOrNull(root)?.path?.contains(pathToContain) == true }
             .toList()
-            // Sort by path length descending to rename deepest folders first
-            .sortedByDescending { it.relativeTo(root).path.length }
-        return dirsToRename
+            // Sort by path length ascending, damit Eltern zuerst kommen
+            .sortedBy { it.relativeTo(root).path.length }
+        // Nur Top-Level-Matches behalten (keine Subfolder von anderen Matches)
+        val result = mutableListOf<File>()
+        for (dir in dirsToRename) {
+            if (result.none { parent -> dir.toPath().startsWith(parent.toPath()) && dir != parent }) {
+                result.add(dir)
+            }
+        }
+        return result
     }
 
     fun isFolderEmptyOrOnlyContainsEmptyFolders(folder: File): Boolean {
