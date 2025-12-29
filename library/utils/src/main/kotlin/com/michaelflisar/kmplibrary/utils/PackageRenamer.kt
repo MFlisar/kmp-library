@@ -11,19 +11,20 @@ object PackageRenamer {
     fun rename(
         root: File,
         packageNameFrom: String,
-        packageNameTo: String
-    ) : Boolean {
+        packageNameTo: String,
+        log: Boolean = true,
+    ): Boolean {
 
         // Convert package names to path format
         val fromPath = packageNameFrom.replace('.', File.separatorChar)
         val toPath = packageNameTo.replace('.', File.separatorChar)
 
         // 1) rename all folders
-        renameFolders(root, fromPath, toPath)
+        renameFolders(root, fromPath, toPath, log)
 
         // 2) rename imports/packagenames/references in all files
-        renameImports(root, packageNameFrom, packageNameTo)
-        renamePackageNames(root, packageNameFrom, packageNameTo)
+        renameImports(root, packageNameFrom, packageNameTo, log)
+        renamePackageNames(root, packageNameFrom, packageNameTo, log)
 
         return true
     }
@@ -33,30 +34,39 @@ object PackageRenamer {
      * If the target directory already exists, moves all content from the source to the target (overwriting files if needed).
      * deletes empty fromPaths afterwards
      */
-    fun renameFolders(
+    private fun renameFolders(
         root: File,
         fromPath: String,
-        toPath: String
+        toPath: String,
+        log: Boolean,
     ) {
         val dirsToRename = FolderUtil.findFoldersWithPath(root, fromPath)
-        println("renameFolders => dirsToRename: "+dirsToRename.size)
+        if (log)
+            println("renameFolders => dirsToRename: " + dirsToRename.size)
         for (dir in dirsToRename) {
             val relative = dir.relativeTo(root).path
             val newRelative = relative.replace(fromPath, toPath)
             val newDir = File(root, newRelative)
-            if (!newDir.exists()) {
-                // Create parent directories if needed
-                newDir.parentFile?.mkdirs()
-                dir.renameTo(newDir)
-                println("renameFolders => renamed $dir => $newDir")
-            } else {
-                // Move all content from dir to newDir, overwriting existing files
-                FolderUtil.moveDirectoryContent(dir, newDir)
-                // Optionally delete dir if empty
-                if (dir.listFiles()?.isEmpty() == true) {
-                    dir.delete()
+            if (dir != newDir) {
+                if (!newDir.exists()) {
+                    // Create parent directories if needed
+                    newDir.parentFile?.mkdirs()
+                    dir.renameTo(newDir)
+                    if (log)
+                        println("renameFolders => renamed $dir => $newDir")
+                } else {
+                    // Move all content from dir to newDir, overwriting existing files
+                    FolderUtil.moveDirectoryContent(dir, newDir)
+                    // Optionally delete dir if empty
+                    if (dir.listFiles()?.isEmpty() == true) {
+                        dir.delete()
+                    }
+                    if (log)
+                        println("renameFolders => merged $dir => $newDir")
                 }
-                println("renameFolders => merged $dir => $newDir")
+            } else {
+                if (log)
+                    println("renameFolders => skipping identical dir $dir")
             }
         }
     }
@@ -65,10 +75,11 @@ object PackageRenamer {
      * Replaces all import statements in Kotlin files from the old package name to the new package name.
      * Only .kt files are processed, recursively from the given root directory.
      */
-    fun renameImports(
+    private fun renameImports(
         root: File,
         packageNameFrom: String,
-        packageNameTo: String
+        packageNameTo: String,
+        log: Boolean,
     ) {
         // Prepare the import statement prefix
         val importFrom = "import $packageNameFrom"
@@ -86,18 +97,19 @@ object PackageRenamer {
                     changedFiles++
                 }
             }
-
-        println("renameImports => changedFiles: $changedFiles")
+        if (log)
+            println("renameImports => changedFiles: $changedFiles")
     }
 
     /**
      * Replaces all package statements in Kotlin files from the old package name to the new package name.
      * Only .kt(s) files are processed, recursively from the given root directory.
      */
-    fun renamePackageNames(
+    private fun renamePackageNames(
         root: File,
         packageNameFrom: String,
-        packageNameTo: String
+        packageNameTo: String,
+        log: Boolean,
     ) {
         // Prepare the import statement prefix
         val packageFrom = "package $packageNameFrom"
@@ -116,6 +128,7 @@ object PackageRenamer {
                 }
             }
 
-        println("renameImports => changedFiles: $changedFiles")
+        if (log)
+            println("renameImports => changedFiles: $changedFiles")
     }
 }
