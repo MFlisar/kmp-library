@@ -47,13 +47,15 @@ object PackageRenamer {
             val relative = dir.relativeTo(root).path
             val newRelative = relative.replace(fromPath, toPath)
             val newDir = File(root, newRelative)
+            if (log)
+                print("renaming folder: $relative => $newRelative => result = ")
             if (dir != newDir) {
                 if (!newDir.exists()) {
                     // Create parent directories if needed
                     newDir.parentFile?.mkdirs()
                     dir.renameTo(newDir)
                     if (log)
-                        println("renameFolders => renamed $dir => $newDir")
+                        print("RENAMED")
                 } else {
                     // Move all content from dir to newDir, overwriting existing files
                     FolderUtil.moveDirectoryContent(dir, newDir)
@@ -62,12 +64,14 @@ object PackageRenamer {
                         dir.delete()
                     }
                     if (log)
-                        println("renameFolders => merged $dir => $newDir")
+                        print("MERGED")
                 }
             } else {
                 if (log)
-                    println("renameFolders => skipping identical dir $dir")
+                    print("SKIPPED (same dir)")
             }
+            if (log)
+                print("\n")
         }
     }
 
