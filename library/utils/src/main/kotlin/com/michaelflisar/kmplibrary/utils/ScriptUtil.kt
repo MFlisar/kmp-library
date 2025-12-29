@@ -1,27 +1,27 @@
 package com.michaelflisar.kmplibrary.utils
 
 class ScriptScope internal constructor(
-    val script: Script,
+    var stepCounter: Int,
 ) {
 
     fun runStep(stepName: String, step: () -> Unit) {
-        script.step++
-        if (script.step > 1)
+        stepCounter++
+        if (stepCounter > 1)
             println()
-        println("---- Step $step: $stepName ----")
+        println("---- Step $stepCounter: $stepName ----")
         step()
     }
 
 }
 
-class Script(
-    val name: String,
-    val details: Map<String, String> = emptyMap(),
-) {
-    internal var step: Int = 0
+object ScriptUtil {
 
-    fun runWithLogs(script: () -> Unit) {
-        with(ScriptScope(this)) {
+    fun runScript(
+        name: String,
+        details: Map<String, String> = emptyMap(),
+        script: ScriptScope.() -> Unit,
+    ) {
+        with(ScriptScope(0)) {
             println()
             printScriptRegionStart(name)
             try {
@@ -51,8 +51,6 @@ class Script(
             println()
             printScriptRegionEnd(name)
         }
-
-
     }
 }
 
