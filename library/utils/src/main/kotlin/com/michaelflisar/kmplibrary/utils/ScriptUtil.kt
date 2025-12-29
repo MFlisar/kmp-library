@@ -1,57 +1,59 @@
 package com.michaelflisar.kmplibrary.utils
 
-class Script(
-    val name: String,
-    val script: () -> Unit,
-    val details: Map<String, String> = emptyMap()
+class ScriptScope internal constructor(
+    val script: Script,
 ) {
-    internal var step: Int = 0
-
-    fun runWithLogs() {
-        runScriptWithLogs(this)
-    }
 
     fun runStep(stepName: String, step: () -> Unit) {
-        this.step++
-        if (this.step > 1)
+        script.step++
+        if (script.step > 1)
             println()
         println("---- Step $step: $stepName ----")
         step()
     }
+
 }
 
-private fun runScriptWithLogs(
-    script: Script
+class Script(
+    val name: String,
+    val details: Map<String, String> = emptyMap(),
 ) {
-    println()
-    printScriptRegionStart(script.name)
-    try {
+    internal var step: Int = 0
 
-        // 1) details
-        if (script.details.isNotEmpty()) {
+    fun runWithLogs(script: () -> Unit) {
+        with(ScriptScope(this)) {
             println()
-            printScriptDetails(
-                label = "Details",
-                map = script.details
-            )
+            printScriptRegionStart(name)
+            try {
+
+                // 1) details
+                if (details.isNotEmpty()) {
+                    println()
+                    printScriptDetails(
+                        label = "Details",
+                        map = details
+                    )
+                }
+                // 2) script
+                println()
+                script()
+
+                println()
+                println("Script finished successfully.")
+
+            } catch (e: Exception) {
+
+                println()
+                println("Script failed with exception: ${e.message}")
+                e.printStackTrace()
+
+            }
+            println()
+            printScriptRegionEnd(name)
         }
-        // 2) script
-        println()
-        script.script()
 
-        println()
-        println("Script finished successfully.")
-    } catch (e: Exception) {
-        println()
-        println("Script failed with exception: ${e.message}")
-        e.printStackTrace()
+
     }
-    println()
-    printScriptRegionEnd(script.name)
-}
-
-fun runScriptStep(stepName: String, step: () -> Unit) {
-    println(step)
 }
 
 private fun printScriptDetails(label: String, map: Map<String, String>) {
