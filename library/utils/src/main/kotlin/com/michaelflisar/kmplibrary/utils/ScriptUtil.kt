@@ -3,10 +3,24 @@ package com.michaelflisar.kmplibrary.utils
 class Script(
     val name: String,
     val script: () -> Unit,
-    val details: Map<String, String> = emptyMap(),
-)
+    val details: Map<String, String> = emptyMap()
+) {
+    internal var step: Int = 0
 
-fun runScriptWithLogs(
+    fun runWithLogs() {
+        runScriptWithLogs(this)
+    }
+
+    fun runStep(stepName: String, step: () -> Unit) {
+        this.step++
+        if (this.step > 1)
+            println()
+        println("---- Step $step: $stepName ----")
+        step()
+    }
+}
+
+private fun runScriptWithLogs(
     script: Script
 ) {
     println()
@@ -36,7 +50,11 @@ fun runScriptWithLogs(
     printScriptRegionEnd(script.name)
 }
 
-fun printScriptDetails(label: String, map: Map<String, String>) {
+fun runScriptStep(stepName: String, step: () -> Unit) {
+    println(step)
+}
+
+private fun printScriptDetails(label: String, map: Map<String, String>) {
     println("$label:")
     val maxKeyLength = map.keys.maxOfOrNull { it.length } ?: 0
     map.forEach { (key, value) ->
