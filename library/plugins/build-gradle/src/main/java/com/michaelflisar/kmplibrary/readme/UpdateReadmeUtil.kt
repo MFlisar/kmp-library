@@ -8,6 +8,7 @@ object UpdateReadmeUtil {
 
     fun update(
         rootDir: File,
+        readmeTemplate: String,
         config: Config,
         libraryConfig: LibraryConfig,
     ) {
@@ -19,7 +20,6 @@ object UpdateReadmeUtil {
 
         // files
         val fileAppVersionToml = File(rootDir, "gradle/app.versions.toml")
-        val fileReadmeTemplate = File(rootDir, "tooling/docs/readme.md")
         val fileReadme = File(rootDir, "README.md")
         val folderDocumentation = File(rootDir, "documentation")
         val folderDocumentationModules = File(rootDir, "documentation/modules")
@@ -158,7 +158,7 @@ object UpdateReadmeUtil {
         }
 
         // 2) read template content
-        var readmeContent = fileReadmeTemplate.readText()
+        var readmeContent = readmeTemplate
 
         // 3) replace placeholders in readme with content from markdown files
         val replacements = listOf(
