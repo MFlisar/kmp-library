@@ -10,6 +10,7 @@ data class LibraryConfig(
     val developer: Developer,
     @SerialName("github-library") val library: GithubLibrary,
     val maven: Maven,
+    val platforms: List<String>,
     val modules: List<Module>,
 ) {
     companion object {
