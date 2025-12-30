@@ -12,6 +12,8 @@ object PackageRenamer {
         root: File,
         packageNameFrom: String,
         packageNameTo: String,
+        libraryNameFrom: String,
+        libraryNameTo: String,
         log: Boolean = true,
     ): Boolean {
 
@@ -23,8 +25,10 @@ object PackageRenamer {
         renameFolders(root, fromPath, toPath, log)
 
         // 2) rename imports/packagenames/references in all files
+        renameLibraryIdInRootBuildGradleKts(root, libraryNameFrom, libraryNameTo, log)
         renameImports(root, packageNameFrom, packageNameTo, log)
         renamePackageNames(root, packageNameFrom, packageNameTo, log)
+        renameModuleReferences(root, libraryNameFrom, libraryNameTo, log)
 
         return true
     }
@@ -134,5 +138,63 @@ object PackageRenamer {
 
         if (log)
             println("renameImports => changedFiles: $changedFiles")
+    }
+
+    /**
+     * Replaces all references to the old package name with the new package name in Kotlin and Gradle files.
+     * Processes gradle.kts files only
+     *
+     * following is replaced e.g.:
+     *
+     * project(":librarytemplate:...)
+     *
+     */
+    private fun renameModuleReferences(
+        root: File,
+        libraryNameFrom: String,
+        libraryNameTo: String,
+        log: Boolean,
+    ) {
+        // Recursively process all .kt(s) and .gradle.kts files
+        var changedFiles = 0
+        root.walkTopDown()
+            .filter { it.isFile && it.name.endsWith(".gradle.kts") }
+            .forEach { file ->
+                val originalText = file.readText()
+                val newText = originalText.replace("project(\":${libraryNameFrom.lowercase()}:", "project(\":${libraryNameTo.lowercase()}:")
+                if (originalText != newText) {
+                    file.writeText(newText)
+                    changedFiles++
+                }
+            }
+
+        if (log)
+            println("renameModuleReferences => changedFiles: $changedFiles")
+    }
+
+    /**
+     * Replaces libraryId in root build.gradle.kts
+     *
+     * val libraryId = "librarytemplate"
+     */
+    private fun renameLibraryIdInRootBuildGradleKts(
+        root: File,
+        libraryNameFrom: String,
+        libraryNameTo: String,
+        log: Boolean,
+    ) {
+        val buildGradleKtsFile = File(root, "build.gradle.kts")
+        if (buildGradleKtsFile.exists()) {
+            val originalText = buildGradleKtsFile.readText()
+            val newText = originalText.replace(libraryNameFrom.lowercase(), libraryNameTo.lowercase())
+            if (originalText != newText) {
+                buildGradleKtsFile.writeText(newText)
+                if (log)
+                    println("renameLibraryIdInRootBuildGradleKts => updated build.gradle.kts")
+            } else {
+                if (log)
+                    println("renameLibraryIdInRootBuildGradleKts => no changes needed")
+            }
+        }
     }
 }
