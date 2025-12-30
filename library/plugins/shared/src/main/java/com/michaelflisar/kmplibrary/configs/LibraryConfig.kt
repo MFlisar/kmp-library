@@ -8,9 +8,9 @@ import java.io.File
 @Serializable
 data class LibraryConfig(
     val developer: Developer,
-    val library: Library,
+    @SerialName("github-library") val library: GithubLibrary,
     val maven: Maven,
-    val modules: List<Module>
+    val modules: List<Module>,
 ) {
     companion object {
 
@@ -54,24 +54,28 @@ data class LibraryConfig(
         val name: String,
         val mail: String,
         @SerialName("maven-id") val mavenId: String,
-        @SerialName("social-github") val socialGithub: String,
+        @SerialName("github-user-name") val githubUserName: String,
     )
 
     @Serializable
-    class Library(
+    class GithubLibrary(
         val name: String,
         val release: Int,
-        @SerialName("link-repo") val linkRepo: String,
         val namespace: String,
-        val license: License
+        val license: License,
     ) {
+        fun getRepoLink(developer: Developer): String {
+            return "https://github.com/{${developer.githubUserName}}/${name}/"
+        }
+
         @Serializable
         class License(
             val name: String,
             val path: String,
         ) {
-            fun getLink(library: Library) : String {
-                return "${library.linkRepo}/$path".replace("//", "/")
+            fun getLink(developer: Developer, library: GithubLibrary): String {
+                val link = library.getRepoLink(developer)
+                return "$link/$path".replace("//", "/")
             }
         }
     }
@@ -87,7 +91,7 @@ data class LibraryConfig(
         val name: String,
         @SerialName("artifact-id") val artifactId: String,
         val description: String,
-        val path: String
+        val path: String,
     ) {
         fun libraryDescription(setup: LibraryConfig): String {
             val library = setup.library.name

@@ -67,12 +67,12 @@ object BuildFileUtil {
                 name.set(libraryConfig.library.name)
                 description.set(module.libraryDescription(libraryConfig))
                 inceptionYear.set(libraryConfig.library.release.toString())
-                url.set(libraryConfig.library.linkRepo)
+                url.set(libraryConfig.library.getRepoLink(libraryConfig.developer))
 
                 licenses {
                     license {
                         name.set(libraryConfig.library.license.name)
-                        url.set(libraryConfig.library.license.getLink(libraryConfig.library))
+                        url.set(libraryConfig.library.license.getLink(libraryConfig.developer, libraryConfig.library))
                     }
                 }
 
@@ -85,7 +85,7 @@ object BuildFileUtil {
                 }
 
                 scm {
-                    url.set(libraryConfig.library.linkRepo)
+                    url.set(libraryConfig.library.getRepoLink(libraryConfig.developer))
                 }
             }
 
