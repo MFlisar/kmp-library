@@ -45,6 +45,19 @@ object UpdateReadmeUtil {
     /**
      * Parses the supported platforms from a module's build.gradle.kts file.
      *
+     * content may look like this:
+     * val buildTargets = Targets(
+     *     // mobile
+     *     android = true,
+     *     iOS = true,
+     *     // desktop
+     *     windows = true,
+     *     macOS = true,
+     *     // web
+     *     wasm = true
+     * )
+     *
+     *
      * @param file The root directory of the module.
      * @return A list of supported platform names.
      */
@@ -56,8 +69,13 @@ object UpdateReadmeUtil {
 
         // 2) extract platforms
         val platforms = mutableListOf<String>()
-        matchResult?.groups?.get(1)?.value?.split(",")?.forEach {
-            val parts = it.trim().split("=")
+        matchResult?.groups?.get(1)?.value
+            ?.lines()
+            ?.filter { !it.trim().startsWith("//") && it.contains("=") }
+            ?.forEach {
+            val parts = it.trim()
+                .removeSuffix(",")
+                .split("=")
             if (parts.size == 2) {
                 val platformName = parts[0].trim()
                 val isEnabled = parts[1].trim().toBoolean()
