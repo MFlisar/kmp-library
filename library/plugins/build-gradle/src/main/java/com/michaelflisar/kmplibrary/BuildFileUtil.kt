@@ -1,6 +1,16 @@
 package com.michaelflisar.kmplibrary
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.gradle.LibraryExtension
+import com.michaelflisar.kmplibrary.configs.Config
+import com.michaelflisar.kmplibrary.configs.LibraryConfig
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.Platform
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import java.io.File
 
 object BuildFileUtil {
@@ -13,39 +23,164 @@ object BuildFileUtil {
     }
 
     /**
-     * Returns a Markdown string for an image, optionally wrapped in a link.
-     * @param imageUrl The URL of the image (required)
-     * @param altText The alt text for the image (optional, default: "")
-     * @param linkUrl The URL to link to (optional, default: null)
-     * @return Markdown string for the image, optionally as a link
+     * Configures the project for publishing to Maven Central.
+     * This includes setting up the Maven coordinates, POM metadata, and signing.
+     *
+     * Usage:
+     *
+     * to only auto-publish releases without suffixes like "-debug", "-alpha", "-test" use following:
+     * <pre><code>
+     * autoReleaseOnMavenCentral = { version -> !version.contains("-") }
+     * </code></pre>
+     *
+     * @param project The Gradle project to configure.
+     * @param libraryConfig The library configuration for the publication.
+     * @param platform The platform configuration for the publication.
+     * @param autoReleaseOnMavenCentral A function that determines if releases should be automatically published.
+     * @param sign Whether to sign the publications.
+     * @param version The version of the library, defaults to the value of the "TAG" environment variable (TAG is set by github action workflow) or "LOCAL-SNAPSHOT".
      */
-    fun markdownImage(imageUrl: String, altText: String = "", linkUrl: String? = null): String {
-        val imageMarkdown = "![${altText}](${imageUrl})"
-        return if (linkUrl != null) {
-            "[${imageMarkdown}](${linkUrl})"
-        } else {
-            imageMarkdown
+    fun setupMavenPublish(
+        project: Project,
+        libraryConfig: LibraryConfig,
+        platform: Platform = KotlinMultiplatform(
+            javadocJar = JavadocJar.Dokka("dokkaHtml"),
+            sourcesJar = true
+        ),
+        autoReleaseOnMavenCentral: (version: String) -> Boolean = { true },
+        sign: Boolean = System.getenv("CI")?.toBoolean() == true,
+        version: String = System.getenv("TAG") ?: "LOCAL-SNAPSHOT",
+    ) {
+        val module = libraryConfig.getModuleForProject(project.rootDir, project.projectDir)
+
+        project.extensions.configure(MavenPublishBaseExtension::class.java) {
+            configure(platform)
+            coordinates(
+                groupId = libraryConfig.maven.groupId,
+                artifactId = module.artifactId,
+                version = version
+            )
+
+            pom {
+                name.set(libraryConfig.library.name)
+                description.set(module.libraryDescription(libraryConfig))
+                inceptionYear.set(libraryConfig.library.release.toString())
+                url.set(libraryConfig.library.getRepoLink(libraryConfig.developer))
+
+                licenses {
+                    license {
+                        name.set(libraryConfig.library.license.name)
+                        url.set(
+                            libraryConfig.library.license.getLink(
+                                libraryConfig.developer,
+                                libraryConfig.library
+                            )
+                        )
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set(libraryConfig.developer.mavenId)
+                        name.set(libraryConfig.developer.name)
+                        email.set(libraryConfig.developer.mail)
+                    }
+                }
+
+                scm {
+                    url.set(libraryConfig.library.getRepoLink(libraryConfig.developer))
+                }
+            }
+
+            // Configure publishing to Maven Central
+            publishToMavenCentral(autoReleaseOnMavenCentral(version))
+
+            // Enable GPG signing for all publications
+            if (sign) {
+                signAllPublications()
+            }
         }
     }
 
-    /**
-     * Reads a property from a TOML file.
-     *
-     * @param file The TOML file to read from.
-     * @param region The region in the TOML file (e.g. "versions")
-     * @param key The key to read (e.g. "minSDK")
-     */
-    fun readTOMLProperty(file: File, region: String, key: String): String {
-        val content = file.readText(Charsets.UTF_8)
-        val regionStart = content.indexOf("[$region]")
-        if (regionStart == -1) {
-            throw RuntimeException("Region [$region] not found in TOML file: ${file.path}")
+    fun setupAndroidLibrary(
+        project: Project,
+        config: Config,
+        libraryConfig: LibraryConfig,
+        compileSdk: Provider<String>,
+        minSdk: Provider<String>,
+        buildConfig: Boolean,
+    ) {
+        val module = libraryConfig.getModuleForProject(project.rootDir, project.projectDir)
+        project.extensions.configure(LibraryExtension::class.java) {
+
+            namespace = module.androidNamespace(libraryConfig)
+
+            this.compileSdk = compileSdk.get().toInt()
+
+            buildFeatures {
+                this.buildConfig = buildConfig
+            }
+
+            defaultConfig {
+                this.minSdk = minSdk.get().toInt()
+            }
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.toVersion(config.javaVersion)
+                targetCompatibility = JavaVersion.toVersion(config.javaVersion)
+            }
         }
-        val regionEnd = content.indexOf("[", regionStart + 1).let { if (it == -1) content.length else it }
-        val regionContent = content.substring(regionStart, regionEnd)
-        val regex = Regex("""$key\s*=\s*["']?([^"'\n\r]+)["']?""")
-        val matchResult = regex.find(regionContent)
-        return matchResult?.groups?.get(1)?.value ?: throw RuntimeException("Key '$key' not found in region [$region] of TOML file: ${file.path}")
+    }
+
+    fun setupAndroidApp(
+        project: Project,
+        config: Config,
+        androidNamespace: String,
+        compileSdk: Provider<String>,
+        minSdk: Provider<String>,
+        targetSdk: Provider<String>,
+        versionCode: Int,
+        versionName: String,
+        buildConfig: Boolean,
+        checkDebugKeyStoreProperty: Boolean,
+    ) {
+        project.extensions.configure(ApplicationExtension::class.java) {
+
+            namespace = androidNamespace
+
+            this.compileSdk = compileSdk.get().toInt()
+
+            buildFeatures {
+                this.buildConfig = buildConfig
+            }
+
+            defaultConfig {
+                this.minSdk = minSdk.get().toInt()
+                this.targetSdk = targetSdk.get().toInt()
+                this.versionCode = versionCode
+                this.versionName = versionName
+            }
+
+            compileOptions {
+                sourceCompatibility = JavaVersion.toVersion(config.javaVersion)
+                targetCompatibility = JavaVersion.toVersion(config.javaVersion)
+            }
+
+            // eventually use local custom signing
+            if (checkDebugKeyStoreProperty) {
+                val debugKeyStore = project.providers.gradleProperty("debugKeyStore").orNull
+                if (debugKeyStore != null) {
+                    signingConfigs {
+                        getByName("debug") {
+                            keyAlias = "androiddebugkey"
+                            keyPassword = "android"
+                            storeFile = File(debugKeyStore)
+                            storePassword = "android"
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
