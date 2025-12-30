@@ -7,9 +7,9 @@ import java.io.File
 object UpdateReadmeUtil {
 
     fun update(
-        projectDirectory: File,
+        rootDir: File,
         config: Config,
-        libraryConfig: LibraryConfig
+        libraryConfig: LibraryConfig,
     ) {
         println("")
         println("#####################################")
@@ -18,19 +18,18 @@ object UpdateReadmeUtil {
         println("")
 
         // files
-        val fileAppVersionToml = File(projectDirectory, "gradle/app.versions.toml")
-        val fileReadmeTemplate = File(projectDirectory, "tooling/docs/readme.md")
-        val fileReadme = File(projectDirectory, "README.md")
-        val folderDocumentation = File(projectDirectory, "documentation")
-        val folderDocumentationModules = File(projectDirectory, "documentation/modules")
-        val folderDocumentationScreenshots = File(projectDirectory, "documentation/screenshots")
+        val fileAppVersionToml = File(rootDir, "gradle/app.versions.toml")
+        val fileReadmeTemplate = File(rootDir, "tooling/docs/readme.md")
+        val fileReadme = File(rootDir, "README.md")
+        val folderDocumentation = File(rootDir, "documentation")
+        val folderDocumentationModules = File(rootDir, "documentation/modules")
+        val folderDocumentationScreenshots = File(rootDir, "documentation/screenshots")
 
         // load data from project files
-        val minSdk =
-            UpdateReadmeUtil.readTOMLProperty(fileAppVersionToml, "versions", "minSdk").toInt()
+        val minSdk = readTOMLProperty(fileAppVersionToml, "versions", "minSdk").toInt()
         val supportedPlatforms = libraryConfig.modules.map { module ->
             val platforms =
-                UpdateReadmeUtil.getSupportedPlatformsFromModule(File(projectDirectory, "${module.path}/build.gradle.kts"))
+                getSupportedPlatformsFromModule(File(rootDir, "${module.path}/build.gradle.kts"))
             module to platforms
         }
         val allSupportedPlatforms = supportedPlatforms.map { it.second }.flatten().distinct()
@@ -66,14 +65,14 @@ object UpdateReadmeUtil {
         val moduleLinks = markdownFilesWithName
             .filter { it.first.startsWith(folderDocumentationModules) }
             .map {
-                val relativePath = it.first.relativeTo(projectDirectory).path.replace("\\", "/")
+                val relativePath = it.first.relativeTo(rootDir).path.replace("\\", "/")
                 val (path, name) = it
                 "- [$name]($relativePath)"
             }
         val otherLinks = markdownFilesWithName
             .filter { !it.first.startsWith(folderDocumentationModules) }
             .map {
-                val relativePath = it.first.relativeTo(projectDirectory).path.replace("\\", "/")
+                val relativePath = it.first.relativeTo(rootDir).path.replace("\\", "/")
                 val (path, name) = it
                 "- [$name]($relativePath)"
             }
@@ -154,7 +153,7 @@ object UpdateReadmeUtil {
 
         // 6) create screenshot replacement
         val screenshots = folderDocumentationScreenshots.listFiles().map {
-            val relativePath = it.relativeTo(projectDirectory).path.replace("\\", "/")
+            val relativePath = it.relativeTo(rootDir).path.replace("\\", "/")
             "![${it.nameWithoutExtension}]($relativePath)"
         }
 
@@ -164,9 +163,15 @@ object UpdateReadmeUtil {
         // 3) replace placeholders in readme with content from markdown files
         val replacements = listOf(
             Placeholder("{{ header }}", header),
-            Partial("{{ partials.introduction }}", File(projectDirectory, "documentation/_partials/introduction.md")),
-            Partial("{{ partials.features }}", File(projectDirectory, "documentation/_partials/features.md")),
-            Partial("{{ partials.usage }}", File(projectDirectory, "documentation/_partials/usage.md")),
+            Partial(
+                "{{ partials.introduction }}",
+                File(rootDir, "documentation/_partials/introduction.md")
+            ),
+            Partial(
+                "{{ partials.features }}",
+                File(rootDir, "documentation/_partials/features.md")
+            ),
+            Partial("{{ partials.usage }}", File(rootDir, "documentation/_partials/usage.md")),
             Placeholder("{{ modules }}", moduleLinks.joinToString("\n")),
             Placeholder("{{ links }}", otherLinks.joinToString("\n")),
             Placeholder("{{ supported_platforms }}", supportedPlatformsTable),
@@ -257,17 +262,17 @@ object UpdateReadmeUtil {
             ?.lines()
             ?.filter { !it.trim().startsWith("//") && it.contains("=") }
             ?.forEach {
-            val parts = it.trim()
-                .removeSuffix(",")
-                .split("=")
-            if (parts.size == 2) {
-                val platformName = parts[0].trim()
-                val isEnabled = parts[1].trim().toBoolean()
-                if (isEnabled) {
-                    platforms.add(platformName)
+                val parts = it.trim()
+                    .removeSuffix(",")
+                    .split("=")
+                if (parts.size == 2) {
+                    val platformName = parts[0].trim()
+                    val isEnabled = parts[1].trim().toBoolean()
+                    if (isEnabled) {
+                        platforms.add(platformName)
+                    }
                 }
             }
-        }
 
         return platforms
     }
