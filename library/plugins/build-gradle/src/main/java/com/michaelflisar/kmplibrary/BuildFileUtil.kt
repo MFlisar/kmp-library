@@ -2,8 +2,8 @@ package com.michaelflisar.kmplibrary
 
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.LibraryExtension
-import com.michaelflisar.kmplibrary.configs.Config
-import com.michaelflisar.kmplibrary.configs.LibraryConfig
+import com.michaelflisar.kmplibrary.core.configs.Config
+import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension

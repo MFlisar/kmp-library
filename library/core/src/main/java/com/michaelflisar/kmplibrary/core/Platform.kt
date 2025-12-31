@@ -1,4 +1,4 @@
-package com.michaelflisar.kmplibrary
+package com.michaelflisar.kmplibrary.core
 
 enum class Platform(
     val targetName: String,
@@ -23,7 +23,7 @@ enum class Platform(
          * parser function names from the Targets class
          */
         fun parseParameterName(name: String): Platform {
-            return Platform.entries.find { it.targetName.equals(name, true) } ?:
+            return entries.find { it.targetName.equals(name, true) } ?:
                 throw IllegalArgumentException("Unknown target name: $name")
         }
 

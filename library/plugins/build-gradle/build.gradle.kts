@@ -55,7 +55,7 @@ dependencies {
     //implementation(gradleApi())
     implementation(gradleKotlinDsl())
 
-    api(project(":library:plugins:shared"))
+    api(project(":library:core"))
 }
 
 mavenPublishing {

@@ -1,4 +1,4 @@
-package com.michaelflisar.kmplibrary.configs
+package com.michaelflisar.kmplibrary.core.configs
 
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.SerialName

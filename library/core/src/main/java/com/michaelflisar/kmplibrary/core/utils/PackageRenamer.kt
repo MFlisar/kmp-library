@@ -1,4 +1,4 @@
-package com.michaelflisar.kmplibrary.utils
+package com.michaelflisar.kmplibrary.core.utils
 
 import java.io.File
 

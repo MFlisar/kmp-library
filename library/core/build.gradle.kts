@@ -13,10 +13,10 @@ plugins {
 // Informations
 // -------------------
 
-val description = "a gradle plugin and plain kotlin dependency that provides utility functions for kmp libraries"
+val description = "a gradle plugin and plain kotlin dependency that provides core functions for kmp libraries"
 
 // Module
-val artifactId = "plugins-shared"
+val artifactId = "core"
 
 // Library
 val libraryName = "kmp-library"

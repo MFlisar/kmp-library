@@ -1,4 +1,4 @@
-package com.michaelflisar.kmplibrary
+package com.michaelflisar.kmplibrary.core
 
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.DeserializationStrategy

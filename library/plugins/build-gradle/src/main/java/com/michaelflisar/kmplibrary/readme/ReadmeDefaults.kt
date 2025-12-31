@@ -1,6 +1,6 @@
 package com.michaelflisar.kmplibrary.readme
 
-import com.michaelflisar.kmplibrary.configs.LibraryConfig
+import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
 
 object ReadmeDefaults {
 

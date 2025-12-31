@@ -39,4 +39,4 @@ dependencyResolutionManagement {
 include(":library:plugins:build-gradle")
 include(":library:plugins:settings-gradle")
 include(":library:plugins:project-gradle")
-include(":library:plugins:shared")
+include(":library:core")

@@ -1,4 +1,4 @@
-package com.michaelflisar.kmplibrary.classes
+package com.michaelflisar.kmplibrary.core.classes
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlList

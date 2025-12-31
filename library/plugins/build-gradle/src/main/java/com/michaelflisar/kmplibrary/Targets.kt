@@ -2,8 +2,9 @@ package com.michaelflisar.kmplibrary
 
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.dsl.androidLibrary
-import com.michaelflisar.kmplibrary.configs.Config
-import com.michaelflisar.kmplibrary.configs.LibraryConfig
+import com.michaelflisar.kmplibrary.core.configs.Config
+import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
+import com.michaelflisar.kmplibrary.core.Platform
 import com.michaelflisar.kmplibrary.setups.AndroidSetup
 import com.michaelflisar.kmplibrary.setups.WasmSetup
 import org.gradle.api.NamedDomainObjectContainer

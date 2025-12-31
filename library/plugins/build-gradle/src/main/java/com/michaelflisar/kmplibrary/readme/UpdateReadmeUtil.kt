@@ -1,7 +1,7 @@
 package com.michaelflisar.kmplibrary.readme
 
-import com.michaelflisar.kmplibrary.configs.Config
-import com.michaelflisar.kmplibrary.configs.LibraryConfig
+import com.michaelflisar.kmplibrary.core.configs.Config
+import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
 import java.io.File
 
 object UpdateReadmeUtil {
