@@ -165,13 +165,13 @@ object UpdateReadmeUtil {
             Placeholder("{{ header }}", header),
             Partial(
                 "{{ partials.introduction }}",
-                File(rootDir, "documentation/_partials/introduction.md")
+                File(rootDir, "documentation/_partials/introduction.md.partial")
             ),
             Partial(
                 "{{ partials.features }}",
-                File(rootDir, "documentation/_partials/features.md")
+                File(rootDir, "documentation/_partials/features.md.partial")
             ),
-            Partial("{{ partials.usage }}", File(rootDir, "documentation/_partials/usage.md")),
+            Partial("{{ partials.usage }}", File(rootDir, "documentation/_partials/usage.md.partial")),
             Placeholder("{{ modules }}", moduleLinks.joinToString("\n")),
             Placeholder("{{ links }}", otherLinks.joinToString("\n")),
             Placeholder("{{ supported_platforms }}", supportedPlatformsTable),
