@@ -132,7 +132,6 @@ object ScriptUtil {
         details: Map<String, String>,
         label: String = "Details"
     ) {
-        println()
         printScriptDetails(
             label = label,
             map = details
