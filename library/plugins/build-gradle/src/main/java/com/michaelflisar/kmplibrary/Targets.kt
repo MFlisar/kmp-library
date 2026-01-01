@@ -21,6 +21,8 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+import org.jetbrains.kotlin.konan.target.KonanTarget
+import java.io.File
 import kotlin.text.get
 import kotlin.text.toInt
 
@@ -202,6 +204,61 @@ class Targets(
                 iosSimulatorArm64 {
                     configure()
                     configureTests()
+                }
+            }
+        }
+    }
+
+    fun setupXCFramework(
+        project: Project,
+        frameworkName: String,
+        folderCInterop: File = project.file("iosXCFramework/cinterop"),
+        folderXCFramework: File = project.file("iosXCFramework/${frameworkName}.xcframework"),
+        relativeHeadersFolderInXCFramework: String = "Headers"
+    ) {
+        // helper function
+        fun sliceDirFor(target: KonanTarget): String = when (target) {
+            KonanTarget.IOS_ARM64 -> "ios-arm64"
+            KonanTarget.IOS_X64 -> "ios-x86_64-simulator"
+            KonanTarget.IOS_SIMULATOR_ARM64 -> "ios-arm64_x86_64-simulator"
+            else -> error("Unsupported target: $target")
+        }
+
+        project.extensions.configure(KotlinMultiplatformExtension::class.java) {
+            if (iOS) {
+
+
+
+                listOf(
+                    iosX64(),
+                    iosArm64(),
+                    iosSimulatorArm64()
+                ).forEach { iosTarget ->
+
+                    iosTarget.compilations.getByName("main") {
+
+                        cinterops.create(frameworkName) {
+
+                            // 1) add all .def files in the cinterop folder
+                            val defFiles =
+                                folderCInterop.listFiles { file: File -> file.extension == "def" }
+                            defFiles.forEach { defFile(it) }
+
+                            // 2) include header dirs (cinterop + provided Headers folder)
+                            val sliceDir =
+                                folderXCFramework.resolve(sliceDirFor(iosTarget.konanTarget))
+                            includeDirs.allHeaders(
+                                sliceDir.resolve("$frameworkName.framework/$relativeHeadersFolderInXCFramework"),
+                                folderCInterop
+                            )
+
+                            // 3) compiler options
+                            compilerOpts(
+                                "-F", sliceDir.absolutePath,
+                                "-framework", frameworkName
+                            )
+                        }
+                    }
                 }
             }
         }

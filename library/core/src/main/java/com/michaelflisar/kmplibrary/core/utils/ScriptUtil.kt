@@ -14,7 +14,7 @@ object ScriptUtil {
         name: String,
         steps: List<ScriptStep>,
         scriptInfos: (() -> Unit)? = null,
-        executeStep: (step: Int) -> Boolean = { true }
+        executeStep: (step: Int) -> Boolean = { true },
     ) {
         runScript(name, steps, scriptInfos, "a", false, executeStep)
     }
@@ -27,7 +27,7 @@ object ScriptUtil {
         steps: List<ScriptStep>,
         scriptInfos: (() -> Unit)? = null,
         defaultInput: String = "a",
-        executeStep: (step: Int) -> Boolean = { true }
+        executeStep: (step: Int) -> Boolean = { true },
     ) {
         runScript(name, steps, scriptInfos, defaultInput, true, executeStep)
     }
@@ -38,7 +38,7 @@ object ScriptUtil {
         scriptInfos: (() -> Unit)? = null,
         defaultInput: String = "a",
         askForUserInput: Boolean,
-        executeStep: (step: Int) -> Boolean = { true }
+        executeStep: (step: Int) -> Boolean = { true },
     ) {
         println()
         printScriptRegionStart(name)
@@ -66,7 +66,8 @@ object ScriptUtil {
 
                 // 3) get user input
                 println()
-                val input = getUserInput("Steps to run? (default: $defaultInput)").ifEmpty { defaultInput }
+                val input =
+                    getUserInput("Steps to run? (default: $defaultInput)").ifEmpty { defaultInput }
                 println()
                 input
 
@@ -80,7 +81,7 @@ object ScriptUtil {
             if (input == "a") {
                 // run all
                 steps.indices.forEach {
-                    if (executeStep(it + 1) )
+                    if (executeStep(it + 1))
                         stepsToRun.add(it + 1)
                 }
             } else {
@@ -145,12 +146,27 @@ object ScriptUtil {
 
     fun printDetails(
         details: Map<String, String>,
-        label: String = "Details"
+        label: String = "Details",
     ) {
         printScriptDetails(
             label = label,
             map = details
         )
+    }
+
+    fun printOptions(prompt: String, options: List<String>): Int? {
+        println(prompt)
+        for ((index, option) in options.withIndex()) {
+            println("  [${index + 1}] $option")
+        }
+        print("Enter number (or press Enter to skip): ")
+        val input = readLine()
+        val selectedIndex = input?.toIntOrNull()?.minus(1)
+        return if (selectedIndex != null && selectedIndex in options.indices) {
+            selectedIndex
+        } else {
+            null
+        }
     }
 }
 

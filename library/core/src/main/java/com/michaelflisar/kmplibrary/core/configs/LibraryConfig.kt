@@ -11,6 +11,7 @@ data class LibraryConfig(
     @SerialName("github-library") val library: GithubLibrary,
     val maven: Maven,
     val modules: List<Module>,
+    val xcFrameworks: List<XCFramework>,
 ) {
     companion object {
 
@@ -104,5 +105,11 @@ data class LibraryConfig(
             return "$namespace.$artifactIdPart"
         }
     }
+
+    @Serializable
+    class XCFramework(
+        val name: String,
+        val path: String,
+    )
 }
 
