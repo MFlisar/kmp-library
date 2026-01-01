@@ -13,9 +13,9 @@ object ScriptUtil {
     fun runScript(
         name: String,
         steps: List<ScriptStep>,
-        details: Map<String, String> = emptyMap(),
+        scriptInfos: () -> Unit = {},
     ) {
-        runScript(name, steps, details, "a", false)
+        runScript(name, steps, scriptInfos, "a", false)
     }
 
     /**
@@ -24,16 +24,16 @@ object ScriptUtil {
     fun runScriptSteps(
         name: String,
         steps: List<ScriptStep>,
-        details: Map<String, String> = emptyMap(),
+        scriptInfos: () -> Unit = {},
         defaultInput: String = "a"
     ) {
-        runScript(name, steps, details, defaultInput, true)
+        runScript(name, steps, scriptInfos, defaultInput, true)
     }
 
     private fun runScript(
         name: String,
         steps: List<ScriptStep>,
-        details: Map<String, String> = emptyMap(),
+        scriptInfos: () -> Unit = {},
         defaultInput: String = "a",
         askForUserInput: Boolean
     ) {
@@ -42,13 +42,7 @@ object ScriptUtil {
         try {
 
             // 1) details
-            if (details.isNotEmpty()) {
-                println()
-                printScriptDetails(
-                    label = "Details",
-                    map = details
-                )
-            }
+            scriptInfos()
             println()
 
             // 2) print steps
@@ -129,6 +123,26 @@ object ScriptUtil {
     fun getUserInput(prompt: String): String {
         print("$prompt ")
         return readlnOrNull() ?: ""
+    }
+
+    fun printDetails(
+        details: Map<String, String>,
+        label: String = "Details"
+    ) {
+        println()
+        printScriptDetails(
+            label = label,
+            map = details
+        )
+    }
+
+    fun printInstructions(
+        instructions: () -> Unit,
+        label: String = "Instructions"
+    ) {
+        println()
+        println("$label:")
+        instructions()
     }
 }
 
