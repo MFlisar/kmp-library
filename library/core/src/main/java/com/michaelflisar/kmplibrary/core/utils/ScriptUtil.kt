@@ -7,11 +7,35 @@ class ScriptStep(
 
 object ScriptUtil {
 
+    /**
+     * Runs a script with the given name and execute all steps. No user interaction.
+     */
     fun runScript(
         name: String,
         steps: List<ScriptStep>,
         details: Map<String, String> = emptyMap(),
+    ) {
+        runScript(name, steps, details, "a", false)
+    }
+
+    /**
+     * Runs a script with the given name and steps. User will be prompted to select which steps to run.
+     */
+    private fun runScriptSteps(
+        name: String,
+        steps: List<ScriptStep>,
+        details: Map<String, String> = emptyMap(),
+        defaultInput: String = "a"
+    ) {
+        runScript(name, steps, details, defaultInput, true)
+    }
+
+    private fun runScript(
+        name: String,
+        steps: List<ScriptStep>,
+        details: Map<String, String> = emptyMap(),
         defaultInput: String = "a",
+        askForUserInput: Boolean
     ) {
         println()
         printScriptRegionStart(name)
@@ -28,21 +52,28 @@ object ScriptUtil {
             println()
 
             // 2) print steps
-            println("------------------------")
-            println("- Available steps")
-            println("------------------------")
-            steps.forEachIndexed { index, step ->
-                println("--- ${index + 1}: ${step.name}")
-            }
-            println("------------------------")
-            println("- Select actions to run (input: 1, 2, 3 or 1-3, 4 etc. or a to run all)")
-            println("------------------------")
+            val input = if (askForUserInput) {
 
-            // 3) get user input
-            println("")
-            val input = getUserInput("Steps to run? (default: $defaultInput)")
-                .ifEmpty { defaultInput }
-            println("")
+                println("------------------------")
+                println("- Available steps")
+                println("------------------------")
+                steps.forEachIndexed { index, step ->
+                    println("--- ${index + 1}: ${step.name}")
+                }
+                println("------------------------")
+                println("- Select actions to run (input: 1, 2, 3 or 1-3, 4 etc. or a to run all)")
+                println("------------------------")
+
+                // 3) get user input
+                println()
+                val input = getUserInput("Steps to run? (default: $defaultInput)").ifEmpty { defaultInput }
+                println()
+                input
+
+            } else {
+
+                defaultInput
+            }
 
             // 4) determine steps to run
             val stepsToRun = mutableListOf<Int>()
