@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+import kotlin.text.get
 import kotlin.text.toInt
 
 class Targets(
@@ -64,10 +65,8 @@ class Targets(
             platforms
         }
         targets.filter { buildTargets.isEnabled(it) }.forEach { target ->
-            val groupMain = sourceSets.maybeCreate(target.nameMain)
-            groupMain.dependsOn(sourceSet)
             target.targets.forEach {
-                sourceSets.getByName("${it}Main").dependsOn(groupMain)
+                sourceSets.getByName("${it}Main").dependsOn(sourceSet)
             }
         }
     }
