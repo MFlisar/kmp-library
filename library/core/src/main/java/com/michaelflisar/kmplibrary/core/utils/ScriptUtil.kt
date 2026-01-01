@@ -13,7 +13,7 @@ object ScriptUtil {
     fun runScript(
         name: String,
         steps: List<ScriptStep>,
-        scriptInfos: () -> Unit = {},
+        scriptInfos: (() -> Unit)? = null,
     ) {
         runScript(name, steps, scriptInfos, "a", false)
     }
@@ -24,7 +24,7 @@ object ScriptUtil {
     fun runScriptSteps(
         name: String,
         steps: List<ScriptStep>,
-        scriptInfos: () -> Unit = {},
+        scriptInfos: (() -> Unit)? = null,
         defaultInput: String = "a"
     ) {
         runScript(name, steps, scriptInfos, defaultInput, true)
@@ -33,7 +33,7 @@ object ScriptUtil {
     private fun runScript(
         name: String,
         steps: List<ScriptStep>,
-        scriptInfos: () -> Unit = {},
+        scriptInfos: (() -> Unit)? = null,
         defaultInput: String = "a",
         askForUserInput: Boolean
     ) {
@@ -42,7 +42,10 @@ object ScriptUtil {
         try {
 
             // 1) details
-            scriptInfos()
+            if (scriptInfos != null) {
+                println()
+                scriptInfos()
+            }
             println()
 
             // 2) print steps
@@ -134,15 +137,6 @@ object ScriptUtil {
             label = label,
             map = details
         )
-    }
-
-    fun printInstructions(
-        instructions: () -> Unit,
-        label: String = "Instructions"
-    ) {
-        println()
-        println("$label:")
-        instructions()
     }
 }
 
