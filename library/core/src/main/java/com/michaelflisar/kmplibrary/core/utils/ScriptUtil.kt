@@ -14,8 +14,9 @@ object ScriptUtil {
         name: String,
         steps: List<ScriptStep>,
         scriptInfos: (() -> Unit)? = null,
+        executeStep: (step: Int) -> Boolean = { true }
     ) {
-        runScript(name, steps, scriptInfos, "a", false)
+        runScript(name, steps, scriptInfos, "a", false, executeStep)
     }
 
     /**
@@ -25,9 +26,10 @@ object ScriptUtil {
         name: String,
         steps: List<ScriptStep>,
         scriptInfos: (() -> Unit)? = null,
-        defaultInput: String = "a"
+        defaultInput: String = "a",
+        executeStep: (step: Int) -> Boolean = { true }
     ) {
-        runScript(name, steps, scriptInfos, defaultInput, true)
+        runScript(name, steps, scriptInfos, defaultInput, true, executeStep)
     }
 
     private fun runScript(
@@ -35,7 +37,8 @@ object ScriptUtil {
         steps: List<ScriptStep>,
         scriptInfos: (() -> Unit)? = null,
         defaultInput: String = "a",
-        askForUserInput: Boolean
+        askForUserInput: Boolean,
+        executeStep: (step: Int) -> Boolean = { true }
     ) {
         println()
         printScriptRegionStart(name)
@@ -76,7 +79,10 @@ object ScriptUtil {
             val stepsToRun = mutableListOf<Int>()
             if (input == "a") {
                 // run all
-                steps.indices.forEach { stepsToRun.add(it + 1) }
+                steps.indices.forEach {
+                    if (executeStep(it + 1) )
+                        stepsToRun.add(it + 1)
+                }
             } else {
                 input.split(",").forEach { part ->
                     if (part.contains("-")) {
@@ -85,12 +91,15 @@ object ScriptUtil {
                             val start = rangeParts[0].toIntOrNull()
                             val end = rangeParts[1].toIntOrNull()
                             if (start != null && end != null) {
-                                stepsToRun.addAll((start..end).toList())
+                                for (i in start..end) {
+                                    if (executeStep(i))
+                                        stepsToRun.add(i)
+                                }
                             }
                         }
                     } else {
                         val stepNumber = part.toIntOrNull()
-                        if (stepNumber != null) {
+                        if (stepNumber != null && executeStep(stepNumber)) {
                             stepsToRun.add(stepNumber)
                         }
                     }
@@ -126,6 +135,12 @@ object ScriptUtil {
     fun getUserInput(prompt: String): String {
         print("$prompt ")
         return readlnOrNull() ?: ""
+    }
+
+    fun getUserInputYesNo(prompt: String, defaultYes: Boolean = true): Boolean {
+        val default = if (defaultYes) "y" else "n"
+        val input = getUserInput("$prompt (y/n) [default: $default]").ifEmpty { default }
+        return input.lowercase().startsWith("y")
     }
 
     fun printDetails(
