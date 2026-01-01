@@ -1,56 +1,103 @@
 package com.michaelflisar.kmplibrary.core.utils
 
-class ScriptScope internal constructor(
-    var stepCounter: Int,
-) {
-
-    fun runStep(stepName: String, step: () -> Unit) {
-        stepCounter++
-        if (stepCounter > 1)
-            println()
-        println("---- Step $stepCounter: $stepName ----")
-        step()
-    }
-
-}
+class ScriptStep(
+    val name: String,
+    val action: () -> Unit,
+)
 
 object ScriptUtil {
 
     fun runScript(
         name: String,
+        steps: List<ScriptStep>,
         details: Map<String, String> = emptyMap(),
-        script: ScriptScope.() -> Unit,
+        defaultInput: String = "a",
     ) {
-        with(ScriptScope(0)) {
-            println()
-            printScriptRegionStart(name)
-            try {
+        println()
+        printScriptRegionStart(name)
+        try {
 
-                // 1) details
-                if (details.isNotEmpty()) {
-                    println()
-                    printScriptDetails(
-                        label = "Details",
-                        map = details
-                    )
-                }
-                // 2) script
+            // 1) details
+            if (details.isNotEmpty()) {
                 println()
-                script()
-
-                println()
-                println("Script finished successfully.")
-
-            } catch (e: Exception) {
-
-                println()
-                println("Script failed with exception: ${e.message}")
-                e.printStackTrace()
-
+                printScriptDetails(
+                    label = "Details",
+                    map = details
+                )
             }
             println()
-            printScriptRegionEnd(name)
+
+            // 2) print steps
+            println("------------------------")
+            println("- Available steps")
+            println("------------------------")
+            steps.forEachIndexed { index, step ->
+                println("--- ${index + 1}: ${step.name}")
+            }
+            println("------------------------")
+            println("- Select actions to run (input: 1, 2, 3 or 1-3, 4 etc. or a to run all)")
+            println("------------------------")
+
+            // 3) get user input
+            println("")
+            val input = getUserInput("Steps to run? (default: $defaultInput)")
+                .ifEmpty { defaultInput }
+            println("")
+
+            // 4) determine steps to run
+            val stepsToRun = mutableListOf<Int>()
+            if (input == "a") {
+                // run all
+                steps.indices.forEach { stepsToRun.add(it + 1) }
+            } else {
+                input.split(",").forEach { part ->
+                    if (part.contains("-")) {
+                        val rangeParts = part.split("-")
+                        if (rangeParts.size == 2) {
+                            val start = rangeParts[0].toIntOrNull()
+                            val end = rangeParts[1].toIntOrNull()
+                            if (start != null && end != null) {
+                                stepsToRun.addAll((start..end).toList())
+                            }
+                        }
+                    } else {
+                        val stepNumber = part.toIntOrNull()
+                        if (stepNumber != null) {
+                            stepsToRun.add(stepNumber)
+                        }
+                    }
+                }
+            }
+
+            // 5) run selected steps
+            steps.forEachIndexed { index, step ->
+                val number = index + 1
+                println("[$number] ${step.name}")
+                if (stepsToRun.contains(number)) {
+                    step.action()
+                } else {
+                    println("SKIPPED")
+                }
+                println()
+            }
+
+            println()
+            println("Script finished successfully.")
+
+        } catch (e: Exception) {
+
+            println()
+            println("Script failed with exception: ${e.message}")
+            e.printStackTrace()
+
         }
+        println()
+        printScriptRegionEnd(name)
+    }
+
+    fun getUserInput(prompt: String): String {
+        print("$prompt ")
+        return readlnOrNull() ?: ""
     }
 }
 
