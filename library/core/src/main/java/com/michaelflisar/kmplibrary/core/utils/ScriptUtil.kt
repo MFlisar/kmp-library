@@ -21,7 +21,7 @@ object ScriptUtil {
     /**
      * Runs a script with the given name and steps. User will be prompted to select which steps to run.
      */
-    private fun runScriptSteps(
+    fun runScriptSteps(
         name: String,
         steps: List<ScriptStep>,
         details: Map<String, String> = emptyMap(),
