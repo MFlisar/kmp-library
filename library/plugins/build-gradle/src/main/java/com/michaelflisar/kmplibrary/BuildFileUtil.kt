@@ -34,6 +34,7 @@ object BuildFileUtil {
      * </code></pre>
      *
      * @param project The Gradle project to configure.
+     * @param config The general configuration for the project.
      * @param libraryConfig The library configuration for the publication.
      * @param platform The platform configuration for the publication.
      * @param autoReleaseOnMavenCentral A function that determines if releases should be automatically published.
@@ -42,6 +43,7 @@ object BuildFileUtil {
      */
     fun setupMavenPublish(
         project: Project,
+        config: Config,
         libraryConfig: LibraryConfig,
         platform: Platform = KotlinMultiplatform(
             javadocJar = JavadocJar.Dokka("dokkaHtml"),
@@ -65,14 +67,14 @@ object BuildFileUtil {
                 name.set(libraryConfig.library.name)
                 description.set(module.libraryDescription(libraryConfig))
                 inceptionYear.set(libraryConfig.library.release.toString())
-                url.set(libraryConfig.library.getRepoLink(libraryConfig.developer))
+                url.set(libraryConfig.library.getRepoLink(config.developer))
 
                 licenses {
                     license {
                         name.set(libraryConfig.library.license.name)
                         url.set(
                             libraryConfig.library.license.getLink(
-                                libraryConfig.developer,
+                                config.developer,
                                 libraryConfig.library
                             )
                         )
@@ -81,14 +83,14 @@ object BuildFileUtil {
 
                 developers {
                     developer {
-                        id.set(libraryConfig.developer.mavenId)
-                        name.set(libraryConfig.developer.name)
-                        email.set(libraryConfig.developer.mail)
+                        id.set(config.developer.mavenId)
+                        name.set(config.developer.name)
+                        email.set(config.developer.mail)
                     }
                 }
 
                 scm {
-                    url.set(libraryConfig.library.getRepoLink(libraryConfig.developer))
+                    url.set(libraryConfig.library.getRepoLink(config.developer))
                 }
             }
 

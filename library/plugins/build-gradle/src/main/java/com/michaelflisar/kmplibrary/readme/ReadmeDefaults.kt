@@ -1,5 +1,6 @@
 package com.michaelflisar.kmplibrary.readme
 
+import com.michaelflisar.kmplibrary.core.configs.Config
 import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
 
 object ReadmeDefaults {
@@ -123,8 +124,8 @@ object ReadmeDefaults {
         altText = "API"
     )
 
-    fun imageKotlin(libraryConfig: LibraryConfig) = UpdateReadmeUtil.markdownImage(
-        imageUrl = "https://img.shields.io/github/languages/top/${libraryConfig.developer.githubUserName}/${libraryConfig.library.name}.svg?style=for-the-badge&amp;color=blueviolet",
+    fun imageKotlin(config: Config, libraryConfig: LibraryConfig) = UpdateReadmeUtil.markdownImage(
+        imageUrl = "https://img.shields.io/github/languages/top/${config.developer.githubUserName}/${libraryConfig.library.name}.svg?style=for-the-badge&amp;color=blueviolet",
         altText = "Kotlin"
     )
 
@@ -133,9 +134,9 @@ object ReadmeDefaults {
         altText = "Kotlin Multiplatform"
     )
 
-    fun imageLicence(libraryConfig: LibraryConfig) = UpdateReadmeUtil.markdownImage(
-        imageUrl = "https://img.shields.io/github/license/${libraryConfig.developer.githubUserName}/${libraryConfig.library.name}?style=for-the-badge",
+    fun imageLicence(config: Config, libraryConfig: LibraryConfig) = UpdateReadmeUtil.markdownImage(
+        imageUrl = "https://img.shields.io/github/license/${config.developer.githubUserName}/${libraryConfig.library.name}?style=for-the-badge",
         altText = "License",
-        linkUrl = "https://github.com/${libraryConfig.developer.githubUserName}/${libraryConfig.library.name}/blob/master/LICENSE"
+        linkUrl = "https://github.com/${config.developer.githubUserName}/${libraryConfig.library.name}/blob/master/LICENSE"
     )
 }

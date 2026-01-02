@@ -5,21 +5,22 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.gradle.api.Project
 import java.io.File
-import kotlin.io.readText
 
 @Serializable
 data class Config(
-    @SerialName("java-version") val javaVersion: String
+    @SerialName("java-version") val javaVersion: String,
+    val developer: Developer,
 ) {
     companion object {
 
-        fun read(project: Project) = read(project.rootDir, "configs/config.yml")
+        fun read(project: Project) = readFromProject(project.rootDir)
+        fun readFromProject(root: File) = read(root, "configs/config.yml")
 
-        fun read(root: File, relativePath: String): Config {
+        private fun read(root: File, relativePath: String): Config {
             return read(File(root, relativePath))
         }
 
-        fun read(file: File): Config {
+        private fun read(file: File): Config {
             return try {
                 tryRead(file)!!
             } catch (e: Exception) {
@@ -28,7 +29,7 @@ data class Config(
             }
         }
 
-        fun tryRead(file: File): Config? {
+        private fun tryRead(file: File): Config? {
             if (!file.exists()) {
                 return null
             }
@@ -36,5 +37,15 @@ data class Config(
             return Yaml.default.decodeFromString(serializer(), content)
         }
     }
+
+
+    @Serializable
+    class Developer(
+        val name: String,
+        val mail: String,
+        @SerialName("maven-id") val mavenId: String,
+        @SerialName("github-user-name") val githubUserName: String,
+    )
+
 }
 

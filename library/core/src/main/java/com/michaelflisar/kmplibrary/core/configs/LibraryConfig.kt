@@ -8,7 +8,6 @@ import java.io.File
 
 @Serializable
 data class LibraryConfig(
-    val developer: Developer,
     @SerialName("github-library") val library: GithubLibrary,
     val maven: Maven,
     val modules: List<Module>,
@@ -16,13 +15,14 @@ data class LibraryConfig(
 ) {
     companion object {
 
-        fun read(project: Project)  = read(project.rootDir, "configs/library-config.yml")
+        fun read(project: Project) = readFromProject(project.rootDir)
+        fun readFromProject(root: File) = read(root, "configs/library-config.yml")
 
-        fun read(root: File, relativePath: String): LibraryConfig {
+        private fun read(root: File, relativePath: String): LibraryConfig {
             return read(File(root, relativePath))
         }
 
-        fun read(file: File): LibraryConfig {
+        private fun read(file: File): LibraryConfig {
             return try {
                 tryRead(file)!!
             } catch (e: Exception) {
@@ -34,7 +34,7 @@ data class LibraryConfig(
             }
         }
 
-        fun tryRead(file: File): LibraryConfig? {
+        private fun tryRead(file: File): LibraryConfig? {
             if (!file.exists()) {
                 return null
             }
@@ -54,21 +54,13 @@ data class LibraryConfig(
     }
 
     @Serializable
-    class Developer(
-        val name: String,
-        val mail: String,
-        @SerialName("maven-id") val mavenId: String,
-        @SerialName("github-user-name") val githubUserName: String,
-    )
-
-    @Serializable
     class GithubLibrary(
         val name: String,
         val release: Int,
         val namespace: String,
         val license: License,
     ) {
-        fun getRepoLink(developer: Developer): String {
+        fun getRepoLink(developer: Config.Developer): String {
             return "https://github.com/{${developer.githubUserName}}/${name}/"
         }
 
@@ -77,7 +69,7 @@ data class LibraryConfig(
             val name: String,
             val path: String,
         ) {
-            fun getLink(developer: Developer, library: GithubLibrary): String {
+            fun getLink(developer: Config.Developer, library: GithubLibrary): String {
                 val link = library.getRepoLink(developer)
                 return "$link/$path".replace("//", "/")
             }

@@ -80,9 +80,9 @@ object UpdateReadmeUtil {
         // 3) create header replacement
         val imageMavenCentral = ReadmeDefaults.imageMavenCentral(libraryConfig)
         val imageAPI = ReadmeDefaults.imageAPI(minSdk)
-        val imageKotlin = ReadmeDefaults.imageKotlin(libraryConfig)
+        val imageKotlin = ReadmeDefaults.imageKotlin(config, libraryConfig)
         val imageKMP = ReadmeDefaults.imageKMP()
-        val imageLicence = ReadmeDefaults.imageLicence(libraryConfig)
+        val imageLicence = ReadmeDefaults.imageLicence(config, libraryConfig)
 
         val headerLine1 = "$imageMavenCentral $imageAPI $imageKotlin $imageKMP $imageLicence"
         val headerLine2 = "# ${libraryConfig.library.name}"
