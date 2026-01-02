@@ -46,7 +46,7 @@ object BuildFileUtil {
         config: Config,
         libraryConfig: LibraryConfig,
         platform: Platform = KotlinMultiplatform(
-            javadocJar = JavadocJar.Dokka("dokkaHtml"),
+            javadocJar = JavadocJar.Dokka("dokkaGenerateHtml"),
             sourcesJar = true
         ),
         autoReleaseOnMavenCentral: (version: String) -> Boolean = { true },

@@ -58,7 +58,7 @@ mavenPublishing {
 
     configure(
         JavaLibrary(
-            javadocJar = JavadocJar.Dokka("dokkaHtml"),
+            javadocJar = JavadocJar.Dokka("dokkaGenerateHtml"),
             sourcesJar = true
         )
     )
