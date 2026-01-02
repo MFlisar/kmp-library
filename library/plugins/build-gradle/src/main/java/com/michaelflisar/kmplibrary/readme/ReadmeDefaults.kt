@@ -22,6 +22,7 @@ object ReadmeDefaults {
         - [Modules](#file_folder-modules)
         - [Demo](#sparkles-demo)
         - [More](#information_source-more)
+        - [Other Libraries](#bulb-other-libraries)
 
         # :camera: Screenshots
 
@@ -82,6 +83,10 @@ object ReadmeDefaults {
         # :information_source: More
 
         {{ links }}
+        
+        # :bulb: Other Libraries
+        
+        You can find more libraries of mine that all do work together nicely [here]({{ other-libraries }}).
 
     """.trimIndent()
 

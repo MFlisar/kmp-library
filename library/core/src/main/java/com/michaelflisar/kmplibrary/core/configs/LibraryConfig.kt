@@ -8,7 +8,7 @@ import java.io.File
 
 @Serializable
 data class LibraryConfig(
-    @SerialName("github-library") val library: GithubLibrary,
+    @SerialName("github") val library: GithubLibrary,
     val maven: Maven,
     val modules: List<Module>,
     val xcframeworks: List<XCFramework>,
@@ -59,6 +59,7 @@ data class LibraryConfig(
         val release: Int,
         val namespace: String,
         val license: License,
+        @SerialName("other-libraries") val otherLibraries: String
     ) {
         fun getRepoLink(developer: Config.Developer): String {
             return "https://github.com/{${developer.githubUserName}}/${name}/"
@@ -88,7 +89,7 @@ data class LibraryConfig(
         @SerialName("artifact-id") val artifactId: String,
         val description: String,
         val path: String,
-        @SerialName("exclude-from-docs")  val excludeFromDocs: Boolean = false
+        @SerialName("exclude-from-docs") val excludeFromDocs: Boolean = false,
     ) {
         fun libraryDescription(setup: LibraryConfig): String {
             val library = setup.library.name

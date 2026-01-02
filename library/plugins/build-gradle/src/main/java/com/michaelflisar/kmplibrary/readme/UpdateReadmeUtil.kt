@@ -185,6 +185,7 @@ object UpdateReadmeUtil {
             Placeholder("{{ setup-via-version-catalogue1 }}", setupViaVersionCatalogue1),
             Placeholder("{{ setup-via-version-catalogue2 }}", setupViaVersionCatalogue2),
             Placeholder("{{ screenshots }}", screenshots.joinToString("\n")),
+            Placeholder("{{ other-libraries }}", libraryConfig.library.otherLibraries),
         )
         for (replacement in replacements) {
             readmeContent = replacement.replace(readmeContent)
