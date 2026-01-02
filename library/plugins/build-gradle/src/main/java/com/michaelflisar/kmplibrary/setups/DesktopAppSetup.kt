@@ -3,7 +3,7 @@ package com.michaelflisar.kmplibrary.setups
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class DesktopSetup(
+class DesktopAppSetup(
     val appName: String,
     val appVersionName: String,
     val mainClass: String,

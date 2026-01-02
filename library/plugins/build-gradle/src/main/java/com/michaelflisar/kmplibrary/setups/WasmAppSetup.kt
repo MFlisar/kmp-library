@@ -1,6 +1,6 @@
 package com.michaelflisar.kmplibrary.setups
 
-class WasmSetup(
+class WasmAppSetup(
     val moduleName: String = DEFAULT_WASM_MODULE_NAME,
     val outputFileName: String = DEFAULT_WASM_OUTPUT_FILENAME,
 ) {

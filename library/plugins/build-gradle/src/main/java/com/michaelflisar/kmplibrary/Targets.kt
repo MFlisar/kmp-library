@@ -5,8 +5,8 @@ import com.android.build.api.dsl.androidLibrary
 import com.michaelflisar.kmplibrary.core.configs.Config
 import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
 import com.michaelflisar.kmplibrary.core.Platform
-import com.michaelflisar.kmplibrary.setups.AndroidSetup
-import com.michaelflisar.kmplibrary.setups.WasmSetup
+import com.michaelflisar.kmplibrary.setups.AndroidLibrarySetup
+import com.michaelflisar.kmplibrary.setups.WasmAppSetup
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -23,7 +23,6 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
-import kotlin.text.get
 import kotlin.text.toInt
 
 class Targets(
@@ -35,7 +34,7 @@ class Targets(
     val wasm: Boolean = false,
     val js: Boolean = false,
 ) {
-    private val enabledPlatforms = Platform.values()
+    private val enabledPlatforms = Platform.entries
         .filter {
             when (it) {
                 Platform.ANDROID -> android
@@ -77,7 +76,7 @@ class Targets(
         project: Project,
         config: Config,
         libraryConfig: LibraryConfig,
-        androidSetup: AndroidSetup?,
+        androidSetup: AndroidLibrarySetup?,
         configureAndroid: (KotlinMultiplatformAndroidLibraryTarget.() -> Unit) = {},
         configureIOS: (KotlinNativeTarget.() -> Unit) = {},
         configureIOSTests: (KotlinNativeTargetWithSimulatorTests.() -> Unit) = {},
@@ -103,23 +102,23 @@ class Targets(
     fun setupTargetsApp(
         project: Project,
         config: Config,
-        wasmSetup: WasmSetup,
-        configAndroid: (KotlinAndroidTarget.() -> Unit) = {},
-        configIOS: (KotlinNativeTarget.() -> Unit) = {},
-        configIOSTests: (KotlinNativeTargetWithSimulatorTests.() -> Unit) = {},
-        configWindows: (KotlinJvmTarget.() -> Unit) = {},
-        configMacOS: (KotlinNativeTargetWithHostTests.() -> Unit) = {},
-        configLinux: (KotlinNativeTarget.() -> Unit) = {},
-        configWASM: (KotlinWasmJsTargetDsl.() -> Unit) = {},
-        configJS: (KotlinJsTargetDsl.() -> Unit) = {},
+        wasmSetup: WasmAppSetup,
+        configureAndroid: (KotlinAndroidTarget.() -> Unit) = {},
+        configureIOS: (KotlinNativeTarget.() -> Unit) = {},
+        configureIOSTests: (KotlinNativeTargetWithSimulatorTests.() -> Unit) = {},
+        configureWindows: (KotlinJvmTarget.() -> Unit) = {},
+        configureMacOS: (KotlinNativeTargetWithHostTests.() -> Unit) = {},
+        configureLinux: (KotlinNativeTarget.() -> Unit) = {},
+        configureWASM: (KotlinWasmJsTargetDsl.() -> Unit) = {},
+        configureJS: (KotlinJsTargetDsl.() -> Unit) = {},
     ) {
-        setupAndroidAppTarget(project, config, configAndroid)
-        setupIOSTarget(project, configIOS, configIOSTests)
-        setupWindowsTarget(project, configWindows)
-        setupMacOSTarget(project, configMacOS)
-        setupLinuxTarget(project, configLinux)
-        setupWasmAppTarget(project, wasmSetup, configWASM)
-        setupJSTarget(project, configJS)
+        setupAndroidAppTarget(project, config, configureAndroid)
+        setupIOSTarget(project, configureIOS, configureIOSTests)
+        setupWindowsTarget(project, configureWindows)
+        setupMacOSTarget(project, configureMacOS)
+        setupLinuxTarget(project, configureLinux)
+        setupWasmAppTarget(project, wasmSetup, configureWASM)
+        setupJSTarget(project, configureJS)
     }
 
     /**
@@ -134,7 +133,7 @@ class Targets(
         project: Project,
         config: Config,
         libraryConfig: LibraryConfig,
-        androidSetup: AndroidSetup,
+        androidSetup: AndroidLibrarySetup,
         configure: (KotlinMultiplatformAndroidLibraryTarget.() -> Unit) = {},
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
@@ -149,6 +148,8 @@ class Targets(
                     compilerOptions {
                         jvmTarget.set(JvmTarget.fromTarget(config.javaVersion))
                     }
+
+                    androidResources { enable = androidSetup.enableAndroidResources }
 
                     configure()
                 }
@@ -336,7 +337,7 @@ class Targets(
      */
     fun setupWasmAppTarget(
         project: Project,
-        wasmSetup: WasmSetup,
+        wasmSetup: WasmAppSetup,
         configure: (KotlinWasmJsTargetDsl.() -> Unit),
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {

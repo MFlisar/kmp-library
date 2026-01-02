@@ -18,6 +18,8 @@ object UpdateReadmeUtil {
         println("#####################################")
         println("")
 
+        val modules = libraryConfig.modules.filter { !it.excludeFromDocs }
+
         // files
         val fileAppVersionToml = File(rootDir, "gradle/app.versions.toml")
         val fileReadme = File(rootDir, "README.md")
@@ -27,7 +29,7 @@ object UpdateReadmeUtil {
 
         // load data from project files
         val minSdk = readTOMLProperty(fileAppVersionToml, "versions", "minSdk").toInt()
-        val supportedPlatforms = libraryConfig.modules.map { module ->
+        val supportedPlatforms = modules.map { module ->
             val platforms =
                 getSupportedPlatformsFromModule(File(rootDir, "${module.path}/build.gradle.kts"))
             module to platforms
@@ -121,7 +123,7 @@ object UpdateReadmeUtil {
         val setupViaDependencies = buildString {
             appendLine("val $libraryName = \"<LATEST-VERSION>\"")
             appendLine()
-            for (module in libraryConfig.modules) {
+            for (module in modules) {
                 appendLine("implementation(\"${libraryConfig.maven.groupId}:${module.artifactId}:\${$libraryName}\")")
             }
         }
@@ -133,7 +135,7 @@ object UpdateReadmeUtil {
             appendLine()
             appendLine("[libraries]")
             appendLine()
-            for (module in libraryConfig.modules) {
+            for (module in modules) {
                 appendLine(
                     "${
                         module.artifactId.replace(
@@ -146,7 +148,7 @@ object UpdateReadmeUtil {
         }
 
         val setupViaVersionCatalogue2 = buildString {
-            for (module in libraryConfig.modules) {
+            for (module in modules) {
                 appendLine("implementation(libs.${module.artifactId.replace("-", ".")})")
             }
         }

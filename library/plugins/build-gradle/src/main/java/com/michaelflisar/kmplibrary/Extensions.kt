@@ -1,6 +1,6 @@
 package com.michaelflisar.kmplibrary
 
-import com.michaelflisar.kmplibrary.setups.DesktopSetup
+import com.michaelflisar.kmplibrary.setups.DesktopAppSetup
 import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
 import org.gradle.api.Project
 import org.jetbrains.compose.desktop.application.dsl.JvmApplication
@@ -12,8 +12,8 @@ import java.time.format.DateTimeFormatter
 
 fun JvmApplication.setupWindowsApp(
     project: Project,
-    setup: DesktopSetup,
-    configNativeDistribution: JvmApplicationDistributions.() -> Unit = {
+    setup: DesktopAppSetup,
+    configureNativeDistribution: JvmApplicationDistributions.() -> Unit = {
         targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
     },
 ) {
@@ -21,7 +21,7 @@ fun JvmApplication.setupWindowsApp(
 
     nativeDistributions {
 
-        configNativeDistribution()
+        configureNativeDistribution()
 
         val now = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -44,7 +44,7 @@ fun JvmApplication.setupWindowsApp(
 }
 
 fun Launch4jLibraryTask.setupLaunch4J(
-    setup: DesktopSetup,
+    setup: DesktopAppSetup,
     jarTask: String = "flattenReleaseJars",
     outputFile: (exe: File) -> File = { it },
 ) {
