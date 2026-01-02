@@ -37,6 +37,9 @@ kotlin {
 
         val main by getting {
             dependencies {
+
+                implementation(gradleKotlinDsl())
+
                 implementation(deps.yaml)
             }
         }

@@ -3,6 +3,7 @@ package com.michaelflisar.kmplibrary.core.configs
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.gradle.api.Project
 import java.io.File
 import kotlin.io.readText
 
@@ -11,6 +12,8 @@ data class Config(
     @SerialName("java-version") val javaVersion: String
 ) {
     companion object {
+
+        fun read(project: Project) = read(project.rootDir, "configs/config.yml")
 
         fun read(root: File, relativePath: String): Config {
             return read(File(root, relativePath))

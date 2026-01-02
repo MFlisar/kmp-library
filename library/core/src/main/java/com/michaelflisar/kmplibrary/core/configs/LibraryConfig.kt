@@ -3,6 +3,7 @@ package com.michaelflisar.kmplibrary.core.configs
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.gradle.api.Project
 import java.io.File
 
 @Serializable
@@ -14,6 +15,8 @@ data class LibraryConfig(
     val xcframeworks: List<XCFramework>,
 ) {
     companion object {
+
+        fun read(project: Project)  = read(project.rootDir, "configs/library-config.yml")
 
         fun read(root: File, relativePath: String): LibraryConfig {
             return read(File(root, relativePath))
