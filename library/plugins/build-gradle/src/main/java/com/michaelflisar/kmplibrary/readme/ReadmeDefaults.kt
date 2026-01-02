@@ -93,7 +93,7 @@ object ReadmeDefaults {
 
         ${headerDemo.markdownHeader()}
 
-        A full [demo](/demo) is included inside the demo module, it shows nearly every usage with working examples.
+        {{ demo }}
 
         ${headerMore.markdownHeader()}
 

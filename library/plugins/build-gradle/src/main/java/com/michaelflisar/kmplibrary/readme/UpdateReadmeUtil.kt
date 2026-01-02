@@ -162,6 +162,10 @@ object UpdateReadmeUtil {
             emptyList()
         }
 
+        val demo = if (File(rootDir, "demo").exists())
+            "A full [demo](/demo) is included inside the demo module, it shows nearly every usage with working examples."
+        else ""
+
         // 7) read template content
         var readmeContent = readmeTemplate
 
@@ -188,6 +192,7 @@ object UpdateReadmeUtil {
             Placeholder("{{ setup-via-version-catalogue2 }}", setupViaVersionCatalogue2),
             Placeholder("{{ screenshots }}", screenshots.joinToString("\n")),
             Placeholder("{{ other-libraries }}", libraryConfig.library.otherLibraries),
+            Placeholder("{{ demo }}", demo),
         )
         for (replacement in replacements) {
             readmeContent = replacement.replace(readmeContent)
