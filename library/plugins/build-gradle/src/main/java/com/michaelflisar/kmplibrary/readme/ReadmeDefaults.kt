@@ -158,6 +158,6 @@ object ReadmeDefaults {
     fun imageLicence(config: Config, libraryConfig: LibraryConfig) = UpdateReadmeUtil.markdownImage(
         imageUrl = "https://img.shields.io/github/license/${config.developer.githubUserName}/${libraryConfig.library.name}?style=for-the-badge",
         altText = "License",
-        linkUrl = "https://github.com/${config.developer.githubUserName}/${libraryConfig.library.name}/${libraryConfig.library.license}"
+        linkUrl = "https://github.com/${config.developer.githubUserName}/${libraryConfig.library.name}/${libraryConfig.library.license.path}"
     )
 }
