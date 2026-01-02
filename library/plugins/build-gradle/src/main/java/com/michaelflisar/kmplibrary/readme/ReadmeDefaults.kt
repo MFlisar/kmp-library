@@ -20,7 +20,7 @@ object ReadmeDefaults {
         - [Setup](#wrench-setup)
         - [Usage](#page_facing_up-usage)
         - [Modules](#file_folder-modules)
-        - [Demo](#diamonds-demo)
+        - [Demo](#sparkles-demo)
         - [More](#information_source-more)
 
         # :camera: Screenshots
@@ -75,7 +75,7 @@ object ReadmeDefaults {
 
         {{ modules }}
 
-        # :diamonds: Demo
+        # :sparkles: Demo
 
         A full [demo](/demo) is included inside the demo module, it shows nearly every usage with working examples.
 

@@ -190,7 +190,51 @@ object UpdateReadmeUtil {
             readmeContent = replacement.replace(readmeContent)
         }
 
-        // 4) write updated readme content to README.md
+        // 4) remove headers (lines starting with #) without content after them until the next header
+        val lines = readmeContent.lines()
+        val cleanedLines = mutableListOf<String>()
+        var i = 0
+        while (i < lines.size) {
+            val line = lines[i]
+            if (line.trim().startsWith("#")) {
+                // Suche nach dem nächsten Header oder Dateiende
+                var j = i + 1
+                var onlyEmpty = true
+                while (j < lines.size && !lines[j].trim().startsWith("#")) {
+                    if (lines[j].isNotBlank()) {
+                        onlyEmpty = false
+                        break
+                    }
+                    j++
+                }
+                if (onlyEmpty) {
+                    // Überspringe Header und alle leeren Zeilen danach
+                    i = j
+                    continue
+                }
+            }
+            cleanedLines.add(line)
+            i++
+        }
+        readmeContent = cleanedLines.joinToString("\n")
+
+        // 5) remove multiple trimmed empty lines => max is 1 empty line
+        val finalLines = mutableListOf<String>()
+        var lastLineEmpty = false
+        for (line in readmeContent.lines()) {
+            if (line.isBlank()) {
+                if (!lastLineEmpty) {
+                    finalLines.add("")
+                    lastLineEmpty = true
+                }
+            } else {
+                finalLines.add(line)
+                lastLineEmpty = false
+            }
+        }
+        readmeContent = finalLines.joinToString("\n")
+
+        // 6) write updated readme content to README.md
         fileReadme.writeText(readmeContent)
 
         println("")
