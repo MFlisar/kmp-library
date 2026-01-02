@@ -6,6 +6,28 @@ import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
 
 object ReadmeDefaults {
 
+    val headerTableOfContent = ReadmeRegion("information_source", "Table of Contents")
+    val headerScreenshots = ReadmeRegion("camera", "Screenshots")
+    val headerSupportedPlatform = ReadmeRegion("computer", "Supported Platforms")
+    val headerSetup = ReadmeRegion("wrench", "Setup")
+    val headerUsage = ReadmeRegion("page_facing_up", "Usage")
+    val headerModules = ReadmeRegion("file_folder", "Modules")
+    val headerDemo = ReadmeRegion("sparkles", "Demo")
+    val headerMore = ReadmeRegion("information_source", "More")
+    val headerOtherLibraries = ReadmeRegion("bulb", "Other Libraries")
+
+    val allHeaders = listOf(
+        headerTableOfContent,
+        headerScreenshots,
+        headerSupportedPlatform,
+        headerSetup,
+        headerUsage,
+        headerModules,
+        headerDemo,
+        headerMore,
+        headerOtherLibraries
+    )
+
     val DefaultReadmeTemplate = """
         {{ header }}
 
@@ -13,26 +35,19 @@ object ReadmeDefaults {
 
         {{ partials.features }}
 
-        # :information_source: Table of Contents
+        ${headerTableOfContent.markdownHeader()}
+        
+        {{ tableOfContent }}
 
-        - [Screenshots](#camera-screenshots)
-        - [Supported Platforms](#computer-supported-platforms)
-        - [Setup](#wrench-setup)
-        - [Usage](#page_facing_up-usage)
-        - [Modules](#file_folder-modules)
-        - [Demo](#sparkles-demo)
-        - [More](#information_source-more)
-        - [Other Libraries](#bulb-other-libraries)
-
-        # :camera: Screenshots
+        ${headerScreenshots.markdownHeader()}
 
         {{ screenshots }}
 
-        # :computer: Supported Platforms
+        ${headerSupportedPlatform.markdownHeader()}
 
         {{ supported_platforms }}
 
-        # :wrench: Setup
+        ${headerSetup.markdownHeader()}
 
         <details>
 
@@ -68,25 +83,25 @@ object ReadmeDefaults {
 
         </details>
 
-        # :page_facing_up: Usage
+        ${headerUsage.markdownHeader()}
 
         {{ partials.usage }}
 
-        # :file_folder: Modules
+        ${headerModules.markdownHeader()}
 
         {{ modules }}
 
-        # :sparkles: Demo
+        ${headerDemo.markdownHeader()}
 
         A full [demo](/demo) is included inside the demo module, it shows nearly every usage with working examples.
 
-        # :information_source: More
+        ${headerMore.markdownHeader()}
 
         {{ links }}
         
-        # :bulb: Other Libraries
+        ${headerOtherLibraries.markdownHeader()}
         
-        You can find more libraries of mine that all do work together nicely [here]({{ other-libraries }}).
+        You can find more libraries (all multiplatform) of mine that all do work together nicely [here]({{ other-libraries }}).
 
     """.trimIndent()
 

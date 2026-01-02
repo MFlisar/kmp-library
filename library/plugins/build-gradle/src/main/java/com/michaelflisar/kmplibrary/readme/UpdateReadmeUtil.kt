@@ -146,7 +146,6 @@ object UpdateReadmeUtil {
                 )
             }
         }
-
         val setupViaVersionCatalogue2 = buildString {
             for (module in modules) {
                 appendLine("implementation(libs.${module.artifactId.replace("-", ".")})")
@@ -163,10 +162,10 @@ object UpdateReadmeUtil {
             emptyList()
         }
 
-        // 2) read template content
+        // 7) read template content
         var readmeContent = readmeTemplate
 
-        // 3) replace placeholders in readme with content from markdown files
+        // 8) replace placeholders in readme with content from markdown files (all but table of contents)
         val replacements = listOf(
             Placeholder("{{ header }}", header),
             Partial(
@@ -177,7 +176,10 @@ object UpdateReadmeUtil {
                 "{{ partials.features }}",
                 File(rootDir, "documentation/_partials/features.md.partial")
             ),
-            Partial("{{ partials.usage }}", File(rootDir, "documentation/_partials/usage.md.partial")),
+            Partial(
+                "{{ partials.usage }}",
+                File(rootDir, "documentation/_partials/usage.md.partial")
+            ),
             Placeholder("{{ modules }}", moduleLinks.joinToString("\n")),
             Placeholder("{{ links }}", otherLinks.joinToString("\n")),
             Placeholder("{{ supported_platforms }}", supportedPlatformsTable),
@@ -191,7 +193,7 @@ object UpdateReadmeUtil {
             readmeContent = replacement.replace(readmeContent)
         }
 
-        // 4) remove headers (lines starting with #) without content after them until the next header
+        // 9) remove headers (lines starting with #) without content after them until the next header
         val lines = readmeContent.lines()
         val cleanedLines = mutableListOf<String>()
         var i = 0
@@ -219,7 +221,20 @@ object UpdateReadmeUtil {
         }
         readmeContent = cleanedLines.joinToString("\n")
 
-        // 5) remove multiple trimmed empty lines => max is 1 empty line
+        // 10)  replacement - table of content
+        val tableOfContent = ReadmeDefaults.allHeaders
+            .filter { it != ReadmeDefaults.headerTableOfContent }
+            .filter {
+                val header = it.markdownHeader()
+                if (readmeContent.contains(header)) {
+                    true
+                } else {
+                    false
+                }
+            }.joinToString("\n") { "- ${it.markdownLink()}" }
+        readmeContent = Placeholder("{{ tableOfContent }}", tableOfContent).replace(readmeContent)
+
+        // 11) remove multiple trimmed empty lines => max is 1 empty line
         val finalLines = mutableListOf<String>()
         var lastLineEmpty = false
         for (line in readmeContent.lines()) {
@@ -235,7 +250,7 @@ object UpdateReadmeUtil {
         }
         readmeContent = finalLines.joinToString("\n")
 
-        // 6) write updated readme content to README.md
+        // 12) write updated readme content to README.md
         fileReadme.writeText(readmeContent)
 
         println("")
