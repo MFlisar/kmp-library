@@ -11,7 +11,7 @@ data class LibraryConfig(
     @SerialName("github-library") val library: GithubLibrary,
     val maven: Maven,
     val modules: List<Module>,
-    val xcFrameworks: List<XCFramework>,
+    val xcframeworks: List<XCFramework>,
 ) {
     companion object {
 
@@ -110,6 +110,7 @@ data class LibraryConfig(
     class XCFramework(
         val name: String,
         val path: String,
+        val targets: List<String>,
     )
 }
 
