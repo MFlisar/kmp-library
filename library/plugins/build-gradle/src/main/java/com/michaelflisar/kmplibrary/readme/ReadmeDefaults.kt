@@ -1,5 +1,6 @@
 package com.michaelflisar.kmplibrary.readme
 
+import com.michaelflisar.kmplibrary.core.Platform
 import com.michaelflisar.kmplibrary.core.configs.Config
 import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
 
@@ -85,31 +86,31 @@ object ReadmeDefaults {
     """.trimIndent()
 
     val ImageAndroid = UpdateReadmeUtil.markdownImage(
-        imageUrl = "https://img.shields.io/badge/android-3DDC84?style=for-the-badge",
+        imageUrl = "https://img.shields.io/badge/android-${Platform.ANDROID.color}?style=for-the-badge",
         altText = "Android"
     )
     val ImageIOS = UpdateReadmeUtil.markdownImage(
-        imageUrl = "https://img.shields.io/badge/ios-A2AAAD?style=for-the-badge",
+        imageUrl = "https://img.shields.io/badge/ios-${Platform.IOS.color}?style=for-the-badge",
         altText = "iOS"
     )
     val ImageWindows = UpdateReadmeUtil.markdownImage(
-        imageUrl = "https://img.shields.io/badge/windows-5382A1?style=for-the-badge",
+        imageUrl = "https://img.shields.io/badge/windows-${Platform.WINDOWS.color}?style=for-the-badge",
         altText = "Windows"
     )
     val ImageMacOS = UpdateReadmeUtil.markdownImage(
-        imageUrl = "https://img.shields.io/badge/macos-B0B0B0?style=for-the-badge",
+        imageUrl = "https://img.shields.io/badge/macos-${Platform.MACOS.color}?style=for-the-badge",
         altText = "macOS"
     )
     val ImageLinux = UpdateReadmeUtil.markdownImage(
-        imageUrl = "https://img.shields.io/badge/linux-FF6600?style=for-the-badge",
+        imageUrl = "https://img.shields.io/badge/linux-${Platform.LINUX.color}?style=for-the-badge",
         altText = "Linux"
     )
     val ImageWASM = UpdateReadmeUtil.markdownImage(
-        imageUrl = "https://img.shields.io/badge/wasm-624DE7?style=for-the-badge",
+        imageUrl = "https://img.shields.io/badge/wasm-${Platform.WASM.color}?style=for-the-badge",
         altText = "WebAssembly"
     )
     val ImageJS = UpdateReadmeUtil.markdownImage(
-        imageUrl = "https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge",
+        imageUrl = "https://img.shields.io/badge/javascript-${Platform.JS.color}?style=for-the-badge",
         altText = "JavaScript"
     )
 
