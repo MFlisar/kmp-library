@@ -154,9 +154,13 @@ object UpdateReadmeUtil {
         }
 
         // 6) create screenshot replacement
-        val screenshots = folderDocumentationScreenshots.listFiles().map {
-            val relativePath = it.relativeTo(rootDir).path.replace("\\", "/")
-            "![${it.nameWithoutExtension}]($relativePath)"
+        val screenshots = if (folderDocumentationScreenshots.exists()) {
+            folderDocumentationScreenshots.listFiles().map {
+                val relativePath = it.relativeTo(rootDir).path.replace("\\", "/")
+                "![${it.nameWithoutExtension}]($relativePath)"
+            }
+        } else {
+            emptyList()
         }
 
         // 2) read template content
