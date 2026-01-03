@@ -1,5 +1,7 @@
 package com.michaelflisar.kmplibrary.core.utils
 
+import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
+import org.gradle.api.Project
 import java.io.File
 import java.util.Properties
 
@@ -10,6 +12,20 @@ class ProjectData(
     val pathRunConfigFolders: String = ".run",
     val root: File = File(System.getProperty("user.dir")),
 ) {
+    constructor(
+        project: Project,
+        libraryConfig: LibraryConfig = LibraryConfig.read(project),
+        pathStateFile: String = "configs/state.properties",
+        pathRunConfigFolders: String = ".run",
+        root: File = project.rootDir
+    ) : this(
+        packageNameTo = libraryConfig.library.namespace,
+        libraryNameTo = libraryConfig.library.name,
+        pathStateFile = pathStateFile,
+        pathRunConfigFolders = pathRunConfigFolders,
+        root = root,
+    )
+
     val fileStateProperties = File(root, pathStateFile)
     val state = Properties().apply {
         fileStateProperties.inputStream().use { load(it) }

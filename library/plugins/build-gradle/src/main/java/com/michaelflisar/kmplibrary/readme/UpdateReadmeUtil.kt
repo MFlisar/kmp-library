@@ -2,15 +2,36 @@ package com.michaelflisar.kmplibrary.readme
 
 import com.michaelflisar.kmplibrary.core.configs.Config
 import com.michaelflisar.kmplibrary.core.configs.LibraryConfig
+import org.gradle.api.Project
 import java.io.File
 
 object UpdateReadmeUtil {
 
+    /**
+     * Updates the README.md file in the given project based on the provided configuration and template.
+     */
+    fun update(
+        project: Project,
+        config: Config = Config.read(project),
+        libraryConfig: LibraryConfig = LibraryConfig.read(project),
+        readmeTemplate: String = ReadmeDefaults.DefaultReadmeTemplate,
+    ) {
+        update(
+            rootDir = project.rootDir,
+            config = config,
+            libraryConfig = libraryConfig,
+            readmeTemplate = readmeTemplate
+        )
+    }
+
+    /**
+     * Updates the README.md file in the given root directory based on the provided configuration and template.
+     */
     fun update(
         rootDir: File,
-        readmeTemplate: String,
         config: Config,
         libraryConfig: LibraryConfig,
+        readmeTemplate: String,
     ) {
         println("")
         println("#####################################")
@@ -271,7 +292,11 @@ object UpdateReadmeUtil {
      * @param linkUrl The URL to link to (optional, default: null)
      * @return Markdown string for the image, optionally as a link
      */
-    fun markdownImage(imageUrl: String, altText: String = "", linkUrl: String? = null): String {
+    internal fun markdownImage(
+        imageUrl: String,
+        altText: String = "",
+        linkUrl: String? = null,
+    ): String {
         val imageMarkdown = "![${altText}](${imageUrl})"
         return if (linkUrl != null) {
             "[${imageMarkdown}](${linkUrl})"
@@ -287,7 +312,7 @@ object UpdateReadmeUtil {
      * @param region The region in the TOML file (e.g. "versions")
      * @param key The key to read (e.g. "minSDK")
      */
-    fun readTOMLProperty(file: File, region: String, key: String): String {
+    private fun readTOMLProperty(file: File, region: String, key: String): String {
         val content = file.readText(Charsets.UTF_8)
         val regionStart = content.indexOf("[$region]")
         if (regionStart == -1) {
@@ -321,7 +346,7 @@ object UpdateReadmeUtil {
      * @param file The root directory of the module.
      * @return A list of supported platform names.
      */
-    fun getSupportedPlatformsFromModule(file: File): List<String> {
+    private fun getSupportedPlatformsFromModule(file: File): List<String> {
 
         // 1) get buildTargets block
         val regex = Regex("val buildTargets = Targets\\((.*?)\\)", RegexOption.DOT_MATCHES_ALL)

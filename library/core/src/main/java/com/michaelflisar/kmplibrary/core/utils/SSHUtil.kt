@@ -6,7 +6,7 @@ class SSHSetup(
     val host: String,
     val user: String,
     val port: Int,
-    val keyPath: String
+    val keyPath: String,
 )
 
 object SSHUtil {
