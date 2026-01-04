@@ -208,9 +208,6 @@ private fun buildXCFramework(
 
         println("Building XCFramework: ${xcFramework.name}")
 
-        val buildXCFrameworkPath = toolingSetup.buildXCFrameworkFile
-
-        val relativeScriptPath = buildXCFrameworkPath.path
         val localXCFrameworkFile = xcFramework.xcframework.getLocalFile(toolingSetup.root)
         val remoteXCFrameworkPath = xcFramework.xcframework.getRemotePath(toolingSetup.root)
         val relativeXCodeProjPath = xcFramework.xcodeproj.path
@@ -219,7 +216,6 @@ private fun buildXCFramework(
         val scheme = xcFramework.scheme
         val includeMacFlag = if (xcFramework.targets.contains("macos")) 1 else 0
 
-        // 1) sh script auf mac ausführen
         // im root ausführen, dann passt auch project path relative zum root
         val env = "PROJECT_NAME=\"$projectName\" " +
                 "SCHEME=\"$scheme\" " +
@@ -228,11 +224,19 @@ private fun buildXCFramework(
                 "INCLUDE_MAC=$includeMacFlag " +
                 "INCLUDE_CATALYST=0"
 
-        val command1 =
-            "cd '$projectRemoteRootDirectory' && chmod +x '$relativeScriptPath' && $env './$relativeScriptPath'"
+        // 1) get script file content from resources/build_xcframework.sh as stream
+        val scriptFileName = "build_xcframework.sh"
+        val resourceStream = MacActions::class.java.classLoader.getResourceAsStream(scriptFileName) ?: error("Resource not found: $scriptFileName")
+
+        // 2) save script file stream to remote machine
+        val scriptFile = File(projectRemoteRootDirectory, scriptFileName)
+        scriptFile.writeText(resourceStream.bufferedReader().readText())
+
+        // 3) run script
+        val command1 = "cd '$projectRemoteRootDirectory' && chmod +x '$scriptFileName' && $env './$scriptFileName'"
         SSHUtil.ssh(command1, sshSetup)
 
-        // 2) xcframework zurück kopieren
+        // 4) xcframework zurück kopieren
         println("Copying XCFramework back to local machine...")
         if (localXCFrameworkFile.exists()) {
             localXCFrameworkFile.deleteRecursively()
@@ -271,18 +275,6 @@ private fun openXCode(
 
     SSHUtil.ssh(
         command = "open -a Xcode '$remoteXCodeProject' >/dev/null 2>&1 &",
-        sshSetup = sshSetup
-    )
-}
-
-private fun openTerminalInScriptDir(
-    toolingSetup: ToolingSetup,
-    sshSetup: SSHSetup,
-) {
-    println("Opening Terminal in script dir...")
-    val remotePath = toolingSetup.scriptsFolder.getRemotePath(toolingSetup.root)
-    SSHUtil.ssh(
-        command = "open -a Terminal '$remotePath' >/dev/null 2>&1 &",
         sshSetup = sshSetup
     )
 }
