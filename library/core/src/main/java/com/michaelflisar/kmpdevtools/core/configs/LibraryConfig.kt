@@ -15,6 +15,7 @@ data class LibraryConfig(
 ) {
     companion object {
 
+        fun read(project: org.gradle.api.initialization.ProjectDescriptor) = readFromProject(project.rootDir)
         fun read(project: Project) = readFromProject(project.rootDir)
         fun readFromProject(root: File) = read(root, "configs/library-config.yml")
 

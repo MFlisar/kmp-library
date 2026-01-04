@@ -13,6 +13,7 @@ data class Config(
 ) {
     companion object {
 
+        fun read(project: org.gradle.api.initialization.ProjectDescriptor) = readFromProject(project.projectDir)
         fun read(project: Project) = readFromProject(project.rootDir)
         fun readFromProject(root: File) = read(root, "configs/config.yml")
 
