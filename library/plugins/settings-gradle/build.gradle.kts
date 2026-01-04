@@ -34,7 +34,7 @@ gradlePlugin {
     plugins {
         create("settingsPlugin") {
             id = "$groupID.$artifactId"
-            implementationClass = "com.michaelflisar.kmplibrary.SettingsFilePlugin"
+            implementationClass = "com.michaelflisar.kmpdevtools.SettingsFilePlugin"
         }
         isAutomatedPublishing = true
     }

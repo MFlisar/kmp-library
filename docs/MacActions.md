@@ -1,5 +1,5 @@
 # Kotlin Files
 
-https://github.com/MFlisar/kmp-library/blob/main/library/plugins/build-gradle/src/main/java/com/michaelflisar/kmplibrary/tooling/MacActions.kt
-https://github.com/MFlisar/kmp-library/blob/main/library/plugins/build-gradle/src/main/java/com/michaelflisar/kmplibrary/tooling/MacDefaults.kt
-https://github.com/MFlisar/kmp-library/blob/main/library/plugins/build-gradle/src/main/java/com/michaelflisar/kmplibrary/tooling/ToolingSetup.kt
+https://github.com/MFlisar/kmp-kmpdevtools/blob/main/library/plugins/build-gradle/src/main/java/com/michaelflisar/kmpdevtools/tooling/MacActions.kt
+https://github.com/MFlisar/kmp-kmpdevtools/blob/main/library/plugins/build-gradle/src/main/java/com/michaelflisar/kmpdevtools/tooling/MacDefaults.kt
+https://github.com/MFlisar/kmp-kmpdevtools/blob/main/library/plugins/build-gradle/src/main/java/com/michaelflisar/kmpdevtools/tooling/ToolingSetup.kt
