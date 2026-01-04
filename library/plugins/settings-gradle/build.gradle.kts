@@ -41,6 +41,7 @@ gradlePlugin {
 }
 
 dependencies {
+    api(project(":library:core"))
 }
 
 mavenPublishing {
