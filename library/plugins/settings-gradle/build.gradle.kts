@@ -18,11 +18,11 @@ val description = "a gradle settings file plugin that provides common functions 
 val artifactId = "plugins-settings-gradle"
 
 // Library
-val libraryName = "kmp-library"
+val libraryName = "kmp-devtools"
 val libraryDescription = "$libraryName - $artifactId module - $description"
-val groupID = "io.github.mflisar.kmp-library"
+val groupID = "io.github.mflisar.kmpdevtools"
 val release = 2025
-val github = "https://github.com/MFlisar/kmp-library"
+val github = "https://github.com/MFlisar/kmp-devtools"
 val license = "Apache License 2.0"
 val licenseUrl = "$github/blob/main/LICENSE"
 
