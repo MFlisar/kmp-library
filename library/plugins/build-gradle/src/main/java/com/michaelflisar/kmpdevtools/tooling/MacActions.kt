@@ -228,15 +228,24 @@ private fun buildXCFramework(
         val scriptFileName = "build_xcframework.sh"
         val resourceStream = MacActions::class.java.classLoader.getResourceAsStream(scriptFileName) ?: error("Resource not found: $scriptFileName")
 
-        // 2) save script file stream to remote machine
-        val scriptFile = File(projectRemoteRootDirectory, scriptFileName)
-        scriptFile.writeText(resourceStream.bufferedReader().readText())
+        // 2) save script file stream to a local temp file
+        val tmpScriptFile = File.createTempFile("build_xcframework", ".sh")
+        tmpScriptFile.writeText(resourceStream.bufferedReader().readText())
 
-        // 3) run script
+        // 3) copy script file to remote machine (Mac)
+        val remoteScriptFile = "$projectRemoteRootDirectory/$scriptFileName"
+        val scpScriptCmd = mutableListOf("scp", "-P", sshSetup.port.toString())
+        if (File(sshSetup.keyPath).exists())
+            scpScriptCmd += listOf("-i", sshSetup.keyPath)
+        scpScriptCmd += listOf(tmpScriptFile.absolutePath, "${sshSetup.user}@${sshSetup.host}:$remoteScriptFile")
+        CMDUtil.runOrThrow(scpScriptCmd, "scp upload of script failed.")
+        tmpScriptFile.delete()
+
+        // 4) run script
         val command1 = "cd '$projectRemoteRootDirectory' && chmod +x '$scriptFileName' && $env './$scriptFileName'"
         SSHUtil.ssh(command1, sshSetup)
 
-        // 4) xcframework zurück kopieren
+        // 5) xcframework zurück kopieren
         println("Copying XCFramework back to local machine...")
         if (localXCFrameworkFile.exists()) {
             localXCFrameworkFile.deleteRecursively()
