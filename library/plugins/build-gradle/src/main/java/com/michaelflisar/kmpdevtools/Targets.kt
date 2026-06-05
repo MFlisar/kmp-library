@@ -268,10 +268,11 @@ class Targets(
     ) {
         project.extensions.configure(KotlinMultiplatformExtension::class.java) {
             if (iOS) {
-                iosX64 {
-                    configure()
-                    configureTests()
-                }
+                // iosX64 target removed because Compose Multiplatform 1.11.0 no longer supports Apple x86_64 targets
+                //iosX64 {
+                //    configure()
+                //    configureTests()
+                //}
                 iosArm64 {
                     configure()
                 }
