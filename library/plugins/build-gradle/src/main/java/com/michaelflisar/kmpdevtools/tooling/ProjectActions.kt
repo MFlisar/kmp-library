@@ -87,8 +87,8 @@ object ProjectActions {
             }
         }
 
-        // 1) gradle/deps.versions.toml => kmpdevtools = "6.4.1" ersetzen
-        val depsFile = File(root, "gradle/deps.versions.toml")
+        // 1) gradle/mflisar.versions.toml => kmpdevtools = "6.4.1" ersetzen
+        val depsFile = File(root, "gradle/mflisar.versions.toml")
         val depsText = depsFile.readText()
         val depsRegex = Regex("""(kmpdevtools\s*=\s*)".*?"""")
         val depsNewText = depsRegex.replace(depsText) { matchResult ->
