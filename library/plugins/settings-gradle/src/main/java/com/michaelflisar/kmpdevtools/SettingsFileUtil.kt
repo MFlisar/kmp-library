@@ -33,6 +33,13 @@ object SettingsFileUtil {
         }
     }
 
+    fun includeAllModules(
+        settings: Settings,
+        exclude: (buildGradleFile: File) -> Boolean = { false },
+    ) {
+        includeModulesInFolder(settings, settings.rootDir.path, exclude)
+    }
+
     fun includeModulesInFolder(
         settings: Settings,
         folder: String,

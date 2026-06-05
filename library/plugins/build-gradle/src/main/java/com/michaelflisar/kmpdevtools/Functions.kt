@@ -155,8 +155,8 @@ fun BuildKonfigExtension.setupBuildKonfig(
     exposeObjectWithName: String = "BuildKonfig",
     config: TargetConfigDsl.() -> Unit = {}
 ) {
-    packageName = appConfig.namespace
-    this.exposeObjectWithName = exposeObjectWithName
+    packageName.set(appConfig.namespace)
+    this.exposeObjectWithName.set(exposeObjectWithName)
     defaultConfigs {
         buildConfigField(Type.STRING, "versionName", appConfig.versionName)
         if (versionFormatter != null)
