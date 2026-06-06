@@ -5,6 +5,7 @@ import com.codingfeline.buildkonfig.gradle.BuildKonfigExtension
 import com.codingfeline.buildkonfig.gradle.TargetConfigDsl
 import com.michaelflisar.composechangelog.format.ChangelogVersionFormatter
 import com.michaelflisar.composechangelog.format.DefaultVersionFormatter
+import com.michaelflisar.kmpdevtools.configs.AppModuleConfig
 import com.michaelflisar.kmpdevtools.configs.LibraryModuleConfig
 import com.michaelflisar.kmpdevtools.core.Platform
 import com.michaelflisar.kmpdevtools.core.configs.AppConfig
@@ -135,12 +136,40 @@ class SourceSetPlatformDsl internal constructor(
 }
 
 fun setupDependencies(
+    module: AppModuleConfig,
+    buildTargets: Targets,
+    sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
+    block: SourceSetPlatformDsl.() -> Unit,
+) {
+    setupDependencies(
+        config = module.config,
+        buildTargets = buildTargets,
+        sourceSets = sourceSets,
+        block = block
+    )
+}
+
+fun setupDependencies(
     module: LibraryModuleConfig,
     buildTargets: Targets,
     sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
     block: SourceSetPlatformDsl.() -> Unit,
 ) {
-    val log = module.config.settings.logDependencies
+    setupDependencies(
+        config = module.config,
+        buildTargets = buildTargets,
+        sourceSets = sourceSets,
+        block = block
+    )
+}
+
+private fun setupDependencies(
+    config: Config,
+    buildTargets: Targets,
+    sourceSets: NamedDomainObjectContainer<KotlinSourceSet>,
+    block: SourceSetPlatformDsl.() -> Unit,
+) {
+    val log = config.settings.logDependencies
     val dsl = SourceSetPlatformDsl(buildTargets, sourceSets)
     with(dsl, block)
     // wenn wir alle source sets zu platform zuordnungen haben, können wir die dependencies setzen
