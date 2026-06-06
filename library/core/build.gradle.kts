@@ -2,6 +2,9 @@ import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SourcesJar
 
+import java.net.URL
+import java.net.URLClassLoader
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
@@ -104,4 +107,45 @@ mavenPublishing {
     // Enable GPG signing for all publications
     if (System.getenv("CI")?.toBoolean() == true)
         signAllPublications()
+}
+
+tasks.register("invokeGithubUtil") {
+    group = "verification"
+    description = "Invokes GithubUtil.getLastRelease for all ReleaseType values via reflection"
+    dependsOn("classes") // sicherstellen, dass der Code kompiliert ist
+
+    doLast {
+        val repo = project.findProperty("githubRepo")?.toString()
+            ?: System.getenv("GITHUB_REPO")
+            ?: "MFlisar/kmp-devtools"
+
+        // build classpath -> URLs
+        val urls = sourceSets["main"].runtimeClasspath.files.map { it.toURI().toURL() }.toTypedArray()
+        val loader = URLClassLoader(urls, null) // null parent macht die Invocation isolierter
+
+        try {
+            // Lade das GithubUtil object und dessen enum ReleaseType
+            val utilClass = loader.loadClass("com.michaelflisar.kmpdevtools.core.utils.GithubUtil")
+            val enumClass = loader.loadClass("com.michaelflisar.kmpdevtools.core.utils.GithubUtil\$ReleaseType")
+            val instance = utilClass.getField("INSTANCE").get(null)
+
+            // Methode mit (String, ReleaseType)
+            val method = utilClass.getMethod("getLastRelease", String::class.java, enumClass)
+
+            // Alle Enum-Werte durchlaufen und aufrufen
+            val enumValuesMethod = enumClass.getMethod("values")
+            val enumValues = enumValuesMethod.invoke(null) as Array<*>
+
+            for (enumConst in enumValues) {
+                val typeName = enumConst.toString()
+                val result = method.invoke(instance, repo, enumConst) as? String
+                println("ReleaseType: $typeName -> $result")
+            }
+        } finally {
+            // sicher schließen
+            try {
+                loader.close()
+            } catch (_: Exception) { /* ignore */ }
+        }
+    }
 }

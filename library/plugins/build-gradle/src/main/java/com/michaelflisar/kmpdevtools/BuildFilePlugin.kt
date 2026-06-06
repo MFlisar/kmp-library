@@ -153,13 +153,13 @@ abstract class DevToolsTask : BaseTask() {
         println("-------------------")
         println("Available Tasks:")
         println("-------------------")
-        println("- (1) updateDevToolsVersion")
+        println("- (u) updateDevToolsVersion")
         println("- (r) project renamer")
 
         val input = ProjectActions.readUserInput("Enter task number: ").lowercase()
 
         when (input) {
-            "1" -> ProjectActions.updateDevToolsVersion(root)
+            "u" -> ProjectActions.updateDevToolsVersion(root)
             "r" -> ProjectActions.runProjectRenamer()
             else -> println("Invalid input")
         }

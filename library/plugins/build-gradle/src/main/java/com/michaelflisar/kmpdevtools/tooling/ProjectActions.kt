@@ -2,6 +2,7 @@ package com.michaelflisar.kmpdevtools.tooling
 
 import com.michaelflisar.kmpdevtools.core.configs.Config
 import com.michaelflisar.kmpdevtools.core.configs.LibraryConfig
+import com.michaelflisar.kmpdevtools.core.utils.GithubUtil
 import com.michaelflisar.kmpdevtools.core.utils.ProjectData
 import com.michaelflisar.kmpdevtools.core.utils.ProjectRenamer
 import com.michaelflisar.kmpdevtools.core.utils.ScriptStep
@@ -76,7 +77,9 @@ object ProjectActions {
         root: File,
     ) {
         // user input holen
-        val newVersion = readUserInput("Neue kmp-devtools version: ")
+        val lastRelease = GithubUtil.getLastRelease("MFlisar/kmp-devtools")
+        val newVersion = readUserInput("Neue kmp-devtools version (default: $lastRelease):", forceNotEmpty = false)
+            .takeIf { it.isNotEmpty() } ?: lastRelease
 
         fun replaceInFile(file: File, regex: Regex, replacement: String) {
             val text = file.readText()
