@@ -1,7 +1,7 @@
 [versions]
 
 # mflisar
-composechangelog =   		"4.0.0-alpha02"
+composechangelog =   		"4.0.0"
 
 # scripts
 yaml =                          "0.83.0"

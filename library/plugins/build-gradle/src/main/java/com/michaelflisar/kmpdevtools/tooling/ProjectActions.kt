@@ -77,9 +77,14 @@ object ProjectActions {
         root: File,
     ) {
         // user input holen
-        val lastRelease = GithubUtil.getLastRelease("MFlisar/kmp-devtools")
+        val lastRelease = GithubUtil.getLastRelease("MFlisar/kmp-devtools", GithubUtil.AccessMode.Auto)
         val newVersion = readUserInput("Neue kmp-devtools version (default: $lastRelease):", forceNotEmpty = false)
             .takeIf { it.isNotEmpty() } ?: lastRelease
+
+        if (newVersion == null) {
+            println("Aborted: Could not determine latest version and no input provided!")
+            return
+        }
 
         fun replaceInFile(file: File, regex: Regex, replacement: String) {
             val text = file.readText()

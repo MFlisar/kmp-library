@@ -1,5 +1,13 @@
 package com.michaelflisar.kmpdevtools.core.utils
 
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.BufferedReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -7,36 +15,99 @@ import java.net.URL
 object GithubUtil {
 
     enum class ReleaseType {
-        LATEST, STABLE, PRE_RELEASE
+        LATEST,
+        STABLE,
+        PRE_RELEASE
     }
+
+    enum class AccessMode {
+        RestAPI,
+        Auto
+    }
+
+    private const val USER_AGENT = "kmp-devtools/1.0 (+https://github.com/MFlisar/kmp-devtools)"
+
+    private val json = Json { ignoreUnknownKeys = true }
 
     // github repo: e.g.: "https://github.com/MFlisar/kmp-devtools" or "MFlisar/kmp-devtools"
     // returns latest release tag depending on ReleaseType, e.g. "v1.0.0", or null if none / on error
     fun getLastRelease(
         githubRepo: String,
-        type: ReleaseType = ReleaseType.LATEST
+        accessMode: AccessMode,
+        type: ReleaseType = ReleaseType.LATEST,
     ): String? {
-        try {
-            val repo = githubRepo.trim().removeSuffix("/").let {
-                if (it.contains("github.com/")) {
-                    val parts = it.substringAfter("github.com/").split("/")
-                    if (parts.size >= 2) "${parts[0]}/${parts[1]}" else it
-                } else it
-            }
 
-            if (!repo.contains("/")) {
-                println("GithubUtil.getLastRelease: invalid repo string: $githubRepo")
-                return null
-            }
+        // 1) get repo in form "owner/repo" from input string
+        val repo = githubRepo.trim().removeSuffix("/").let {
+            if (it.contains("github.com/")) {
+                val parts = it.substringAfter("github.com/").split("/")
+                if (parts.size >= 2) "${parts[0]}/${parts[1]}" else it
+            } else it
+        }
 
-            val apiUrl = "https://api.github.com/repos/$repo/releases"
+        if (!repo.contains("/")) {
+            println("GithubUtil.getLastRelease: invalid repo string: $githubRepo")
+            return null
+        }
+
+        // 2) check if we can use auto mode (only for latest release, because we need to parse html for stable / pre-release)
+        if (accessMode == AccessMode.Auto) {
+            if (type == ReleaseType.LATEST) {
+                // we use non api method for latest release:
+                // resolve url: https://github.com/MFlisar/KMPPlatformContext/releases/latest
+                // result: https://github.com/MFlisar/KMPPlatformContext/releases/tag/2.0.2
+                // => damit kann man version aus link auslesen
+                val finalLink = resolveUrl("https://github.com/$repo/releases/latest")
+                val version = finalLink
+                    ?.substringAfter("/releases/tag/", missingDelimiterValue = "")
+                    ?.substringBefore("?")
+                    ?.substringBefore("#")
+                    ?.takeIf { it.isNotBlank() }
+
+                return version
+            }
+        }
+
+        // 3) load data from github via rest api and parse result
+        val apiUrl = "https://api.github.com/repos/$repo/releases"
+        val body = loadUrl(apiUrl)
+        if (body == null) {
+            println("GithubUtil.getLastRelease: failed to load releases for $repo")
+            return null
+        }
+
+        val releases: JsonArray = json.parseToJsonElement(body).jsonArray
+
+        // tag, prerelease, draft
+        val results = releases.mapNotNull { element ->
+            val obj: JsonObject = element.jsonObject
+            val tag = obj["tag_name"]?.jsonPrimitive?.contentOrNull ?: return@mapNotNull null
+            val prerelease = obj["prerelease"]?.jsonPrimitive?.booleanOrNull ?: false
+            val draft = obj["draft"]?.jsonPrimitive?.booleanOrNull ?: false
+            Triple(tag, prerelease, draft)
+        }
+
+        if (results.isEmpty()) {
+            println("GithubUtil.getLastRelease: no releases found in list for $repo")
+            return null
+        }
+
+        return when (type) {
+            ReleaseType.LATEST -> results.firstOrNull { !it.third }?.first ?: results.first().first
+            ReleaseType.STABLE -> results.firstOrNull { !it.second && !it.third }?.first
+            ReleaseType.PRE_RELEASE -> results.firstOrNull { it.second && !it.third }?.first
+        }
+    }
+
+    private fun loadUrl(apiUrl: String): String? {
+        return try {
             val url = URL(apiUrl)
             val conn = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "GET"
                 connectTimeout = 10_000
                 readTimeout = 10_000
                 setRequestProperty("Accept", "application/vnd.github.v3+json")
-                setRequestProperty("User-Agent", "kmp-devtools")
+                setRequestProperty("User-Agent", USER_AGENT)
                 val token = System.getenv("GITHUB_TOKEN") ?: System.getenv("GH_TOKEN")
                 if (!token.isNullOrBlank()) {
                     setRequestProperty("Authorization", "token $token")
@@ -48,68 +119,55 @@ object GithubUtil {
             val body = stream.bufferedReader().use(BufferedReader::readText)
 
             if (code == 200) {
-                // minimal JSON parsing: iterate occurrences of "tag_name" and inspect surrounding object for prerelease/draft
-                val results = mutableListOf<Triple<String, Boolean, Boolean>>() // tag, prerelease, draft
+                body
+            } else {
+                println("GithubUtil.loadUrl: unexpected response $code for $apiUrl: $body")
+                null
+            }
+        } catch (e: Exception) {
+            println("GithubUtil.loadUrl: failed: ${e.message}")
+            null
+        }
+    }
 
-                var index = 0
-                while (true) {
-                    val tagIndex = body.indexOf("\"tag_name\"", index)
-                    if (tagIndex < 0) break
-                    // find value start
-                    val colon = body.indexOf(':', tagIndex)
-                    if (colon < 0) break
-                    val quoteStart = body.indexOf('"', colon)
-                    if (quoteStart < 0) break
-                    val quoteEnd = body.indexOf('"', quoteStart + 1)
-                    if (quoteEnd < 0) break
-                    val tag = body.substring(quoteStart + 1, quoteEnd)
+    private fun resolveUrl(url: String, maxRedirects: Int = 10): String? {
+        return try {
+            var current = URL(url)
+            val visited = mutableSetOf<String>()
 
-                    // find object bounds (search back for '{' and forward for '}')
-                    val objStart = body.lastIndexOf('{', tagIndex)
-                    val objEnd = body.indexOf('}', quoteEnd)
-                    val obj = if (objStart >= 0 && objEnd > objStart) body.substring(objStart, objEnd + 1) else ""
-
-                    val prerelease = Regex("\"prerelease\"\\s*:\\s*(true|false)").find(obj)?.groups?.get(1)?.value?.toBoolean() ?: false
-                    val draft = Regex("\"draft\"\\s*:\\s*(true|false)").find(obj)?.groups?.get(1)?.value?.toBoolean() ?: false
-
-                    results.add(Triple(tag, prerelease, draft))
-
-                    index = quoteEnd + 1
-                }
-
-                if (results.isEmpty()) {
-                    println("GithubUtil.getLastRelease: no releases found in list for $repo")
+            repeat(maxRedirects + 1) {
+                val currentStr = current.toString()
+                if (!visited.add(currentStr)) {
+                    println("GithubUtil.resolveUrl: redirect loop detected at $currentStr")
                     return null
                 }
 
-                fun pickFirst(predicate: (Triple<String, Boolean, Boolean>) -> Boolean): String? {
-                    return results.firstOrNull { predicate(it) }?.first
+                val conn = (current.openConnection() as HttpURLConnection).apply {
+                    instanceFollowRedirects = false
+                    requestMethod = "GET"
+                    connectTimeout = 10_000
+                    readTimeout = 10_000
+                    setRequestProperty("User-Agent", USER_AGENT)
                 }
 
-                return when (type) {
-                    ReleaseType.LATEST -> {
-                        // take first non-draft if possible, otherwise first element
-                        pickFirst { !it.third } ?: results.first().first
+                val code = conn.responseCode
+                if (code in 300..399) {
+                    val location = conn.getHeaderField("Location")
+                    if (location.isNullOrBlank()) {
+                        println("GithubUtil.resolveUrl: missing Location header for redirect from $currentStr")
+                        return null
                     }
-                    ReleaseType.STABLE -> {
-                        // first non-prerelease and non-draft
-                        pickFirst { !it.second && !it.third }
-                    }
-                    ReleaseType.PRE_RELEASE -> {
-                        // first prerelease and non-draft
-                        pickFirst { it.second && !it.third }
-                    }
+                    current = URL(current, location) // supports relative redirects
+                } else {
+                    return current.toString()
                 }
-            } else if (code == 404) {
-                println("GithubUtil.getLastRelease: no releases found for $repo (404)")
-                return null
-            } else {
-                println("GithubUtil.getLastRelease: unexpected response $code for $repo: $body")
-                return null
             }
+
+            println("GithubUtil.resolveUrl: too many redirects (>$maxRedirects) for $url")
+            null
         } catch (e: Exception) {
-            println("GithubUtil.getLastRelease: failed: ${e.message}")
-            return null
+            println("GithubUtil.getLastRelease: auto latest resolve failed: ${e.message}")
+            null
         }
     }
 }
