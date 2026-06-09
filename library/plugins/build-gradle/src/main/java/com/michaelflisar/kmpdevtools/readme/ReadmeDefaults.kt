@@ -21,6 +21,7 @@ object ReadmeDefaults {
     val headerDemo = ReadmeRegion("sparkles", "Demo")
     val headerMore = ReadmeRegion("information_source", "More")
     val headerOtherLibraries = ReadmeRegion("bulb", "Other Libraries")
+    val headerCompatibility = ReadmeRegion("twisted_rightwards_arrows", "Compatibility")
     val headerApiDocs = ReadmeRegion("books", "API")
 
     val allHeaders = listOf(
@@ -122,6 +123,8 @@ object ReadmeDefaults {
         ${headerOtherLibraries.markdownHeader()}
         
         You can find more of my multiplatform libraries that work well together [here]({{ other-libraries }}).
+        
+        ${headerCompatibility.markdownHeader()}
 
         When combining my libraries, you can find compatibility information [here]({{ compatibility-link }}).
 

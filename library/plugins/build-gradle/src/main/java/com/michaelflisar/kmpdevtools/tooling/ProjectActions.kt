@@ -79,9 +79,10 @@ object ProjectActions {
         // user input holen
         val lastRelease = GithubUtil.getLastRelease("MFlisar/kmp-devtools", GithubUtil.AccessMode.Auto)
         val newVersion = readUserInput("Neue kmp-devtools version (default: $lastRelease):", forceNotEmpty = false)
-            .takeIf { it.isNotEmpty() } ?: lastRelease
+            .trim()
+            .takeIf { it.isNotEmpty() } ?: lastRelease?.trim()
 
-        if (newVersion == null) {
+        if (newVersion.isNullOrEmpty()) {
             println("Aborted: Could not determine latest version and no input provided!")
             return
         }
