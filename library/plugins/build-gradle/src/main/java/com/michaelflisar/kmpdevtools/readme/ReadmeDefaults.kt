@@ -38,6 +38,7 @@ object ReadmeDefaults {
     )
 
     val GithubMyLibrariesLink = "https://mflisar.github.io/Libraries/"// "https://github.com/MFlisar/Libraries"
+    val GithubLibrariesCompatibilityLink = "https://mflisar.github.io/Libraries/compatibilities/"
 
     val DefaultReadmeTemplate = """
         {{ header }}
@@ -120,7 +121,9 @@ object ReadmeDefaults {
         
         ${headerOtherLibraries.markdownHeader()}
         
-        You can find more libraries (all multiplatform) of mine that all do work together nicely [here]({{ other-libraries }}).
+        You can find more of my multiplatform libraries that work well together [here]({{ other-libraries }}).
+
+        When combining my libraries, you can find compatibility information [here]({{ compatibility-link }}).
 
     """.trimIndent()
 

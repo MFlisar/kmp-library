@@ -419,6 +419,7 @@ object UpdateReadmeUtil {
             Placeholder("{{ setup-via-version-catalogue2 }}", setupViaVersionCatalogue2),
             Placeholder("{{ screenshots }}", screenshotsTable),
             Placeholder("{{ other-libraries }}", ReadmeDefaults.GithubMyLibrariesLink),
+            Placeholder("{{ compatibility-link }}", ReadmeDefaults.GithubLibrariesCompatibilityLink),
             Placeholder("{{ demo }}", demo),
             Placeholder("{{ api-docs }}", apiDocs),
         )
