@@ -267,6 +267,7 @@ object BuildFileUtil {
         desktopAppConfig: DesktopAppConfig,
         jarTask: String = "flattenReleaseJars",
         outputFile: (exe: File) -> File = { it },
+        configure: Launch4jLibraryTask.() -> Unit = {},
     ) {
         appModuleConfig.project.tasks.register("launch4j", Launch4jLibraryTask::class.java) {
             setupLaunch4J(
@@ -276,6 +277,7 @@ object BuildFileUtil {
                 jarTask = jarTask,
                 outputFile = outputFile
             )
+            configure()
         }
     }
 
@@ -284,7 +286,7 @@ object BuildFileUtil {
         task: Launch4jLibraryTask,
         desktopAppConfig: DesktopAppConfig,
         jarTask: String = "flattenReleaseJars",
-        outputFile: (exe: File) -> File = { it },
+        outputFile: (exe: File) -> File = { it }
     ) {
         with(task) {
 
