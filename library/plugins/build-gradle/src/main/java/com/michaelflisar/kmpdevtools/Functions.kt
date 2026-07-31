@@ -11,6 +11,7 @@ import com.michaelflisar.kmpdevtools.core.Platform
 import com.michaelflisar.kmpdevtools.core.configs.AppConfig
 import com.michaelflisar.kmpdevtools.core.configs.Config
 import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 class SourceSetPlatformDsl internal constructor(
@@ -178,20 +179,41 @@ private fun setupDependencies(
     dsl.setupDependencies(log)
 }
 
+fun BuildKonfigExtension.isDebug(project: Project): Boolean {
+    return !project.gradle.startParameter.taskNames.any {
+        it.contains("release", true) ||
+                it.contains("launch4j", ignoreCase = true)
+    }
+}
+
+fun BuildKonfigExtension.isExe(project: Project): Boolean {
+    return project.gradle.startParameter.taskNames.any { it.contains("publishRelease", true) || it.contains("launch4j", ignoreCase = true) }
+}
+
 fun BuildKonfigExtension.setupBuildKonfig(
     appConfig: AppConfig,
     versionFormatter: ChangelogVersionFormatter? = DefaultVersionFormatter(DefaultVersionFormatter.Format.MajorMinorPatch),
     exposeObjectWithName: String = "BuildKonfig",
-    config: TargetConfigDsl.() -> Unit = {}
+    isDebug: Boolean? = null,
+    isExe: Boolean? = null,
+    config: TargetConfigDsl.() -> Unit = {},
 ) {
     packageName.set(appConfig.namespace)
     this.exposeObjectWithName.set(exposeObjectWithName)
     defaultConfigs {
         buildConfigField(Type.STRING, "versionName", appConfig.versionName)
         if (versionFormatter != null)
-            buildConfigField(Type.INT, "versionCode", versionFormatter.parseVersion(appConfig.versionName).toString())
+            buildConfigField(
+                Type.INT,
+                "versionCode",
+                versionFormatter.parseVersion(appConfig.versionName).toString()
+            )
         buildConfigField(Type.STRING, "namespace", appConfig.namespace)
         buildConfigField(Type.STRING, "appName", appConfig.name)
+        if (isDebug != null)
+            buildConfigField(Type.BOOLEAN, "DEBUG", isDebug.toString())
+        if (isExe != null)
+            buildConfigField(Type.BOOLEAN, "EXE", isExe.toString())
         config()
     }
 }
