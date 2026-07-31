@@ -7,9 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Config(
     @SerialName("java-version") val javaVersion: String,
-    val developer: Developer,
+    val developer: Developer = Developer(),
     val project: Project,
-    val readme: Readme,
+    val readme: Readme = Readme(),
     val settings: Settings = Settings()
 ) {
 
@@ -18,12 +18,18 @@ data class Config(
         { Config.serializer() }
     )
 
+    /**
+     * default values:
+     *
+     * just to avoid the necessity to define them in the config file,
+     * if  a project is not published at all
+     */
     @Serializable
     class Developer(
-        val name: String,
-        val mail: String,
-        @SerialName("maven-id") val mavenId: String,
-        @SerialName("github-user-name") val githubUserName: String,
+        val name: String = "<UNKNOWN>",
+        val mail: String = "<NONE>",
+        @SerialName("maven-id") val mavenId: String = "<NONE>",
+        @SerialName("github-user-name") val githubUserName: String = "<NONE>",
     )
 
     @Serializable
@@ -40,14 +46,14 @@ data class Config(
      */
     @Serializable
     class Readme(
-        val screenshots: Screenshots,
+        val screenshots: Screenshots = Screenshots(),
     ) {
         @Serializable
         class Screenshots(
-            @SerialName("exclude-root") val excludeRoot: Boolean,
-            @SerialName("group-by-folder") val groupByFolders: Boolean,
-            @SerialName("excluded-folders") val excludedFolders: List<String>,
-            @SerialName("excluded-images") val excludedImages: List<String>,
+            @SerialName("exclude-root") val excludeRoot: Boolean = true,
+            @SerialName("group-by-folder") val groupByFolders: Boolean = true,
+            @SerialName("excluded-folders") val excludedFolders: List<String> = emptyList(),
+            @SerialName("excluded-images") val excludedImages: List<String> = emptyList(),
         )
     }
 

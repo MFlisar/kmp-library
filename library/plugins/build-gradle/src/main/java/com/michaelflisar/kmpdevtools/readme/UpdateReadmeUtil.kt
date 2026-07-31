@@ -28,7 +28,7 @@ object UpdateReadmeUtil {
         println("################################")
         println("")
 
-        val modules = libraryConfig.modules.filter { it.artifactId.isNotEmpty() }
+        val modules = libraryConfig.modules.filter { it.artifactId.isNotEmpty() && !it.internal }
         val pluginModules = modules.filter { it.plugin }
         val nonPluginModules = modules.filter { !it.plugin }
 
