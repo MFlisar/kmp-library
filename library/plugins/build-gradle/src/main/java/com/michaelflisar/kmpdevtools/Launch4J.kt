@@ -65,6 +65,9 @@ object Launch4J {
             outputConfig.directory
                 ?: launch4jFolder.get().asFile
 
+        val needsRelocation =
+            outputDirectory.canonicalFile != launch4jFolder.get().asFile.canonicalFile
+
         val launch4jTask = project.tasks.register(
             "${taskName}Generate",
             Launch4jLibraryTask::class.java
@@ -110,7 +113,7 @@ object Launch4J {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             mainClassName.set(desktopAppConfig.mainClass)
             icon.set(project.file(desktopAppConfig.ico).absolutePath)
-            outfile.set("${appModuleConfig.appConfig.name}.exe")
+            outfile.set(outputFileName)
             productName.set(appModuleConfig.appConfig.name)
             version.set(appModuleConfig.appConfig.versionName)
             textVersion.set(appModuleConfig.appConfig.versionName)
@@ -118,7 +121,7 @@ object Launch4J {
             copyright.set("©${now.year} ${appModuleConfig.config.developer.name}. All rights reserved.")
             companyName.set(appModuleConfig.config.developer.name)
 
-            outfile.set(outputFileName)
+
         }
 
         val previousTask = when (config) {
@@ -149,34 +152,60 @@ object Launch4J {
             }
         }
 
-        val relocateTask = project.tasks.register(
-            "${taskName}Relocate",
-            Sync::class.java
-        ) {
+        val finalTask = if (needsRelocation) {
+            project.tasks.register(
+                "${taskName}Relocate",
+                Sync::class.java
+            ) {
+                dependsOn(previousTask)
 
-            dependsOn(previousTask)
+                from(launch4jFolder)
+                into(outputDirectory)
 
-            from(launch4jFolder)
-            into(outputDirectory)
-
-            doLast {
-
-                val outputFile = File(outputDirectory, outputFileName)
-
-                logger.lifecycle("Executable wurde in folgendem Ordner erstellt:")
-                logger.lifecycle(
-                    "file:///{}",
-                    outputFile.parentFile.absolutePath
-                        .replace(" ", "%20")
-                        .replace("\\", "/")
-                )
+                doLast {
+                    report(
+                        logger,
+                        outputDirectory,
+                        outputFileName
+                    )
+                }
             }
+        } else {
+            previousTask.configure {
+                doLast {
+                    report(
+                        logger,
+                        outputDirectory,
+                        outputFileName
+                    )
+                }
+            }
+            previousTask
         }
 
         project.tasks.register(taskName) {
             group = "distribution"
-            description = "Creates ${config.javaClass.simpleName} Launch4J executable"
-            dependsOn(relocateTask)
+            description = "Creates ${config::class.simpleName} Launch4J executable"
+            dependsOn(finalTask)
         }
     }
+}
+
+private fun report(
+    logger: org.gradle.api.logging.Logger,
+    outputDirectory: File,
+    outputFileName: String,
+) {
+    val outputFile = File(outputDirectory, outputFileName)
+
+    logger.lifecycle(
+        "Executable wurde in folgendem Ordner erstellt:"
+    )
+
+    logger.lifecycle(
+        "file:///{}",
+        outputFile.parentFile.absolutePath
+            .replace(" ", "%20")
+            .replace("\\", "/")
+    )
 }
