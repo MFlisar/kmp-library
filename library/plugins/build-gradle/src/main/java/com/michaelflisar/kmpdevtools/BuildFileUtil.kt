@@ -262,164 +262,21 @@ object BuildFileUtil {
         }
     }
 
-    fun registerLaunch4JFatExeTask(
+    fun registerLaunch4JTask(
         appModuleConfig: AppModuleConfig,
         desktopAppConfig: DesktopAppConfig,
-        taskName: String = "launch4jFatExe",
-        jarTask: String = "flattenReleaseJars",
-        outputFolder: (folder: File) -> File = { it },
-        outputFileName: (name: String) -> String = { it },
-        configure: Launch4jLibraryTask.() -> Unit = {},
+        config: Launch4J.Config,
+        baseTaskName: String = "launch4j",
+        outputConfig: Launch4J.OutputConfig = Launch4J.OutputConfig(),
     ) {
-        appModuleConfig.project.tasks.register(taskName, Launch4jLibraryTask::class.java) {
-
-            val outputDirName = "launch4j-fat"
-
-            outputDir.set(outputDirName)
-
-            setJarTask(project.tasks.getByName(jarTask))
-
-            setupLaunch4J(
-                appModuleConfig = appModuleConfig,
-                desktopAppConfig = desktopAppConfig,
-                task = this
-            )
-
-            configure()
-
-            doLast {
-
-                val exe = dest.get().asFile
-
-                val finalOutputFolder = outputFolder(exe.parentFile)
-                val finalOutputFileName = outputFileName(exe.name)
-                val finalExe = File(finalOutputFolder, finalOutputFileName)
-
-                if (finalExe != exe) {
-
-                    val finalOutputFolder = finalExe.parentFile
-                    if (finalOutputFolder.exists())
-                        finalOutputFolder.deleteRecursively()
-
-                    exe.copyTo(finalExe, overwrite = true)
-                }
-
-                project.printLaunch4JResult("FAT EXE", finalExe)
-            }
-        }
-    }
-
-    fun registerLaunch4JThinExeTask(
-        appModuleConfig: AppModuleConfig,
-        desktopAppConfig: DesktopAppConfig,
-        taskName: String = "launch4jThinExe",
-        jarTask: String = "proguardReleaseJars",
-        jarFolder: String = "build/compose/tmp/main-release/proguard",
-        mainJarFileName: String = "app-jvm.jar",
-        outputFolder: (folder: File) -> File = { it },
-        configure: Launch4jLibraryTask.() -> Unit = {},
-    ) {
-
-        appModuleConfig.project.tasks.register(taskName, Launch4jLibraryTask::class.java) {
-
-            val outputDirName = "launch4j-thin"
-
-            outputDir.set(outputDirName)
-
-            dependsOn(jarTask)
-
-            jarFiles.set(project.files(project.file("$jarFolder/$mainJarFileName")))
-            classpath.set(
-                project.fileTree(jarFolder) {
-                    include("*.jar")
-                    exclude(mainJarFileName)
-                }.files.map {
-                    "lib/${it.name}"
-                }.toSet()
-            )
-
-            setupLaunch4J(
-                appModuleConfig = appModuleConfig,
-                desktopAppConfig = desktopAppConfig,
-                task = this
-            )
-
-            configure()
-
-            doLast {
-
-                val buildDirFile = project.layout.buildDirectory.get().asFile
-                val launch4jFolder = File(buildDirFile, outputDirName)
-                val finalOutputFolder = outputFolder(launch4jFolder)
-
-                // 1) copy all jar files
-                project.copy {
-                    from(project.file(jarFolder)) {
-                        include("*.jar")
-                    }
-                    into("$buildDirFile/$outputDirName/lib")
-                }
-
-                // 2) move result to final output folder
-                if (finalOutputFolder != launch4jFolder) {
-
-                    if (finalOutputFolder.exists())
-                        finalOutputFolder.deleteRecursively()
-
-                    // copy all files from launch4j folder
-                    project.copy {
-                        from(launch4jFolder)
-                        into(finalOutputFolder)
-                    }
-                }
-
-                project.printLaunch4JResult("THIN EXE", File(finalOutputFolder, "${appModuleConfig.appConfig.name}.exe"))
-            }
-        }
-    }
-
-    private fun setupLaunch4J(
-        appModuleConfig: AppModuleConfig,
-        desktopAppConfig: DesktopAppConfig,
-        task: Launch4jLibraryTask
-    ) {
-        with(task) {
-
-            mainClassName.set(desktopAppConfig.mainClass)
-            icon.set(project.file(desktopAppConfig.ico).absolutePath)
-            outfile.set("${appModuleConfig.appConfig.name}.exe")
-
-            val now = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-
-            productName.set(appModuleConfig.appConfig.name)
-            version.set(appModuleConfig.appConfig.versionName)
-            textVersion.set(appModuleConfig.appConfig.versionName)
-            description = "${appModuleConfig.appConfig.name} - Build at ${now.format(formatter)}"
-            copyright.set("©${now.year} ${appModuleConfig.config.developer.name}. All rights reserved.")
-            companyName.set(appModuleConfig.config.developer.name)
-        }
-    }
-
-    private fun Project.printLaunch4JResult(
-        info: String,
-        exe: File
-    ) {
-        logger.lifecycle("")
-        val title = "LAUNCH4J - $info"
-        val width = title.length + 8
-        logger.lifecycle("#".repeat(width))
-        logger.lifecycle("#   {}   #", title)
-        logger.lifecycle("#".repeat(width))
-        logger.lifecycle("")
-        logger.lifecycle("Executable wurde in folgendem Ordner erstellt:")
-        logger.lifecycle(
-            "file:///{}",
-            exe.parentFile.absolutePath
-                .replace(" ", "%20")
-                .replace("\\", "/")
+        // forwarden
+        Launch4J.registerTask(
+            appModuleConfig,
+            desktopAppConfig,
+            config,
+            baseTaskName,
+            outputConfig
         )
-        logger.lifecycle("")
     }
 
     fun registerExtractProguardMapFromAABTask(
