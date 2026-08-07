@@ -16,7 +16,7 @@ object Launch4J {
         abstract val outputDirName: String
         abstract val jarTask: String
 
-        data class Slim(
+        data class Thin(
             override val outputDirName: String = "launch4j-thin",
             override val jarTask: String = "proguardReleaseJars",
             val jarFolder: String = "build/compose/tmp/main-release/proguard",
@@ -69,7 +69,7 @@ object Launch4J {
 
             when (config) {
 
-                is Config.Slim -> {
+                is Config.Thin -> {
 
                     jarFiles.set(
                         project.files(
@@ -116,7 +116,7 @@ object Launch4J {
 
         val previousTask = when (config) {
 
-            is Config.Slim -> {
+            is Config.Thin -> {
 
                 project.tasks.register(
                     "${taskName}CopyJars",
@@ -150,53 +150,25 @@ object Launch4J {
             dependsOn(previousTask)
 
             from(launch4jFolder)
-
             into(outputDirectory)
 
             doLast {
 
-                val outputFile =
-                    File(outputDirectory, outputFileName)
+                val outputFile = File(outputDirectory, outputFileName)
 
-                logger.lifecycle("")
-
-                val title =
-                    "LAUNCH4J - ${config::class.simpleName}"
-
-                val width = title.length + 8
-
-                logger.lifecycle("#".repeat(width))
-                logger.lifecycle("#   {}   #", title)
-                logger.lifecycle("#".repeat(width))
-                logger.lifecycle("")
-
-                logger.lifecycle(
-                    "Executable wurde in folgendem Ordner erstellt:"
-                )
-
+                logger.lifecycle("Executable wurde in folgendem Ordner erstellt:")
                 logger.lifecycle(
                     "file:///{}",
                     outputFile.parentFile.absolutePath
                         .replace(" ", "%20")
                         .replace("\\", "/")
                 )
-
-                logger.lifecycle("")
             }
         }
 
         project.tasks.register(taskName) {
-
             group = "distribution"
-
-            description = when (config) {
-                is Launch4J.Config.Slim ->
-                    "Creates slim Launch4J executable"
-
-                is Launch4J.Config.Fat ->
-                    "Creates fat Launch4J executable"
-            }
-
+            description = "Creates ${config.javaClass.simpleName} Launch4J executable"
             dependsOn(relocateTask)
         }
     }

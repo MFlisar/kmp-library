@@ -15,7 +15,6 @@ import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.Platform
 import com.vanniktech.maven.publish.SourcesJar
-import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.jetbrains.compose.desktop.application.dsl.JvmApplication
@@ -265,18 +264,32 @@ object BuildFileUtil {
     fun registerLaunch4JTask(
         appModuleConfig: AppModuleConfig,
         desktopAppConfig: DesktopAppConfig,
-        config: Launch4J.Config,
+        thinConfig: Launch4J.Config.Thin? = null,
+        fatConfig: Launch4J.Config.Fat? = null,
         baseTaskName: String = "launch4j",
         outputConfig: Launch4J.OutputConfig = Launch4J.OutputConfig(),
     ) {
-        // forwarden
-        Launch4J.registerTask(
-            appModuleConfig,
-            desktopAppConfig,
-            config,
-            baseTaskName,
-            outputConfig
-        )
+        if (thinConfig == null && fatConfig == null) {
+            throw RuntimeException("either thinConfig or fatConfig must be provided")
+        }
+        if (thinConfig != null) {
+            Launch4J.registerTask(
+                appModuleConfig,
+                desktopAppConfig,
+                thinConfig,
+                baseTaskName,
+                outputConfig
+            )
+        }
+        if (fatConfig != null) {
+            Launch4J.registerTask(
+                appModuleConfig,
+                desktopAppConfig,
+                fatConfig,
+                baseTaskName,
+                outputConfig
+            )
+        }
     }
 
     fun registerExtractProguardMapFromAABTask(
