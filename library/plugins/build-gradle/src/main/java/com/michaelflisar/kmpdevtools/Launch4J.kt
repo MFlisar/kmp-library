@@ -11,21 +11,28 @@ import java.time.format.DateTimeFormatter
 
 object Launch4J {
 
-    sealed class Config {
+    sealed interface SingleConfig {
+        val outputDirName: String
+        val jarTask: String
+    }
 
-        abstract val outputDirName: String
-        abstract val jarTask: String
+    sealed class Config {
 
         data class Thin(
             override val outputDirName: String = "launch4j-thin",
             override val jarTask: String = "proguardReleaseJars",
             val jarFolder: String = "build/compose/tmp/main-release/proguard",
             val mainJarFileName: String = "app-jvm.jar",
-        ) : Config()
+        ) : Config(), SingleConfig
 
         data class Fat(
             override val outputDirName: String = "launch4j-fat",
             override val jarTask: String = "flattenReleaseJars",
+        ) : Config(), SingleConfig
+
+        data class All(
+            val thin: Thin = Thin(),
+            val fat: Fat = Fat(),
         ) : Config()
     }
 
@@ -37,7 +44,7 @@ object Launch4J {
     internal fun registerTask(
         appModuleConfig: AppModuleConfig,
         desktopAppConfig: DesktopAppConfig,
-        config: Config,
+        config: SingleConfig,
         baseTaskName: String = "launch4j",
         outputConfig: OutputConfig = OutputConfig(),
     ) {

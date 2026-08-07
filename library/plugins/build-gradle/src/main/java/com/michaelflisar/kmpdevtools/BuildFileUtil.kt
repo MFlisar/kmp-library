@@ -264,31 +264,45 @@ object BuildFileUtil {
     fun registerLaunch4JTask(
         appModuleConfig: AppModuleConfig,
         desktopAppConfig: DesktopAppConfig,
-        thinConfig: Launch4J.Config.Thin? = null,
-        fatConfig: Launch4J.Config.Fat? = null,
+        config: Launch4J.Config = Launch4J.Config.All(),
         baseTaskName: String = "launch4j",
         outputConfig: Launch4J.OutputConfig = Launch4J.OutputConfig(),
     ) {
-        if (thinConfig == null && fatConfig == null) {
-            throw RuntimeException("either thinConfig or fatConfig must be provided")
-        }
-        if (thinConfig != null) {
-            Launch4J.registerTask(
-                appModuleConfig,
-                desktopAppConfig,
-                thinConfig,
-                baseTaskName,
-                outputConfig
-            )
-        }
-        if (fatConfig != null) {
-            Launch4J.registerTask(
-                appModuleConfig,
-                desktopAppConfig,
-                fatConfig,
-                baseTaskName,
-                outputConfig
-            )
+        when (config) {
+            is Launch4J.Config.Thin -> {
+                Launch4J.registerTask(
+                    appModuleConfig,
+                    desktopAppConfig,
+                    config,
+                    baseTaskName,
+                    outputConfig
+                )
+            }
+            is Launch4J.Config.Fat -> {
+                Launch4J.registerTask(
+                    appModuleConfig,
+                    desktopAppConfig,
+                    config,
+                    baseTaskName,
+                    outputConfig
+                )
+            }
+            is Launch4J.Config.All -> {
+                Launch4J.registerTask(
+                    appModuleConfig,
+                    desktopAppConfig,
+                    config.thin,
+                    baseTaskName,
+                    outputConfig
+                )
+                Launch4J.registerTask(
+                    appModuleConfig,
+                    desktopAppConfig,
+                    config.fat,
+                    baseTaskName,
+                    outputConfig
+                )
+            }
         }
     }
 
