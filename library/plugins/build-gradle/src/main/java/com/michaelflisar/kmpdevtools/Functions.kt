@@ -1,18 +1,26 @@
 package com.michaelflisar.kmpdevtools
 
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import com.android.build.api.dsl.LibraryExtension
+import com.android.build.gradle.internal.dsl.LibraryExtensionImpl
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type
 import com.codingfeline.buildkonfig.gradle.BuildKonfigExtension
 import com.codingfeline.buildkonfig.gradle.TargetConfigDsl
 import com.michaelflisar.composechangelog.format.ChangelogVersionFormatter
 import com.michaelflisar.composechangelog.format.DefaultVersionFormatter
+import com.michaelflisar.kmpdevtools.configs.AndroidLibraryConfig
 import com.michaelflisar.kmpdevtools.configs.AppModuleConfig
 import com.michaelflisar.kmpdevtools.configs.LibraryModuleConfig
 import com.michaelflisar.kmpdevtools.core.Platform
 import com.michaelflisar.kmpdevtools.core.configs.AppConfig
 import com.michaelflisar.kmpdevtools.core.configs.Config
+import org.gradle.api.JavaVersion
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import kotlin.text.toInt
 
 class SourceSetPlatformDsl internal constructor(
     private val buildTargets: Targets,
@@ -216,4 +224,52 @@ fun BuildKonfigExtension.setupBuildKonfig(
             buildConfigField(Type.BOOLEAN, "EXE", isExe.toString())
         config()
     }
+}
+
+fun LibraryExtension.setupAndroid(
+    libraryModuleConfig: LibraryModuleConfig,
+    androidConfig: AndroidLibraryConfig,
+    compose: Boolean = true,
+    buildConfig: Boolean = true,
+    useSupportLibrary: Boolean = true,
+    lintAbortOnError: Boolean = false,
+    releaseIsMinifyEnabled: Boolean = false,
+    configure: LibraryExtension.() -> Unit = {}
+) {
+    val project = libraryModuleConfig.project
+    val config = libraryModuleConfig.config
+
+    namespace = androidConfig.namespace
+    compileSdk = androidConfig.compileSdk.get().toInt()
+
+    buildFeatures {
+        this.compose = compose
+        this.buildConfig = buildConfig
+    }
+
+    defaultConfig {
+        minSdk = androidConfig.minSdk.get().toInt()
+        vectorDrawables {
+            this.useSupportLibrary = useSupportLibrary
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = releaseIsMinifyEnabled
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            consumerProguardFiles("proguard-rules.pro")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.toVersion(config.javaVersion)
+        targetCompatibility = JavaVersion.toVersion(config.javaVersion)
+    }
+
+    lint {
+        abortOnError = lintAbortOnError
+    }
+
+    configure()
 }
