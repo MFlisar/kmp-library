@@ -63,5 +63,19 @@ class AndroidLibraryConfig private constructor(
                 namespace = androidNamespace
             )
         }
+
+        fun createManual(
+            libraryModuleConfig: LibraryModuleConfig.Library,
+            compileSdk: Provider<String>,
+            minSdk: Provider<String>,
+            namespaceAddon: String
+        ): AndroidLibraryConfig {
+            return AndroidLibraryConfig(
+                compileSdk = compileSdk,
+                minSdk = minSdk,
+                enableAndroidResources = true,
+                namespace = "${libraryModuleConfig.projectNamespace}.$namespaceAddon"
+            )
+        }
     }
 }
