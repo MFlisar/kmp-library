@@ -89,7 +89,7 @@ class AndroidLibraryConfig private constructor(
                 )
                 .filter { it.toString() != ".." }
                 .joinToString(".") {
-                    it.toString().replace("-", "_")
+                    it.toString().toPackageSegment()
                 }
 
             return if (namespace.isBlank()) {
@@ -97,6 +97,16 @@ class AndroidLibraryConfig private constructor(
             } else {
                 "$projectNamespace.$namespace"
             }
+        }
+
+        private fun String.toPackageSegment(): String {
+            var value = replace(Regex("[^A-Za-z0-9_]"), "_")
+
+            if (value.firstOrNull()?.isDigit() == true) {
+                value = "_$value"
+            }
+
+            return value
         }
     }
 }

@@ -47,6 +47,7 @@ object Launch4J {
         config: SingleConfig,
         baseTaskName: String = "launch4j",
         outputConfig: OutputConfig = OutputConfig(),
+        configure: Launch4jLibraryTask.() -> Unit = { }
     ) {
 
         val project = appModuleConfig.project
@@ -121,7 +122,8 @@ object Launch4J {
             copyright.set("©${now.year} ${appModuleConfig.config.developer.name}. All rights reserved.")
             companyName.set(appModuleConfig.config.developer.name)
 
-
+            jreMinVersion.set(appModuleConfig.config.javaVersion)
+            configure()
         }
 
         val previousTask = when (config) {

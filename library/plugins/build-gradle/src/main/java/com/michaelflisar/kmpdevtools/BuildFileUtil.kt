@@ -15,6 +15,7 @@ import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.Platform
 import com.vanniktech.maven.publish.SourcesJar
+import edu.sc.seis.launch4j.tasks.Launch4jLibraryTask
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.jetbrains.compose.desktop.application.dsl.JvmApplication
@@ -267,6 +268,7 @@ object BuildFileUtil {
         config: Launch4J.Config = Launch4J.Config.All(),
         baseTaskName: String = "launch4j",
         outputConfig: Launch4J.OutputConfig = Launch4J.OutputConfig(),
+        configure: Launch4jLibraryTask.() -> Unit = { }
     ) {
         when (config) {
             is Launch4J.Config.Thin -> {
@@ -275,7 +277,8 @@ object BuildFileUtil {
                     desktopAppConfig,
                     config,
                     baseTaskName,
-                    outputConfig
+                    outputConfig,
+                    configure
                 )
             }
             is Launch4J.Config.Fat -> {
@@ -284,7 +287,8 @@ object BuildFileUtil {
                     desktopAppConfig,
                     config,
                     baseTaskName,
-                    outputConfig
+                    outputConfig,
+                    configure
                 )
             }
             is Launch4J.Config.All -> {
@@ -293,14 +297,16 @@ object BuildFileUtil {
                     desktopAppConfig,
                     config.thin,
                     baseTaskName,
-                    outputConfig
+                    outputConfig,
+                    configure
                 )
                 Launch4J.registerTask(
                     appModuleConfig,
                     desktopAppConfig,
                     config.fat,
                     baseTaskName,
-                    outputConfig
+                    outputConfig,
+                    configure
                 )
             }
         }
